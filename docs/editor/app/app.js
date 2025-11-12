@@ -16,7 +16,7 @@ import { GPU } from "../utils/webGPU.js";
 import { CreateObjectCommand, DeleteObjectCommand } from "../commands/object/object.js";
 import { CreateEdgeTool } from "../ui/tools/CreateEdge.js";
 import { NodeEditorSpaceData } from "../ui/area/areas/NodeEditor/area_NodeEditorSpaceData.js";
-import { Area_NodeEditor } from "../ui/area/areas/nodeEditor/area_NodeEditor.js";
+import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/area_NodeEditor.js";
 import { Area_Previewer } from "../ui/area/areas/Previewer/area_Previewer.js";
 import { PreviewerSpaceData } from "../ui/area/areas/Previewer/area_PreviewerSpaceData.js";
 import { WorkSpaces } from "./workSpaces/workSpaces.js";
@@ -27,7 +27,6 @@ import { Area_BlendShape } from "../ui/area/areas/BlendShapes/area_BlendShape.js
 import { Area_BlendShapeSpaceData } from "../ui/area/areas/BlendShapes/area_BlendShapeSpaceData.js";
 import { BezierModifier } from "../core/objects/bezierModifier.js";
 import { GraphicMesh } from "../core/objects/graphicMesh.js";
-import { Armature } from "../core/objects/armature.js";
 
 const allLanguageData = await loadFile("./config/language/language.json");
 const calculateMeshParentWeightByBone = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu")], await loadFile("./editor/shader/compute/objectUtil/setWeight/mesh/byBone.wgsl"));

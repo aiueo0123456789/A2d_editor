@@ -2,8 +2,7 @@ import { Area } from "../../ui/area/Area.js";
 import { CreatorForUI } from "../../utils/ui/creatorForUI.js";
 import { AutoGrid } from "../../utils/ui/grid.js";
 import { createID, createTag } from "../../utils/ui/util.js";
-import { changeParameter, indexOfSplice } from "../../utils/utility.js";
-import { GPU } from "../../utils/webGPU.js";
+import { indexOfSplice } from "../../utils/utility.js";
 import { Application } from "../app.js";
 
 export class UI {

@@ -9,7 +9,7 @@ import { DeleteTool } from '../../../tools/Delete.js';
 import { WeightPaintModal } from '../../../tools/WeightPaintTool.js';
 import { ToolsBarOperator } from '../../../../operators/toolsBarOperator.js';
 import { EdgeJoinTool } from '../../../tools/EdgeJoin.js';
-import { AppendVertex } from '../../../tools/appendVertex.js';
+import { AppendVertex } from '../../../tools/AppendVertex.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
 import { boolTo0or1, calculateLocalMousePosition, changeParameter, loadFile, range } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
