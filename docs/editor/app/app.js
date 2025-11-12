@@ -21,7 +21,7 @@ import { Area_Previewer } from "../ui/area/areas/Previewer/area_Previewer.js";
 import { PreviewerSpaceData } from "../ui/area/areas/Previewer/area_PreviewerSpaceData.js";
 import { WorkSpaces } from "./workSpaces/workSpaces.js";
 import { Area_Timeline2 } from "../ui/area/areas/Timeline2/area_Timeline2.js";
-import { UI } from "./uia/uia.js";
+import { UI } from "./ui/ui.js";
 import { Context } from "./context/context.js";
 import { Area_BlendShape } from "../ui/area/areas/BlendShapes/area_BlendShape.js";
 import { Area_BlendShapeSpaceData } from "../ui/area/areas/BlendShapes/area_BlendShapeSpaceData.js";
