@@ -267,13 +267,13 @@ export function createIcon(target, imgName) {
     const container = document.createElement("div");
     container.classList.add("icon");
     const icon = document.createElement("img");
-    icon.src = `config/images/ui_icon/${imgName}.png`;
+    icon.src = `./config/images/ui_icon/${imgName}.png`;
     let errorC = 0;
     icon.addEventListener("error", () => {
         // console.warn("画像の読み込みに失敗",imgName)
         if (errorC < 3) {
             errorC ++;
-            icon.src = `config/images/ui_icon/${imgName}.png`;
+            icon.src = `./config/images/ui_icon/${imgName}.png`;
         } else {
             // console.error("画像の読み込みに失敗",imgName,`config/images/ui_icon/${imgName}.png`)
         }
