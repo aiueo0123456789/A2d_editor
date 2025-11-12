@@ -2147,7 +2147,7 @@ console.log("最大そのた:", limits);
 export const format = navigator.gpu.getPreferredCanvasFormat();
 
 export const GPU = new WebGPU();
-const isNotTexture = await GPU.imageToTexture2D("config/画像データ/ui_icon/画像未設定.png");
+const isNotTexture = await GPU.imageToTexture2D("config/images/ui_icon/画像未設定.png");
 const transparentToWhitePipeline = GPU.createComputePipeline(
     [GPU.createGroupLayout([{useShaderTypes: ['c'], type: 'stw'},{useShaderTypes: ['c'], type: 't'}])],
     `
