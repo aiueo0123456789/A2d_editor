@@ -1,0 +1,216 @@
+.imgText {
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+}
+
+.ui_options {
+    border: 0px;
+    width: 100%;
+    height: fit-content;
+    overflow-x: auto;
+    background-color: var(--subColor);
+}
+
+.ui_container_0 {
+    gap: 2px;
+    padding-top: 2px;
+    width: 100%;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    display: flex;
+    flex-flow: column;
+    border-radius: 0px;
+    background-color: var(--backColor);
+}
+.ui_container_0 > *{
+    flex-shrink: 0;
+}
+
+.ui_container_1 {
+    gap: 2px;
+    padding-top: 2px;
+    height: fit-content;
+    width: 100%;
+    overflow-x: auto;
+    overflow-y: auto;
+    border-radius: 0px;
+    background-color: var(--backColor);
+}
+
+/* エリア */
+.area {
+    display: grid;
+    width: 100%;
+    height: 100%;
+    grid-template-rows: 20px 1fr;
+}
+.area:hover{
+    /* border: 1; */
+}
+/* ヘッダー */
+.area .header {
+    grid-row: 1/2;
+    padding: 0px 5px;
+    display: flex;
+    overflow: hidden;
+    align-items: center;      /* 縦方向中央 */
+    width: fit-content;
+    height: 100%;
+}
+.area .header :first-child {
+}
+.area .header :nth-child(2) {
+}
+.area .header :nth-child(3) > * {
+    font-weight: 900;
+}
+/* メイン */
+.area .main {
+    grid-row: 2/3;
+    height: 100%;
+    width: 100%;
+    /* background-color: var(--baseColor); */
+    overflow: hidden;
+    border-top-right-radius: 0px;
+    border-top-left-radius: 0px;
+    border-radius: 0px;
+}
+
+.canvasContainer {
+    grid-row: 2/3;
+    height: 100%;
+    width: 100%;
+    background-color: var(--baseColor);
+    overflow: hidden;
+    position: relative;
+}
+
+.renderingTarget {
+    background-color: rgb(248, 248, 248);
+    width: 100%;
+    height: 100%;
+    position: absolute;
+}
+
+canvas {
+    border-radius: 0px;
+}
+
+/* 区切り */
+.separator::after {
+    content: "";
+    display: inline-block;
+    width: 1px;
+    height: 100%; /* 文字と同じ高さ */
+    background-color: #686868; /* 縦線の色 */
+    margin-left: 0.5em; /* テキストと縦線の間隔 */
+    vertical-align: middle;
+}
+
+.panel-main {
+    padding: 5px;
+    width: 100%;
+    max-height: fit-content;
+    display: flex;
+    flex-flow: column;
+    overflow-y: hidden;
+    gap: 5px;
+    transition: height 0.3s ease;
+}
+
+.sectionOrPanel {
+    width: 100%;
+    height: fit-content;
+    /* border: 1px solid var(--sub2Color); */
+    background-color: var(--subColor);
+    display: flex;
+    flex-flow: column;
+    gap: 5px;
+    /* padding: 5px; */
+}
+.sectionOrPanel-header {
+    width: 100%;
+    display: flex;
+}
+.sectionOrPanel-mainContainer {
+    width: 100%;
+    max-height: fit-content;
+    display: flex;
+    flex-flow: column;
+    overflow-y: hidden;
+    transition: height 0.3s ease;
+}
+.section-main {
+    width: 100%;
+    padding: 5px;
+    max-height: fit-content;
+    display: flex;
+    flex-flow: column;
+    overflow-y: hidden;
+    gap: 5px;
+}
+.minSection {
+    width: 100%;
+    border: 0px;
+    background-color: var(--subColor);
+    display: flex;
+    flex-flow: column;
+    gap: 5px;
+    padding: 5px;
+}
+
+.shelfe {
+    position: absolute;
+    bottom: 0;
+    background-color: var(--colorShelfeBackGroundColor);
+    display: flex;
+    flex-flow: column;
+    width: fit-content;
+    pointer-events: all;
+    padding: 5px;
+    gap: 3px;
+}
+.shelfe .shelfeTitle {
+    background-color: #686868;
+    padding: 3px;
+}
+
+.sideBar {
+    height: 100%;
+    padding: 4px;
+    padding-left: 0px;
+    display: flex;
+    flex-flow: column;
+    gap: 4px;
+    background-color: rgba(0, 0, 0, 0.386);
+    border-radius: 0px;
+}
+.sideBar-toolTitle {
+    padding: 5px 0px;
+    background-color: rgb(36, 36, 36);
+    border: solid rgb(86, 86, 86) 1px;
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}
+.sideBar-shelfe {
+    /* position: absolute; */
+    margin: 0 0 0 auto;
+    display: flex;
+    flex-flow: column;
+    width: fit-content;
+    pointer-events: all;
+    padding: 5px;
+    gap: 3px;
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -1,0 +1,552 @@
+:root {
+    --activeColor: #4772b3;
+    --selectedColor: #4c658b;
+    --backColor: rgb(0, 0, 0);
+    --baseColor: rgb(59, 59, 59);
+    --subColor: rgb(24, 24, 24);
+    --subHoverColor: rgb(50, 50, 50);
+    --sub2Color: rgb(84, 84, 84);
+    --sub2HoverColor: rgb(47, 47, 47);
+    --sub3Color: rgb(42, 42, 42);
+    --sub4Color: rgb(59, 59, 59);
+    --inputColor: rgb(14, 14, 14);
+
+    --colorShelfeBackGroundColor: rgba(0, 0, 0, 0.386);
+    --colorAreaBG: rgb(128, 119, 119);
+    --colorSectionBoder: rgb(130, 130, 130);
+    --colorActive: #4772b3;
+}
+
+body {
+    overflow-y: hidden;
+    height: 100vh;
+    background-color: #000000;
+    font-family: 'Arial', sans-serif;
+    user-select: none; /* すべてのテキスト選択を無効化 */
+    position: relative;
+}
+
+* {
+    color: rgb(202, 202, 202);
+    font-size: 97.5%;
+    font-weight: 500;
+    /* text-shadow: 0px 1px 0px rgb(28, 28, 28); */
+    min-height: 0;
+    min-width: 0;
+}
+
+.minLimitClear * {
+    min-width: auto;
+    min-height: auto;
+}
+
+.text {
+    min-width: fit-content;
+    width: 100%;
+    overflow: hidden;
+    /* text-align: right; */
+    text-align: left;
+}
+
+select {
+    appearance: auto;
+    -webkit-appearance: auto;
+    background-color: #151515;
+    border-radius: 4px;
+    border: solid rgb(63, 63, 63) 2px;
+    padding: 2px;
+    /* min-width: fit-content; */
+    max-width: 100%;
+    overflow: hidden;
+
+    -webkit-appearance: none; /* Safari/Chrome */
+    -moz-appearance: none;    /* Firefox */
+    appearance: none;
+}
+
+.select-wrapper {
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+.select-wrapper select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    padding-right: 2em;
+}
+
+.select-wrapper::after {
+    content: "▼"; /* お好みで画像でもOK */
+    position: absolute;
+    right: 0.5em;
+    top: 50%;
+    transform: translateY(-50%);
+    pointer-events: none;
+}
+
+select:hover {
+    background-color: rgb(71 114 179);
+}
+
+input {
+    background-color: var(--inputColor);
+    border: solid rgb(79, 79, 79) 1px;
+    border-radius: 4px;
+    padding: 2px;
+    box-shadow: 0px 1px 0px rgb(28, 28, 28);
+    height: 15px;
+    /* filter: drop-shadow(0px 5px 0px rgba(0, 0, 0, 0.5)); */
+}
+
+input[type="text"] {
+    min-width: 50px;
+    width: 100%;
+    overflow: hidden;
+    /* text-align: right; */
+    text-align: left;
+}
+
+input .no-access {
+    pointer-events: none;
+    opacity: 0.5;
+}
+
+.searchBox {
+    width: 100%;
+    height: fit-content;
+    position: relative; /* 疑似要素の基準 */
+}
+.searchBox::before {
+    content: "";
+    width: 7px;  /* 円のサイズ */
+    height: 7px;
+    border: 1px solid rgb(202, 202, 202);  /* 円の枠線 */
+    border-radius: 50%;      /* 丸にする */
+    position: absolute;
+    top: 50%;
+    left: 6px;
+    transform: translateY(-50%);
+}
+.searchBox::after {
+    content: "";
+    width: 4px;
+    height: 1px;
+    background: rgb(202, 202, 202);
+    position: absolute;
+    top: 11px;
+    left: 11px;
+    transform: rotate(45deg);
+}
+.searchBox input {
+    width: 100%;
+    height: 15px;
+    /* padding: 5px 0 5px 2em; */
+    padding-left: 22px;
+}
+
+.dblClickInput {
+    box-shadow: 0px 0px 0px;
+    width: 100%;
+    /* width: 50px; */
+    border: 0px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.dblClickInput:hover {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.dblClickInput:not([readonly]):focus  {
+    background-color: rgb(16, 16, 16);
+    border: solid rgb(32, 32, 32) 1px;
+}
+
+input[type="color"] {
+    width: 27px;
+    height: 27px;
+    background: none;
+    vertical-align: -3px;
+    border: 0px;
+    box-shadow: none;
+}
+
+
+/* Chrome, Safari, Edge 対応 */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox 対応 */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+input[type="number"] {
+    min-width: 50px;
+    width: 100%;
+    overflow: hidden;
+    /* text-align: right; */
+    /* text-align: left; */
+    text-align: center;
+}
+
+/* チェックボックスを非表示（ただし、操作は可能） */
+/* input[type="checkbox"] {
+    display: none;
+} */
+
+/* スライダー */
+input[type="range"] {
+    -webkit-appearance: none; /* デフォルトのスタイルをリセット */
+    appearance: none;
+    display: block;
+    margin: auto;
+    background-color: #404040; /* スライダーの背景色 */
+    outline: none; /* フォーカス時の青い枠を消す */
+    width: 100%; /* スライダーの幅 */
+    border-radius: 4px; /* 丸みをつける */
+    padding: 0px;
+}
+input[type="range"]:hover {
+    background-color: #5c5c5c; /* スライダーの背景色 */
+}
+/* スライダーのつまみ（thumb）のスタイル */
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 5px; /* つまみの幅 */
+    height: 17px; /* つまみの高さ */
+    background-color: #787878; /* つまみの色 */
+    border-radius: 4px; /* つまみを丸く */
+    cursor: pointer;
+}
+
+/* チェックボタン */
+/* チェックボックスを非表示（ただし、操作は可能） */
+input[type="checkbox"]:checked + .radioElement { /* チェックを表示 */
+    background-color: rgb(71 114 179);
+}
+
+/* ラジオボタン */
+/* チェックボックスを非表示（ただし、操作は可能） */
+input[type="radio"] {
+    display: none;
+}
+.radioElement {
+    height: 25px;
+    border-radius: 4px;
+    padding: 2px;
+    border: solid 1px rgb(77, 77, 77);
+    background-color: rgb(120, 120, 120);
+    width: fit-content;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    box-shadow: 0px 1px 0px rgb(28, 28, 28);
+    cursor: pointer;
+}
+input[type="radio"]:checked + .radioElement { /* チェックを表示 */
+    background-color: rgb(71 114 179);
+}
+
+button {
+    height: 20px;
+    border-radius: 4px;
+    padding: 2px;
+    border: solid 1px rgb(77, 77, 77);
+    background-color: rgb(120, 120, 120);
+    width: fit-content;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+
+    box-shadow: 0px 1px 0px rgb(28, 28, 28);
+}
+
+button:hover {
+    background-color: rgb(137, 137, 137);
+}
+
+button:active {
+    background-color: rgb(71 114 179);
+}
+
+.button-min {
+    width: 20px;
+    aspect-ratio: 1 / 1;
+    text-align: center;
+}
+
+/* スクロールバー全体のスタイル */
+::-webkit-scrollbar {
+    width: 5px; /* 縦スクロールバーの幅 */
+    height: 0px; /* 横のスクロールバーを非表示 */
+}
+
+/* トラック部分（背景）のスタイル */
+::-webkit-scrollbar-track {
+    background: #00000000;
+    border-radius: 10px;
+}
+
+/* つまみ部分（ドラッグできる部分）のスタイル */
+::-webkit-scrollbar-thumb {
+    background: #8c8c8c;
+    border-radius: 10px;
+}
+
+/* つまみ部分のホバー時のスタイル */
+::-webkit-scrollbar-thumb:hover {
+    background: #bbbbbb;
+}
+
+.flex {
+    width: 100%;
+    display: flex;
+}
+
+.appContainer {
+    width: 100%;
+    height: 100vh;
+}
+
+.all {
+    width: 100%;
+    height: 100vh;
+    display: grid;
+    /* grid-template-rows: 30px calc(100% - 60px) 30px; */
+    grid-template-rows: auto 1fr auto;
+    /* position: relative; */
+    background-color: var(--subColor);
+    /* grid-template-rows: auto 1fr; */
+}
+
+#save-btn {
+    background-color: #00000000;
+    padding: 0px;
+    margin: 0px;
+    border: 0px;
+}
+
+input[type="file"] {
+    display: none;
+}
+
+.scrollable {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto; /* スクロールを有効にする */
+    overflow-x: hidden; /* スクロールを有効にする */
+    display: flex;
+    flex-flow: column;
+}
+
+.flexRow {
+    width: 100%;
+    height: 100%;
+    display: flex;
+}
+
+.color2 {
+    background-color: rgb(61, 61, 61);
+}
+
+.color3 {
+    background-color: #414141;
+}
+
+.color4 {
+    background-color: #161616;
+}
+
+.activeColor {
+    background-color: rgb(71 114 179);
+}
+
+.activeColor2 {
+    background-color: rgb(53, 86, 135);
+}
+
+.label-input {
+    overflow: hidden;
+    width: 100%;
+    min-width: fit-content;
+    height: fit-content;
+    display: grid;
+    text-align: center;
+    grid-template-columns: 1fr 5px auto;
+}
+
+.label-input :first-child {
+    margin: 0 0 0 auto;
+    white-space: nowrap;
+    min-width: fit-content;
+    grid-column: 1/2;
+}
+.label-input :last-child {
+    margin: 0 0 0 0;
+    max-width: 150px;
+    grid-column: 3/4;
+}
+
+.section-main .label-input {
+    grid-template-columns: 1fr 5px 1fr;
+}
+
+.panel-main .label-input {
+}
+
+label {
+    display: flex;
+    justify-content: center; /* 横中央揃え */
+    align-items: center; /* 縦中央揃え */
+}
+
+.hidden {
+    display: none !important;
+}
+
+.mi-2px {
+    margin: 2px;
+}
+
+.mi-10px {
+    margin: 10px;
+}
+
+.pa-2px {
+    padding: 2px;
+}
+
+.pa-10px {
+    padding: 10px;
+}
+
+.pa-r-0px {
+    padding-right: 0px;
+}
+
+.pa-l-0px {
+    padding-right: 0px;
+}
+
+.resizer-w {
+    position: absolute;
+    right: 2px;
+    bottom: 50%;
+    align-items: center;
+    width: 2px;
+    height: 100%;
+    background-color: var(--backColor);
+    cursor: col-resize;
+}
+
+.resizer-h {
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    align-items: center;
+    width: 100%;
+    height: 2px;
+    background-color: var(--backColor);
+    cursor: row-resize;
+}
+
+.hidden-btn {
+    width: 100%;
+    background-color: #00000000;
+    border: 0px;
+    box-shadow: 0px 0px 0px #00000000;
+}
+
+.icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%; /* 親の高さを明示的に指定 */
+    height: 100%; /* 親の高さを明示的に指定 */
+}
+
+.icon img {
+    height: 15px;
+    height: 15px;
+}
+
+/* :has(.icon) {
+    background-color: #ff0000;
+} */
+
+.minList {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.minList .scrollable {
+    background-color: var(--inputColor);
+    border-radius: 4px;
+}
+
+.square_btn {
+    display: block;
+    position: relative;
+    width: 15px;
+    height: 15px;
+    background: #ffffff00; /* ボタンの背景色 */
+}
+.square_btn:hover {
+    background: #ffffff2c; /* ボタンの背景色 */
+}
+.square_btn::before, .square_btn::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px; /* 棒の幅（太さ） */
+    height: 12px; /* 棒の高さ */
+    background: #dbdbdb; /* バツ印の色 */
+}
+.square_btn::before {
+    transform: translate(-50%,-50%) rotate(45deg);
+}
+.square_btn::after {
+    transform: translate(-50%,-50%) rotate(-45deg);
+}
+
+
+li {
+    list-style: none;
+    width: 100%;
+    /* height: 100%; */
+    height: fit-content;
+}
+
+.heightCenter {
+    display: flex;
+    justify-content: center; /* 横方向中央 */
+    align-items: center;     /* 縦方向中央 */
+    width: 100%;
+    height: 100%;
+}
+
+.meter {
+    min-width: 100px;
+    max-width: 250px;
+    width: 100%;
+    height: 20px;
+    border: 1px solid #767676;
+    background-color: var(--baseColor);
+}
+
+.meterBar {
+    height: 100%;
+    background: linear-gradient(rgb(216, 228, 214),rgb(62, 129, 49));
+}

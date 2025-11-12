@@ -1,0 +1,63 @@
+:root {
+    --functionColor: rgb(255, 230, 0);
+    --varColor: rgb(123, 211, 231);
+    --reservedWordColor: rgb(207, 51, 150);
+}
+
+.caret {
+    position: absolute;
+}
+
+.caret::after {
+    content: '';
+    display: inline-block;
+    width: 1px;
+    height: 11.5px;
+    background-color: rgb(255, 255, 255);
+    animation: blink 1s steps(2, start) infinite;
+    vertical-align: bottom;
+}
+
+@keyframes blink {
+    0% { opacity: 1; }
+    50% { opacity: 0; }
+    100% { opacity: 1; }
+}
+
+.codeAreaContainer {
+    width: 100%;
+    height: fit-content;
+    position: relative;
+    user-select: none;
+    overflow-x: auto;
+    overflow-y: hidden;
+    background-color: rgb(41, 41, 41);
+}
+
+.codeAreaContainer, .codeAreaContainer * {
+    caret-color: transparent !important;
+}
+
+.tokenSpan {
+    white-space: pre;
+}
+.tokenSpan::selection {
+    background-color: #00000000;
+}
+
+.selection {
+    position: absolute;
+    background-color: rgba(78, 127, 217, 0.451);
+    height: 11.5px;
+    border-radius: 0px;
+}
+
+.autocompleteFilterItem {
+    width: 100%;
+    height: fit-content;
+    display: grid;
+    grid-template-columns: auto auto 1fr auto 1fr;
+}
+.autocompleteFilterItem:hover {
+    background-color: #ffffff4f;
+}

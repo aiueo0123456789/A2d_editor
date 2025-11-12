@@ -1,0 +1,66 @@
+/* モーダルの背景 */
+.loadingModalsContainer {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.374);
+    z-index: 100000;
+    pointer-events: none;
+    display: flex;
+    flex-flow: column;
+    gap: 20px;
+    justify-content: center; /* 水平方向の中央揃え */
+    align-items: center; /* 垂直方向の中央揃え */
+}
+.loadingModalContainer {
+    width: 500px;
+    height: 120px;
+    background: var(--subColor);
+    display: flex;
+    flex-flow: column;
+    gap: 10px;
+}
+
+.loadingModal-header {
+    display: flex;
+    align-items: center;
+    background: var(--baseColor);
+    width: 100%;
+    height: fit-content;
+    padding: 10px;
+}
+/* ゲージの枠 */
+.loadingModal-processName {
+}
+
+.loadingModal-main {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+}
+
+.loadingModal-txt {
+}
+
+.loadingModal-percentageContainer {
+    position: relative;
+    height: 10px;
+}
+/* ゲージ本体 */
+.loadingModal-percentage {
+    position: absolute;
+    width: 0%;
+    height: 10px;
+    border-radius: 5px;
+    background: rgb(68, 133, 255);
+    transition: width 0.3s ease;
+}
+.loadingModal-percentageBack {
+    position: absolute;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: rgb(75, 75, 75);
+}

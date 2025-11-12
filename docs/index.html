@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A2D</title>
+    <link rel="stylesheet" href="style/destyle.css"/>
+    <link rel="stylesheet" href="style/base.css">
+    <link rel="stylesheet" href="style/menubar.css">
+    <link rel="stylesheet" href="style/grid.css">
+    <link rel="stylesheet" href="style/contextmenu.css">
+    <link rel="stylesheet" href="style/outliner.css">
+    <link rel="stylesheet" href="style/timeLine.css">
+    <link rel="stylesheet" href="style/inspector.css">
+    <link rel="stylesheet" href="style/view.css">
+    <link rel="stylesheet" href="style/load.css">
+    <link rel="stylesheet" href="style/shelf.css">
+    <link rel="stylesheet" href="style/graphEditor.css">
+    <link rel="stylesheet" href="style/animationCollector.css">
+    <link rel="stylesheet" href="style/appendModal.css">
+    <link rel="stylesheet" href="style/ui.css">
+    <link rel="stylesheet" href="style/arrow.css">
+    <link rel="stylesheet" href="style/look.css">
+    <link rel="stylesheet" href="style/customTags/menu.css">
+    <link rel="stylesheet" href="style/customTags/select.css">
+    <link rel="stylesheet" href="style/codeEditor.css">
+    <link rel="stylesheet" href="style/customCheckbox.css">
+    <link rel="stylesheet" href="style/customTags/button.css">
+
+    <link rel="website icon" type="png" href="config/画像データ/アプリアイコン.png">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.7.1/jszip.min.js"></script>
+</head>
+<body>
+    <!--
+.----------------.  .-----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .----------------.  .-----------------.
+| .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. || .--------------. |
+| |      __      | || | ____  _____  | || |     _____    | || | ____    ____ | || |      __      | || |  _________   | || |     _____    | || |     ____     | || | ____  _____  | |
+| |     /  \     | || ||_   \|_   _| | || |    |_   _|   | || ||_   \  /   _|| || |     /  \     | || | |  _   _  |  | || |    |_   _|   | || |   .'    `.   | || ||_   \|_   _| | |
+| |    / /\ \    | || |  |   \ | |   | || |      | |     | || |  |   \/   |  | || |    / /\ \    | || | |_/ | | \_|  | || |      | |     | || |  /  .--.  \  | || |  |   \ | |   | |
+| |   / ____ \   | || |  | |\ \| |   | || |      | |     | || |  | |\  /| |  | || |   / ____ \   | || |     | |      | || |      | |     | || |  | |    | |  | || |  | |\ \| |   | |
+| | _/ /    \ \_ | || | _| |_\   |_  | || |     _| |_    | || | _| |_\/_| |_ | || | _/ /    \ \_ | || |    _| |_     | || |     _| |_    | || |  \  `--'  /  | || | _| |_\   |_  | |
+| ||____|  |____|| || ||_____|\____| | || |    |_____|   | || ||_____||_____|| || ||____|  |____|| || |   |_____|    | || |    |_____|   | || |   `.____.'   | || ||_____|\____| | |
+| |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | || |              | |
+| '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' || '--------------' |
+ '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'  '----------------'
+    -->
+    <div id="appendModal">
+        <div id="selectAppendObject">
+            <ul id="directories">
+            </ul>
+            <div id="appendModal-action">
+                <button id="appendModal-appendBtn">追加</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="appContainer" id="appContainer">
+
+    </div>
+    <script src="main.js" type="module"></script>
+</body>
+</html>

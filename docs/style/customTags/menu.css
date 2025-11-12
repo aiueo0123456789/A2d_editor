@@ -1,0 +1,60 @@
+.custom-menu {
+    min-width: fit-content;
+    min-height: fit-content;
+    height: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    overflow: hidden;
+}
+.custom-menu-item {
+    width: fit-content;
+    position: relative; /* 子要素の位置基準にする */
+    overflow: visible; /* サブメニューが親の範囲外に表示されるようにする */
+    padding: 2px;
+}
+.custom-menu-itemContainer {
+    background-color: #151515;
+    display: flex;
+    width: fit-content;
+    min-width: 50px;
+    height: 15px;
+}
+.custom-menu-itemContainer img {
+    width: 15px;
+    height: 15px;
+}
+.custom-menu-itemContainer div {
+    width: fit-content;
+}
+/* サブメニューのスタイル */
+.custom-menu-item-submenu {
+    display: none;
+    position: absolute; /* 親から独立した位置に配置 */
+    left: 100%; /* 親の右横に配置 */
+    top: 0; /* 親の上端に揃える */
+    white-space: nowrap; /* 長いテキストでもサブメニューの幅が変わらないようにする */
+    z-index: 1000; /* サブメニューが他の要素より前に表示されるようにする */
+    background-color: #151515;
+}
+
+.custom-menu-item:hover > .custom-menu-item-submenu {
+    display: block;
+}
+
+.custom-menu-itemContainer:hover {
+    background-color: rgb(85, 85, 85);
+}
+
+.custom-menu-items {
+    border-top-left-radius: 0px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: fit-content;
+    height: fit-content;
+    background-color: #151515;
+    z-index: 1000;
+    gap: 5px;
+}
