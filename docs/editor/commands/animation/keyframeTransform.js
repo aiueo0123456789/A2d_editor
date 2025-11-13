@@ -3,10 +3,11 @@ import { Keyframe } from "../../core/objects/keyframeBlock.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 
 class KeyframeTransformCommand {
-    constructor() {
+    constructor(mode) {
+        this.mode = mode;
         /** @type {Keyframe[]} */
-        this.selectedAnchorPoint = app.appConfig.areasConfig["Timeline"].keyframes.filter(keyframe => keyframe.selectedPoint);
-        this.originalAnchorPointPosition = this.selectedAnchorPoint.map(keyframe => {
+        this.targetPoints = app.appConfig.areasConfig["Timeline"].keyframes.filter(keyframe => keyframe.selectedPoint || keyframe.selectedLeftHandle || keyframe.selectedRightHandle);
+        this.originalAnchorPointPosition = this.targetPoints.map(keyframe => {
             return {point: [...keyframe.point], leftHandle: [...keyframe.leftHandle], rightHandle: [...keyframe.rightHandle]};
         });
         this.value = [0,0];
@@ -15,20 +16,32 @@ class KeyframeTransformCommand {
     transform(value) {
         this.value = value;
         if (this instanceof KeyframeTranslateCommand) {
-            this.selectedAnchorPoint.forEach((anchorPoint, index) => {
-                MathVec2.add(anchorPoint.point, this.originalAnchorPointPosition[index].point, this.value);
-                MathVec2.add(anchorPoint.leftHandle, this.originalAnchorPointPosition[index].leftHandle, this.value);
-                MathVec2.add(anchorPoint.rightHandle, this.originalAnchorPointPosition[index].rightHandle, this.value);
+            this.targetPoints.forEach((anchorPoint, index) => {
+                if (anchorPoint.selectedPoint) {
+                    MathVec2.add(anchorPoint.point, this.originalAnchorPointPosition[index].point, this.value);
+                }
+                if (anchorPoint.selectedLeftHandle) {
+                    MathVec2.add(anchorPoint.leftHandle, this.originalAnchorPointPosition[index].leftHandle, this.value);
+                }
+                if (anchorPoint.selectedRightHandle) {
+                    MathVec2.add(anchorPoint.rightHandle, this.originalAnchorPointPosition[index].rightHandle, this.value);
+                }
             })
         }
     }
 
     execute() {
         if (this instanceof KeyframeTranslateCommand) {
-            this.selectedAnchorPoint.forEach((anchorPoint, index) => {
-                MathVec2.add(anchorPoint.point, this.originalAnchorPointPosition[index].point, this.value);
-                MathVec2.add(anchorPoint.leftHandle, this.originalAnchorPointPosition[index].leftHandle, this.value);
-                MathVec2.add(anchorPoint.rightHandle, this.originalAnchorPointPosition[index].rightHandle, this.value);
+            this.targetPoints.forEach((anchorPoint, index) => {
+                if (anchorPoint.selectedPoint) {
+                    MathVec2.add(anchorPoint.point, this.originalAnchorPointPosition[index].point, this.value);
+                }
+                if (anchorPoint.selectedLeftHandle) {
+                    MathVec2.add(anchorPoint.leftHandle, this.originalAnchorPointPosition[index].leftHandle, this.value);
+                }
+                if (anchorPoint.selectedRightHandle) {
+                    MathVec2.add(anchorPoint.rightHandle, this.originalAnchorPointPosition[index].rightHandle, this.value);
+                }
             })
         }
         return {consumed: true};
@@ -36,7 +49,7 @@ class KeyframeTransformCommand {
 
     undo() {
         if (this instanceof KeyframeTranslateCommand) {
-            this.selectedAnchorPoint.forEach((anchorPoint, index) => {
+            this.targetPoints.forEach((anchorPoint, index) => {
                 MathVec2.set(anchorPoint.point, this.originalAnchorPointPosition[index].point);
                 MathVec2.set(anchorPoint.leftHandle, this.originalAnchorPointPosition[index].leftHandle);
                 MathVec2.set(anchorPoint.rightHandle, this.originalAnchorPointPosition[index].rightHandle);

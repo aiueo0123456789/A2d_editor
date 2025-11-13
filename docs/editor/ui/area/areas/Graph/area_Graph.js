@@ -1,17 +1,15 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/inputManager/inputManager.js";
-import { SelectOnlyKeyframeCommand } from "../../../../commands/utile/selectKeyframe.js";
-import { Keyframe } from "../../../../core/objects/keyframeBlock.js";
+import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
 import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
-import { OutlinerTag } from "../../../../utils/ui/customTags/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
-import { createID, managerForDOMs, rgbToRgba } from "../../../../utils/ui/util.js";
+import { createID, managerForDOMs } from "../../../../utils/ui/util.js";
 import { calculateLocalMousePosition, changeParameter, errorCut, isPointInEllipse } from "../../../../utils/utility.js";
 import { KeyDelete } from "../../../tools/KeyDelete.js";
 import { KeyframeResize } from "../../../tools/KeyframeResize.js";
-import { KeyframeTranslate } from "../../../tools/KeyframeTranslate.js";
-import { TimelineSpaceData } from "../Timeline/area_TimelineSpaceData.js";
+import { KeyframeRotate } from "../../../tools/KeyframeRotate.js";
+import { KeyframeTranslateInGraph } from "../../../tools/KeyframeTranslate.js";
 
 const targetValueToColor = {
     "x": "rgb(0, 0, 255)",
@@ -20,17 +18,18 @@ const targetValueToColor = {
     "sy": "rgb(0, 255, 255)",
     "r": "rgb(255, 0, 0)",
     "l": "rgb(247, 104, 237)",
+    "0": "rgb(0, 0, 255)",
+    "1": "rgb(0, 255, 0)",
 }
 
-export class Area_Timeline2 {
+export class Area_Timeline {
     constructor(area) {
         this.dom = area.main;
-        /** @type {TimelineSpaceData} */
         this.spaceData = app.appConfig.areasConfig["Timeline"];
 
         this.camera = [0,0];
         // this.zoom = [1,1];
-        this.zoom = [5,1];
+        this.zoom = [5,5];
 
         this.selectedOnly = false;
 
@@ -45,10 +44,12 @@ export class Area_Timeline2 {
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option",style: "height: 25px;", name: "情報", children: [
                         {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto 1fr", children: [
-                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "auto auto auto 1fr", children: [
-                                {tagType: "input", label: "現在", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
-                                {tagType: "input", label: "開始", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
-                                {tagType: "input", label: "終了", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "auto auto 1fr", children: [
+                                {tagType: "padding", size: "10px"},
+                                {tagType: "menu", title: "選択", struct: [
+                                    {label: "すべて選択", children: [], submitFunction: () => {app.context.selectAll()}},
+                                    {label: "属性選択", children: [], submitFunction: () => {app.context.selectByAttribute()}},
+                                ]},
                                 {tagType: "padding", size: "10px"},
                             ]},
                             {tagType: "box", class: "boxs", children: [
@@ -133,14 +134,10 @@ export class Area_Timeline2 {
         this.creatorForUI = area.creatorForUI;
         this.creatorForUI.create(area.main, this.struct, {padding: false});
 
-        this.toolPanelOperator = new ToolPanelOperator(this.creatorForUI.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslate, "s": KeyframeResize, "x": KeyDelete});
+        this.toolPanelOperator = new ToolPanelOperator(this.creatorForUI.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
 
         /** @type {OutlinerTag} */
         this.overview = this.creatorForUI.getDOMFromID("overview");
-        // this.overview.scrollable.addEventListener("scroll", () => {
-
-        // })
-        console.log(this.overview)
         this.canvas = this.creatorForUI.getDOMFromID("timelineCanvasForGrid");
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.context = this.canvas.getContext("2d");//2次元描画
@@ -194,7 +191,16 @@ export class Area_Timeline2 {
                 const wx = this.worldToCanvas([x + leftDown[0] + decimalOffset[0] + offset[0],0])[0];
                 line([wx, this.canvas.height], [wx,0], width, color);
             }
+            for (let y = 0; y < this.canvas.height / this.zoom[1]; y += gap[1]) {
+                const wy = this.worldToCanvas([0,y + leftDown[1] + decimalOffset[1] + offset[1]])[1];
+                line([this.canvas.width, wy], [0, wy], width, color);
+            }
             if (string) {
+                for (let y = 0; y < this.canvas.height / this.zoom[1]; y += gap[1]) {
+                    const wy = this.worldToCanvas([0, y + leftDown[1] + decimalOffset[1]])[1];
+                    line([0, wy], [40, wy], 10, "rgb(255,255,255)");
+                    text([50, wy], `${errorCut(y + leftDown[1] + decimalOffset[1])}`, 70, "rgb(255, 255, 255)", "left", "middle");
+                }
                 for (let x = 0; x < this.canvas.width / this.zoom[0]; x += gap[0]) {
                     const wx = this.worldToCanvas([x + leftDown[0] + decimalOffset[0], 0])[0];
                     line([wx, 0], [wx, 40], 10, "rgb(255,255,255)");
@@ -226,13 +232,7 @@ export class Area_Timeline2 {
         const gap = [getGridStep(this.zoom[0]),getGridStep(this.zoom[1])];
         const bigGap = MathVec2.scaleR(gap, 5);
 
-        this.spaceData.outlineKefyframeData.forEach((keyframeBlock, index) => {
-            const displayHeight = this.getKeyFrameBlockDisplayTop(keyframeBlock.pathID);
-            // line([0, displayHeight], [o.canvasSize[0], displayHeight], 15 * o.pixelDensity - 1 * o.pixelDensity, targetValueToColor[keyframeBlock.parameter]);
-            // line([0, displayHeight], [this.canvasSize[0], displayHeight], 15 * this.pixelDensity - 1 * this.pixelDensity, "rgb(65, 65, 65)");
-        })
-
-        // gridRender(gap, [0,0], 4, "rgb(72, 72, 72)");
+        gridRender(gap, [0,0], 4, "rgb(72, 72, 72)");
         gridRender(bigGap, [0,0], 5, "rgb(18, 18, 18)", true);
 
         if (true) {
@@ -246,33 +246,47 @@ export class Area_Timeline2 {
             this.context.arc(...p, radius, 0, Math.PI * 2);
             this.context.fill();
         }
+
+        const circleStroke = (p, radius, color, lineWidth) => {
+            this.context.strokeStyle = color;
+            this.context.lineWidth = lineWidth;
+            this.context.beginPath();
+            this.context.arc(...p, radius, 0, Math.PI * 2);
+            // object.context.fill();
+            this.context.stroke();
+        }
         this.spaceData.outlineKefyframeData.forEach((keyframeBlock, index) => {
-            const displayHeight = this.getKeyFrameBlockDisplayTop(keyframeBlock.pathID);
-            for (const keyframe of keyframeBlock.object.keys) {
+            const getColor = (b) => {
+                return b ? "rgb(255, 174, 0)" : targetValueToColor[keyframeBlock.parameter];
+            }
+            // console.log(keyframeBlock);
+            this.context.strokeStyle = targetValueToColor[keyframeBlock.parameter];
+            this.context.lineWidth = 10;
+            const keys = keyframeBlock.object.keys;
+            let lastData = keys[0];
+            for (const keyData of keys.slice(1)) {
+                // ベジェ曲線を描く
+                this.context.beginPath();
+                this.context.moveTo(...this.worldToCanvas(lastData.point));
+                this.context.bezierCurveTo(
+                    ...this.worldToCanvas(lastData.rightHandle),
+                    ...this.worldToCanvas(keyData.leftHandle),
+                    ...this.worldToCanvas(keyData.point)
+                );
+                this.context.strokeStyle = this.strokeStyle;
+                this.context.stroke();
+                lastData = keyData;
+            }
+            for (const keyData of keys) {
                 // 制御点と線
-                const getColor = (b) => {
-                    return b ? "rgb(255, 174, 0)" : "rgb(200, 200, 200)";
-                }
-                circle([this.getKeyframeDisplayLeft(keyframe), displayHeight], 15, getColor(keyframe.selectedPoint));
+                line(this.worldToCanvas(keyData.point),this.worldToCanvas(keyData.leftHandle),10, getColor(keyData.selectedPoint && keyData.selectedLeftHandle));
+                line(this.worldToCanvas(keyData.point),this.worldToCanvas(keyData.rightHandle),10, getColor(keyData.selectedPoint && keyData.selectedRightHandle));
+                circle(this.worldToCanvas(keyData.point), 20, getColor(keyData.selectedPoint));
+                circleStroke(this.worldToCanvas(keyData.leftHandle), 15, getColor(keyData.selectedLeftHandle), 7);
+                circleStroke(this.worldToCanvas(keyData.rightHandle), 15, getColor(keyData.selectedRightHandle), 7);
             }
         })
         circle(this.worldToCanvas(this.inputs.position), 20, "rgb(255, 0, 0)");
-    }
-
-    // キーフレームブロックの表示高さ
-    getKeyFrameBlockDisplayTop(keyframeBlockPathID) {
-        const overviewBoundingbox = this.overview.scrollableContainer.getBoundingClientRect();
-        const tag = this.creatorForUI.getDOMFromID(keyframeBlockPathID);
-        const boundingbox = tag.element.getBoundingClientRect();
-        return (boundingbox.top + boundingbox.height - overviewBoundingbox.top + 7.5) * this.pixelDensity;
-    }
-
-    getKeyframeDisplayLeft(keyframe) {
-        return this.worldToCanvas([keyframe.point[0], 0])[0];
-    }
-
-    getKeyframeDisplayPosition(keyframeBlockPathID, keyframe) {
-        return [this.getKeyframeDisplayLeft(keyframe), this.getKeyFrameBlockDisplayTop(keyframeBlockPathID)];
     }
 
     clipToCanvas(p) {
@@ -312,19 +326,51 @@ export class Area_Timeline2 {
     async keyInput(/** @type {InputManager} */inputManager) {
         let consumed = await this.toolPanelOperator.keyInput(inputManager); // モーダルオペレータがアクションをおこしたら処理を停止
         if (consumed) return ;
+        if (inputManager.consumeKeys(["a"])) {
+            for (const key of this.spaceData.getAllKeyframe) {
+                key.pointSelected = true;
+            }
+        }
     }
 
     async mousedown(inputManager) {
         const mouseLocalPoint = calculateLocalMousePosition(this.canvas, inputManager.position, this.pixelDensity);
         const world = this.canvasToWorld(mouseLocalPoint);
         this.inputs.position = world;
-        let consumed = await this.toolPanelOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
-        app.operator.appendCommand(new SelectOnlyKeyframeCommand(mouseLocalPoint, !inputManager.keysDown["Shift"], this));
-        app.operator.execute();
         if (Math.abs(world[0] - app.scene.frame_current) < 1) {
             this.frameBarDrag = true;
             return ;
+        }
+        let consumed = await this.toolPanelOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
+        if (consumed) return ;
+        if (true) { // 最短のキーフレーム
+            let selectKeyframes = [];
+            let minDist = 15 * 5;
+            for (const keyframeBlock of this.spaceData.outlineKefyframeData) {
+                for (const keyframe of keyframeBlock.object.keys) {
+                    const pointDist = MathVec2.distanceR(this.worldToCanvas(keyframe.point), mouseLocalPoint);
+                    if (pointDist < minDist) {
+                        minDist = pointDist;
+                        selectKeyframes.length = 0;
+                        selectKeyframes.push({keyframe: keyframe, point: true});
+                    }
+                    const leftDist = MathVec2.distanceR(this.worldToCanvas(keyframe.leftHandle), mouseLocalPoint);
+                    if (leftDist < minDist) {
+                        minDist = leftDist;
+                        selectKeyframes.length = 0;
+                        selectKeyframes.push({keyframe: keyframe, left: true});
+                    }
+                    const rightDist = MathVec2.distanceR(this.worldToCanvas(keyframe.rightHandle), mouseLocalPoint);
+                    if (rightDist < minDist) {
+                        minDist = rightDist;
+                        selectKeyframes.length = 0;
+                        selectKeyframes.push({keyframe: keyframe, right: true});
+                    }
+                }
+            }
+            if (app.operator.appendCommand(new SelectKeyframesCommand(selectKeyframes, !inputManager.keysDown["Shift"]))) {
+                if (app.operator.execute()) return ;
+            }
         }
     }
     async mousemove(inputManager) {
@@ -336,11 +382,13 @@ export class Area_Timeline2 {
 
         if (this.frameBarDrag) {
             app.scene.frame_current += this.inputs.movement[0];
+            managerForDOMs.update({o: "タイムライン-canvas", g: this.groupID});
             document.body.style.cursor = "col-resize";
             return ;
         }
 
         let consumed = await this.toolPanelOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
+        managerForDOMs.update({o: "タイムライン-canvas", g: this.groupID});
         if (consumed) return ;
     }
     mouseup(inputManager) {
@@ -353,10 +401,13 @@ export class Area_Timeline2 {
     wheel(inputManager) {
         if (app.input.keysDown["Alt"]) {
             this.zoom[0] -= inputManager.wheelDelta[0] / 25;
+            this.zoom[1] += inputManager.wheelDelta[1] / 25;
             this.zoom[0] = Math.max(0.1,this.zoom[0]);
+            this.zoom[1] = Math.max(0.1,this.zoom[1]);
         } else {
             this.camera[0] += inputManager.wheelDelta[0] / this.zoom[0];
-            this.camera[1] = -this.overview.scrollable.scrollTop;
+            this.camera[1] -= inputManager.wheelDelta[1] / this.zoom[1];
         }
+        managerForDOMs.update({o: "タイムライン-canvas", g: this.groupID});
     }
 }

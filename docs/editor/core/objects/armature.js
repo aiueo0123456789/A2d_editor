@@ -133,13 +133,21 @@ export class Armature extends ObjectBase {
         copyToArray(this.allPhysics, data.physicsDatas.flat().map(x => Math.abs(x - 0.4) < 0.01 ? 0.2 : x));
         copyToArray(this.allVertices, data.vertices.flat());
 
-        /** @type {KeyframeBlockManager} */
-        this.keyframeBlockManager = new KeyframeBlockManager({
-            type: "キーフレームブロックマネージャー",
-            object: this.allAnimations,
-            parameters: createArrayN(this.allAnimations.length),
-            keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}))
-        });
+        if (data.keyframeBlockManager) { // セーブデータから
+            /** @type {KeyframeBlockManager} */
+            this.keyframeBlockManager = new KeyframeBlockManager({
+                object: this.allAnimations,
+                parameters: data.keyframeBlockManager.parameters,
+                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
+            });
+        } else {
+            /** @type {KeyframeBlockManager} */
+            this.keyframeBlockManager = new KeyframeBlockManager({
+                object: this.allAnimations,
+                parameters: createArrayN(this.allAnimations.length),
+                keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}))
+            });
+        }
         console.log(this)
     }
 

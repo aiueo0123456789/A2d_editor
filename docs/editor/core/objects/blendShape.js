@@ -59,13 +59,21 @@ export class BlendShape {
         this.min = data.min;
         this.weights = createArrayNAndFill(this.shapeKeys.length, 0);
         this.triangles = []; // ドロネーで自動生成
-        /** @type {KeyframeBlockManager} */
-        this.keyframeBlockManager = new KeyframeBlockManager({
-            type: "キーフレームブロックマネージャー",
-            object: this.value,
-            parameters: createArrayN(this.dimension),
-            keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}))
-        });
+        if (data.keyframeBlockManager) { // セーブデータから
+            /** @type {KeyframeBlockManager} */
+            this.keyframeBlockManager = new KeyframeBlockManager({
+                object: this.value,
+                parameters: data.keyframeBlockManager.parameters,
+                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
+            });
+        } else {
+            /** @type {KeyframeBlockManager} */
+            this.keyframeBlockManager = new KeyframeBlockManager({
+                object: this.value,
+                parameters: createArrayN(this.dimension),
+                keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}))
+            });
+        }
 
         // エディターデータ
         this.activePoint = null;
@@ -125,6 +133,7 @@ export class BlendShape {
             dimension: this.dimension,
             shapeKeys: this.shapeKeys.map(shapeKey => shapeKey.id),
             points: this.points.map(point => point.getSaveData()),
+            keyframeBlockManager: this.keyframeBlockManager.getSaveData(),
         };
     }
 }

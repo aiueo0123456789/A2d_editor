@@ -12,9 +12,9 @@ export class KeyframeInsertInSelectedElementCommand {
         if (this.isBArmatureAnimation) {
             this.selectedBones = this.editObjects.map(editObject => editObject.selectedBones).flat();
             this.createdKeyframes = this.selectedBones.map(bone => {
-                const values = bone.keyframeBlockManager.valuesInObject;
                 /** @type {BKeyframeBlockManager} */
                 const keyframeBlockManager = bone.keyframeBlockManager;
+                const values = keyframeBlockManager.values;
                 return keyframeBlockManager.keyframeBlocks.map((keyframeBlock, valueIndex) => KeyframeBlock.createKeyframe(app.scene.frame_current, values[valueIndex]));
             });
         }

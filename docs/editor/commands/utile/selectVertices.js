@@ -40,7 +40,6 @@ export class SelectOnlyVertexCommand {
     }
 
     execute() {
-        let hasDiff = false;
         this.editObjects.forEach(editObject => {
             const objectID = editObject.id;
             if (this.multiple) {
@@ -50,6 +49,7 @@ export class SelectOnlyVertexCommand {
                 editObject.select(this.selectData[objectID]);
             }
         })
+        let hasDiff = false;
         this.editObjects.forEach(editObject => {
             const objectID = editObject.id;
             if (this.originalSelectData[objectID].filter((b, index) => editObject.verticesSelectData[index] !== b).length != 0) {

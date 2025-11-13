@@ -2,7 +2,6 @@ import { app } from "../../../main.js";
 
 export class KeyDelete {
     constructor(/** @type {InputManager} */inputManager) {
-        this.selectKeys = app.appConfig.areasConfig["Timeline"].getSelectKey();
         this.activateKey = "x";
     }
 
@@ -11,8 +10,5 @@ export class KeyDelete {
     }
 
     execute() {
-        this.selectKeys.forEach((key) => {
-            key.keyframeBlock.deleteKeyframe(key);
-        })
     }
 }

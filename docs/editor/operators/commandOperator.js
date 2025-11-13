@@ -52,10 +52,13 @@ export class Operator {
     }
 
     appendCommand(command) {
-        if (command.error) console.error("コマンドの初期化でエラーが出た可能性があります");
-        else {
+        if (command.error) {
+            console.error("コマンドの初期化でエラーが出た可能性があります");
+            return false;
+        } else {
             command.id = createID();
             this.commands.push(command);
+            return true;
         }
     }
 
@@ -65,6 +68,7 @@ export class Operator {
     }
 
     execute() {
+        let noError = true;
         const commandsToStack = [];
         while (this.commands.length != 0) {
             const command = this.commands.pop();
@@ -72,16 +76,19 @@ export class Operator {
             if (result.error) {
                 this.errorLog.push(result.error);
                 console.error("コマンド実行時のエラー", result, command)
+                noError = false;
             } else if (result.consumed) {
                 commandsToStack.push(command);
             } else {
                 console.warn("差分が検出できなかった可能性があります", result, command)
+                noError = false;
             }
         }
         if (commandsToStack.length) {
             this.stack.history.push(commandsToStack);
             this.stack.redoStack.length = 0; // 新しい操作をしたらRedoはリセット
         }
+        return noError;
     }
 }
 

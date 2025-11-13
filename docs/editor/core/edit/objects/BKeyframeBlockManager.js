@@ -10,6 +10,10 @@ export class BKeyframeBlockManager {
         this.keyframeBlocks = data.keyframeBlocks.map(keyframeBlock => keyframeBlock);
     }
 
+    get values() {
+        return this.parameters.map(parameter => this.object[parameter]);
+    }
+
     setKeyframeBlocks(parameters, keyframeBlocks) {
         copyToArray(this.parameters, parameters);
         copyToArray(this.keyframeBlocks, keyframeBlocks);

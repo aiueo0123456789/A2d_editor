@@ -3,7 +3,61 @@ import { InputManager } from "../../app/inputManager/inputManager.js";
 import { managerForDOMs } from "../../utils/ui/util.js";
 import { KeyframeTranslateCommand } from "../../commands/animation/keyframeTransform.js";
 
-export class KeyframeTranslate {
+export class KeyframeTranslateInTimeline {
+    constructor(/** @type {InputManager} */inputManager) {
+        this.command = null;
+        this.values = [
+            0,0, // スライド量
+        ];
+        this.sumMovement = [0,0];
+        this.modal = {
+            inputObject: {"value": this.values},
+            DOM: [
+                {tagType: "div", class: "shelfe", children: [
+                    {tagType: "title", text: "TranslateModal", class: "shelfeTitle"},
+                    {tagType: "input", label: "x", value: "value/0", type: "number", min: -1000, max: 1000, useCommand: false},
+                    {tagType: "input", label: "y", value: "value/1", type: "number", min: -1000, max: 1000, useCommand: false},
+                ]}
+            ]
+        };
+        this.activateKey = "g";
+        this.type = "";
+
+        const update = () => {
+            if (!this.command) return ;
+            // this.command.transform([this.values[0],this.values[1]], this.values[2], this.values[3], this.values[4]);
+            this.command.transform([this.values[0],this.values[1]]);
+        }
+        managerForDOMs.set({o: this.values, i: "&all"}, update, null);
+    }
+
+    init() {
+        this.type = app.context.currentMode;
+        try {
+            this.command = new KeyframeTranslateCommand("timeline");
+            app.operator.appendCommand(this.command);
+        } catch (error) {
+            console.error(error);
+            return {complete: true};
+        }
+    }
+
+    mousemove(/** @type {InputManager} */inputManager) {
+        this.sumMovement[0] += inputManager.movement[0];
+        this.values[0] = this.sumMovement[0];
+        managerForDOMs.update({o: this.values});
+        return true;
+    }
+
+    execute() {
+        app.operator.execute();
+    }
+
+    mousedown(/** @type {InputManager} */inputManager) {
+        return {complete: true};
+    }
+}
+export class KeyframeTranslateInGraph {
     constructor(/** @type {InputManager} */inputManager) {
         this.command = null;
         this.values = [
@@ -40,7 +94,7 @@ export class KeyframeTranslate {
     init() {
         this.type = app.context.currentMode;
         try {
-            this.command = new KeyframeTranslateCommand();
+            this.command = new KeyframeTranslateCommand("graph");
             app.operator.appendCommand(this.command);
         } catch (error) {
             console.error(error);

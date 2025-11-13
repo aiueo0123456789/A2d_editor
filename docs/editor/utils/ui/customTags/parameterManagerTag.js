@@ -8,7 +8,10 @@ export class ParameterManagerTag extends CustomTag {
     constructor(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         /** @type {HTMLElement} */
-        this.element = createTag(t, "div", {class: "button"});
+        this.element = createTag(t, "div");
+        this.element.classList.add("custom-select");
+        this.text = createTag(this.element, "p", {textContent: "パラメーターを選択", class: "nowrap"});
+        const isOpen = createTag(this.element, "span", {class: "downArrow"});
         /** @type {HTMLElement} */
         this.icon = createTag(this.element, "img");
         this.element.addEventListener("click", (e) => {

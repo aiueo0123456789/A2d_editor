@@ -8,14 +8,13 @@ export class SelectTag extends CustomTag {
         super();
         this.customTag = true;
         this.element = createTag(t, "div");
+        this.element.classList.add("custom-select");
         this.input = createTag(this.element, "input", {style: "display: none;"});
         if (!isFunction(child.value)) {
             creatorForUI.setWith(this.input, child.value, searchTarget, flag, child.useCommand);
         }
-        this.element.classList.add("custom-select");
         let initValue = "選択されていません";
-        const value = createTag(this.element, "p");
-        setClass(value, "nowrap")
+        const value = createTag(this.element, "p", {class: "nowrap"});
         if (child.options.initValue) {
             if (child.options.initValue.path) {
                 initValue = creatorForUI.getParameter(searchTarget, child.options.initValue.path);
