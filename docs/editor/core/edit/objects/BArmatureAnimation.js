@@ -122,7 +122,7 @@ export class BArmatureAnimation {
         // this.updateGPUData();
     }
 
-    select(/** @type {Array} */ indexs) {
+    selectBones(/** @type {Array} */ indexs) {
         indexs.forEach(index => {
             this.bones[index].selected = true;
             this.activeBone = this.bones[index];
@@ -133,10 +133,6 @@ export class BArmatureAnimation {
             GPU.writeBuffer(this.boneSelectedBuffer, GPU.createBitData([1], ["u32"]), index * 4);
         });
         // this.updateGPUData();
-    }
-
-    get bonesPolygons() {
-        return this.bones.map(bone => bone.polygon);
     }
 
     get verticesNum() {

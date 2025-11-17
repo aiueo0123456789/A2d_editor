@@ -13,7 +13,7 @@ export class Area_Outliner {
                             app.context.setActiveObject(object);
                             event.stopPropagation();
                         }
-                    }, rangeSelectEventFn: (event, array, startIndex, endIndex) => {
+                    }, rangeonSelectFn: (event, array, startIndex, endIndex) => {
                         if (app.context.currentMode == "オブジェクト") {
                             let minIndex = Math.min(startIndex, endIndex);
                             let maxIndex = Math.max(startIndex, endIndex);

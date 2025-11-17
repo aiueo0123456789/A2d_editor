@@ -11,7 +11,7 @@ import { ToolsBarOperator } from '../../../../operators/toolsBarOperator.js';
 import { EdgeJoinTool } from '../../../tools/EdgeJoin.js';
 import { AppendVertex } from '../../../tools/AppendVertex.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
-import { boolTo0or1, calculateLocalMousePosition, changeParameter, loadFile, range } from '../../../../utils/utility.js';
+import { boolTo0or1, calculateLocalMousePosition, changeParameter, chunk, hitTestPointTriangle, isEmpty, loadFile, range } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/objects/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
@@ -23,24 +23,29 @@ import { app } from '../../../../../main.js';
 import { SelectOnlyVertexCommand } from '../../../../commands/utile/selectVertices.js';
 import { managerForDOMs } from '../../../../utils/ui/util.js';
 import { BBezier } from '../../../../core/edit/objects/BBezier.js';
-import { SelectOnlyBoneCommand } from '../../../../commands/utile/selectBone.js';
+import { SelectOnlyBoneCommand } from '../../../../commands/utile/selectBones.js';
 import { KeyframeInsertModal } from '../../../tools/keyframeInsert.js';
 import { ActiveVertexPanel } from './toolBar/panel/vertex.js';
-import { ActiveBonePanel } from './toolBar/panel/bone.js';
+import { ActiveBonePanelFromBA, ActiveBonePanelFromBAA } from './toolBar/panel/bone.js';
 import { ActiveMeshPanel } from './toolBar/panel/mesh.js';
 import { ActiveEdgePanel } from './toolBar/panel/edge.js';
 import { WeightPaintPanel } from './toolBar/panel/weight.js';
 import { BBezierWeight } from '../../../../core/edit/objects/BBezierWeight.js';
+import { BArmatureAnimation } from '../../../../core/edit/objects/BArmatureAnimation.js';
+import { BArmature } from '../../../../core/edit/objects/BArmature.js';
+import { BBezierShapeKey } from '../../../../core/edit/objects/BBezierShapeKey.js';
+import { BMeshShapeKey } from '../../../../core/edit/objects/BMeshShapeKey.js';
+import { BMesh } from '../../../../core/edit/objects/BMesh.js';
 
-const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Ft"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
+const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
 const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/mix.wgsl"), [], "2d", "s");
 
 const devMaskTexturePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft")], await loadFile("./editor/shader/render/devMaskTexture.wgsl"), [], "2d", "s");
 const renderGridPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts")], await fetch('./editor/shader/render/grid.wgsl').then(x => x.text()), [], "2d", "s");
-const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Vu_Ft_Ft_Fu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
-// const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Vu_Ft_Ft_Fu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wa");
+const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft_Fu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
+// const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Vu_Ft_Fu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wa");
 const renderParticlePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/particleVertex.wgsl"), [], "2d", "s", "wl");
-const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Ft")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t");
+const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t");
 
 const BMSMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/main.wgsl"), [], "2d", "t", "wl");
 const BMSMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/meshs.wgsl"), [], "2d", "s");
@@ -54,14 +59,15 @@ const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGrou
 const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/silhouetteEdgesShader.wgsl"), [], "2d", "s");
 // const graphicMeshsWeightRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr"), GPU.getGroupLayout("Vu"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/graphicMesh/weightShader.wgsl"), [], "2d", "s");
 
-const BAABoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_VFsr_Vsr")], await loadFile("./editor/shader/render/bone/BAABone.wgsl"), [], "2d", "s");
-const BArmatureVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/vertices.wgsl"), [], "2d", "t");
-const BArmatureBonesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/BABone.wgsl"), [], "2d", "s");
-const selectObjectOutlineBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBoneRenderPipeline.wgsl"), [], "mask", "t");
-const boneBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/bone.wgsl"), [], "2d", "s");
-const boneRelationshipsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_VFsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/relationships.wgsl"), [], "2d", "s");
+const BAABoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr")], await loadFile("./editor/shader/render/bone/baa/bones.wgsl"), [], "2d", "s");
+const BArmatureVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/vertices.wgsl"), [], "2d", "t");
+const BArmatureBonesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/bones.wgsl"), [], "2d", "s");
 
-const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "mask", "s");
+const selectObjectOutlineBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBoneRenderPipeline.wgsl"), [], "mask", "t");
+const boneBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/bones.wgsl"), [], "2d", "s");
+const boneRelationshipsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/relationships.wgsl"), [], "2d", "s");
+
+const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "mask", "s");
 const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/bezier.wgsl"), [], "2d", "s");
 const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/BBezier.wgsl"), [], "2d", "s");
 const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/vertices.wgsl"), [], "2d", "t");
@@ -96,9 +102,10 @@ const useingSideBarPanelInMode = {
     },
     "ボーン編集": {
         "頂点": ActiveVertexPanel,
+        "ボーン": ActiveBonePanelFromBA,
     },
     "ボーンアニメーション編集": {
-        "ボーン": ActiveBonePanel,
+        "ボーン": ActiveBonePanelFromBAA,
     },
     "メッシュウェイト編集": {
         "ウェイトペイント": WeightPaintPanel,
@@ -157,8 +164,8 @@ export class Area_Viewer {
                                 ]},
                                 {tagType: "heightCenter", children: [
                                     {tagType: "menu", title: "選択", struct: [
-                                        {label: "すべて選択", children: [], submitFunction: () => {app.context.selectAll()}},
-                                        {label: "属性選択", children: [], submitFunction: () => {app.context.selectByAttribute()}},
+                                        {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
+                                        {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
                                         {label: "選択解除", children: []},
                                         {label: "反転", children: []},
                                         {label: "ランダム選択", children: []},
@@ -325,6 +332,78 @@ export class Area_Viewer {
         }
     }
 
+    getBonesRayCast(point) {
+        let selectIndex = -1;
+        let selectBoneIncludesObjectID = -1;
+        const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BArmatureAnimation || editData instanceof BArmature);
+        editObjects.forEach(editObject => {
+            const objectID = editObject.id;
+            const bonesPolygons = editObject.bones.map(bone => bone.polygon);
+            bonesPolygons.forEach((polygons, polygonsIndex) => {
+                if (hitTestPointTriangle(polygons[0], polygons[1], polygons[2], point) || hitTestPointTriangle(polygons[3], polygons[1], polygons[2], point)) {
+                    selectIndex = polygonsIndex;
+                    selectBoneIncludesObjectID = objectID;
+                }
+            })
+        })
+        const result = {};
+        if (selectBoneIncludesObjectID != -1 && selectIndex != -1) {
+            result[selectBoneIncludesObjectID] = [selectIndex];
+        }
+        return result;
+    }
+
+    getVerticesRayCast(point) {
+        const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey || editData instanceof BBezier || editData instanceof BBezierShapeKey || editData instanceof BArmature);
+        let minDis = Infinity;
+        let selectIndexs = [];
+        let selectBoneIncludesObjectIDs = [];
+        editObjects.forEach(editObject => {
+            const objectID = editObject.id;
+            let verticesCoordinates;
+            if (editObject instanceof BMeshShapeKey || editObject instanceof BBezierShapeKey) verticesCoordinates = editObject.activeShapeKey.data.map(vertex => vertex.co);
+            else verticesCoordinates = editObject.vertices.map(vertex => vertex.co);
+            if (editObject instanceof BArmature) {
+                for (const boneVertices of chunk(verticesCoordinates, 2)) {
+                    const lenght = MathVec2.distanceR(boneVertices[0], boneVertices[1]);
+                    for (const vertex of boneVertices) {
+                        const dist = MathVec2.distanceR(vertex, point);
+                        if (dist < lenght * 0.05) {
+                            if (dist <= minDis) {
+                                if (dist < minDis) { // ==じゃないなら配列の長さをリセット
+                                    selectIndexs.length = 0;
+                                    selectBoneIncludesObjectIDs.length = 0;
+                                }
+                                minDis = dist;
+                                selectIndexs.push(verticesCoordinates.indexOf(vertex));
+                                selectBoneIncludesObjectIDs.push(objectID);
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (const vertex of verticesCoordinates) {
+                    const dist = MathVec2.distanceR(vertex, point);
+                    if (dist <= minDis) {
+                        if (dist < minDis) { // ==じゃないなら配列の長さをリセット
+                            selectIndexs.length = 0;
+                            selectBoneIncludesObjectIDs.length = 0;
+                        }
+                        minDis = dist;
+                        selectIndexs.push(verticesCoordinates.indexOf(vertex));
+                        selectBoneIncludesObjectIDs.push(objectID);
+                    }
+                }
+            }
+        })
+        const result = {};
+        if (selectBoneIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
+            let index = Math.floor(Math.random() * selectBoneIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
+            result[selectBoneIncludesObjectIDs[index]] = [selectIndexs[index]];
+        }
+        return result;
+    }
+
     async mousedown(/** @type {InputManager} */ inputManager) {
         const local = this.convertCoordinate.screenPosFromGPUPos(MathVec2.flipY(calculateLocalMousePosition(this.canvas, inputManager.position), this.canvas.offsetHeight)); // canvasないのlocal座標へ
         this.inputs.click = true;
@@ -341,45 +420,38 @@ export class Area_Viewer {
             context.setSelectedObject(frontObject, inputManager.keysDown["Shift"]);
             context.setActiveObject(frontObject);
         } else if (context.currentMode == "メッシュ編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.inputs.position, !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "ボーン編集") {
-            // for (const armature of app.context.selectedObjects) {
-            //     app.scene.runtimeData.armatureData.selectedForVertices(armature, {circle: [...this.inputs.clickPosition, 100 / this.camera.zoom]}, {add: boolTo0or1(inputManager.keysDown["Shift"]), circle: inputManager.keysDown["c"]});
-            // }
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.inputs.position, !inputManager.keysDown["Shift"]));
+            // 頂点選択
+            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            console.log(this.getVerticesRayCast(this.inputs.position));
+            if (isEmpty(this.getVerticesRayCast(this.inputs.position))) {
+                app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            }
             app.operator.execute();
         } else if (context.currentMode == "ベジェ編集") {
-            // for (const bezierModifier of app.context.selectedObjects) {
-            //     app.scene.runtimeData.bezierModifierData.selectedForVertices(bezierModifier, {circle: [...this.inputs.clickPosition, 100 / this.camera.zoom]}, {add: boolTo0or1(inputManager.keysDown["Shift"])});
-            // }
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.inputs.position, !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "メッシュシェイプキー編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.inputs.position, !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "ベジェシェイプキー編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.inputs.position, !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "ボーンアニメーション編集") {
-            app.operator.appendCommand(new SelectOnlyBoneCommand(this.inputs.position, !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "メッシュウェイト編集") {
-            // if (inputManager.consumeKeys(["Alt"])) {
-            //     await app.scene.runtimeData.armatureData.selectedForBone(app.context.activeObject.parent, {circle: [...this.inputs.clickPosition, 100 / this.camera.zoom]}, {add: boolTo0or1(inputManager.keysDown["Shift"])});
-            //     const bone = app.scene.runtimeData.armatureData.getSelectBones();
-            //     changeParameter(this.areasConfig.weightPaintMetaData, "boneIndex", bone[0].index);
-            // } else {
-            // }
             if (inputManager.consumeKeys(["Shift"])) {
-                app.operator.appendCommand(new SelectOnlyBoneCommand(this.inputs.position, false));
+                app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), false));
                 app.operator.execute();
             } else {
                 this.toolPanelOperator.setPanel(WeightPaintModal, this.inputs);
             }
         } else if (context.currentMode == "ベジェウェイト編集") {
             if (inputManager.consumeKeys(["Shift"])) {
-                app.operator.appendCommand(new SelectOnlyBoneCommand(this.inputs.position, false));
+                app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), false));
                 app.operator.execute();
             } else {
                 this.toolPanelOperator.setPanel(WeightPaintModal, this.inputs);
@@ -476,24 +548,24 @@ export class Renderer {
                 app.scene.allRenderingOrder.filter(object => selectedObjects.includes(object)).forEach((object, index) => {
                     if (object == app.context.activeObject) {
                         // selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Fu"), [GPU.createUniformBuffer(4, [244 / 255], ["f32"])]));
-                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Fu"), [GPU.createUniformBuffer(4, [1 / 255], ["f32"])]));
+                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4, [1 / 255], ["f32"])]));
                     } else{
-                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Fu"), [GPU.createUniformBuffer(4, [(index + 2) / 255], ["f32"])]));
+                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4, [(index + 2) / 255], ["f32"])]));
                     }
                     if (object.type == "グラフィックメッシュ") {
-                        selectObjectOutlineRenderPass.setBindGroup(1, app.scene.runtimeData.graphicMeshData.renderGroup);
-                        selectObjectOutlineRenderPass.setBindGroup(2, object.maskRenderGroup);
+                        selectObjectOutlineRenderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.mesh.group);
+                        selectObjectOutlineRenderPass.setBindGroup(2, app.scene.runtimeData.graphicMeshData.renderGroup);
                         selectObjectOutlineRenderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, object.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshBlockByteLength, object.meshesNum * app.scene.runtimeData.graphicMeshData.meshBlockByteLength);
                         selectObjectOutlineRenderPass.setPipeline(selectObjectOutlinePipeline);
                         selectObjectOutlineRenderPass.draw(object.meshesNum * 3, 1, 0, 0);
                     } else if (object.type == "アーマチュア") {
-                        selectObjectOutlineRenderPass.setBindGroup(1, app.scene.runtimeData.armatureData.renderingGizumoGroup);
-                        selectObjectOutlineRenderPass.setBindGroup(2, object.objectDataGroup);
+                        selectObjectOutlineRenderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.bone.group);
+                        selectObjectOutlineRenderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
                         selectObjectOutlineRenderPass.setPipeline(selectObjectOutlineBoneRenderPipeline);
                         selectObjectOutlineRenderPass.draw(3 * 2, object.bonesNum, 0, 0);
                     } else if (object.type == "ベジェモディファイア") {
-                        selectObjectOutlineRenderPass.setBindGroup(1, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
-                        selectObjectOutlineRenderPass.setBindGroup(2, object.objectDataGroup);
+                        selectObjectOutlineRenderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.bezier.group);
+                        selectObjectOutlineRenderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
                         selectObjectOutlineRenderPass.setPipeline(selectObjectOutlineBezierRenderPipeline);
                         selectObjectOutlineRenderPass.draw(2 * 50, object.pointsNum - 1, 0, 0);
                     }
@@ -519,7 +591,7 @@ export class Renderer {
                 maskRenderPass.setBindGroup(0, this.staticGroup);
                 maskRenderPass.setBindGroup(1, app.scene.runtimeData.graphicMeshData.renderGroup);
                 for (const graphicMesh of maskTexture.renderingObjects) {
-                    maskRenderPass.setBindGroup(2, graphicMesh.maskRenderGroup);
+                    maskRenderPass.setBindGroup(2, graphicMesh.objectDataGroup);
                     maskRenderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, graphicMesh.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshBlockByteLength, graphicMesh.meshesNum * app.scene.runtimeData.graphicMeshData.meshBlockByteLength);
                     maskRenderPass.draw(graphicMesh.meshesNum * 3, 1, 0, 0);
                 }
@@ -633,32 +705,33 @@ export class Renderer {
             }
         }
         if (this.viewer.spaceData.visibleObjects.armature && app.scene.objects.armatures.length) {
-            renderPass.setBindGroup(1, app.scene.runtimeData.armatureData.renderingGizumoGroup);
+            renderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.bone.group);
+            renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
             renderPass.setPipeline(boneBoneRenderPipeline);
             for (const armature of app.scene.objects.armatures) {
                 if (armature.visible) {
                     if (armature.mode == "ボーン編集") {
                         const ba = app.scene.editData.getEditObjectByObject(armature);
-                        renderPass.setBindGroup(1, ba.renderingGroup);
+                        renderPass.setBindGroup(2, ba.renderingGroup);
                         renderPass.setPipeline(BArmatureBonesRenderPipeline);
                         renderPass.draw(4, ba.bonesNum, 0, 0);
                         renderPass.setPipeline(BArmatureVerticesRenderPipeline);
                         renderPass.draw(6 * 2, ba.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
                         // renderPass.setPipeline(boneRelationshipsRenderPipeline);
                         // renderPass.draw(4, bm.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
-    
-                        renderPass.setBindGroup(1, app.scene.runtimeData.armatureData.renderingGizumoGroup);
+
+                        renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
                         renderPass.setPipeline(boneBoneRenderPipeline);
                     } else if (armature.mode == "ボーンアニメーション編集" || armature.mode == "メッシュウェイト編集" || armature.mode == "ベジェウェイト編集") {
                         const baa = app.scene.editData.getEditObjectByObject(armature);
-                        renderPass.setBindGroup(1, baa.renderingGroup);
+                        renderPass.setBindGroup(2, baa.renderingGroup);
                         renderPass.setPipeline(BAABoneRenderPipeline);
                         renderPass.draw(4, baa.bonesNum, 0, 0);
-    
-                        renderPass.setBindGroup(1, app.scene.runtimeData.armatureData.renderingGizumoGroup);
+
+                        renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
                         renderPass.setPipeline(boneBoneRenderPipeline);
                     } else {
-                        renderPass.setBindGroup(2, armature.objectDataGroup);
+                        renderPass.setBindGroup(3, armature.objectDataGroup);
                         renderPass.draw(4, armature.bonesNum, 0, 0);
                     }
                 }
@@ -736,6 +809,11 @@ export class Renderer {
         if (app.context.currentMode == "オブジェクト") {
             renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft_Fu"), [GPU.sampler, this.selectObjectMaskTextureView, GPU.createUniformBuffer(4 * 4, [1, 0.4, 0.2, 1], ["f32", "f32", "f32", "f32"])]));
             renderPass.setPipeline(selectObjectOutlineMixPipeline);
+            renderPass.draw(4, 1, 0, 0);
+        }
+        if (app.scene.runtimeData.graphicMeshData.textureAtls) {
+            renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft"), [GPU.sampler, app.scene.runtimeData.graphicMeshData.textureAtls.createView()]));
+            renderPass.setPipeline(devMaskTexturePipeline);
             renderPass.draw(4, 1, 0, 0);
         }
         // 処理の終了と送信

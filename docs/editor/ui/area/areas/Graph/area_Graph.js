@@ -47,18 +47,18 @@ export class Area_Timeline {
                             {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "auto auto 1fr", children: [
                                 {tagType: "padding", size: "10px"},
                                 {tagType: "menu", title: "選択", struct: [
-                                    {label: "すべて選択", children: [], submitFunction: () => {app.context.selectAll()}},
-                                    {label: "属性選択", children: [], submitFunction: () => {app.context.selectByAttribute()}},
+                                    {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
+                                    {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
                                 ]},
                                 {tagType: "padding", size: "10px"},
                             ]},
                             {tagType: "box", class: "boxs", children: [
-                                {tagType: "button", icon: "reverseSkip", submitFunction: () => {
+                                {tagType: "button", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
                                 }},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isReversePlaying", look: {check: "stop", uncheck: "reverse"}, useCommand: false},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isPlaying", look: {check: "stop", uncheck: "playing"}, useCommand: false},
-                                {tagType: "button", icon: "skip", submitFunction: () => {
+                                {tagType: "button", icon: "skip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
@@ -79,7 +79,7 @@ export class Area_Timeline {
                                     // app.context.setSelectedObject(object, app.input.keysDown["Ctrl"]);
                                     // app.context.setActiveObject(object);
                                     event.stopPropagation();
-                                }, rangeSelectEventFn: (event, array, startIndex, endIndex) => {
+                                }, rangeonSelectFn: (event, array, startIndex, endIndex) => {
                                     // let minIndex = Math.min(startIndex, endIndex);
                                     // let maxIndex = Math.max(startIndex, endIndex);
                                     // for (let i = minIndex; i < maxIndex; i ++) {
@@ -106,7 +106,7 @@ export class Area_Timeline {
                                                 {tagType: "color", src: "colorData/{/parameter}"},
                                             ]},
                                             {tagType: "icon", src: {path: "/type"}},
-                                            {tagType: "input", type: "checkbox", checked: "/visible", look: {check: "display", uncheck: "hide"}},
+                                            {tagType: "input", type: "checkbox", checked: "/object/visible", look: {check: "display", uncheck: "hide"}},
                                             {tagType: "dblClickInput", value: "/parameter"},
                                         ]}
                                     ],
@@ -255,14 +255,15 @@ export class Area_Timeline {
             // object.context.fill();
             this.context.stroke();
         }
-        this.spaceData.outlineKefyframeData.forEach((keyframeBlock, index) => {
+        this.spaceData.outlineKefyframeData.forEach((keyframeBlockData, index) => {
+            const keyframeBlock = keyframeBlockData.object;
+            if (!keyframeBlock.visible) return ;
             const getColor = (b) => {
-                return b ? "rgb(255, 174, 0)" : targetValueToColor[keyframeBlock.parameter];
+                return b ? "rgb(255, 174, 0)" : targetValueToColor[keyframeBlockData.parameter];
             }
-            // console.log(keyframeBlock);
-            this.context.strokeStyle = targetValueToColor[keyframeBlock.parameter];
+            this.context.strokeStyle = targetValueToColor[keyframeBlockData.parameter];
             this.context.lineWidth = 10;
-            const keys = keyframeBlock.object.keys;
+            const keys = keyframeBlock.keys;
             let lastData = keys[0];
             for (const keyData of keys.slice(1)) {
                 // ベジェ曲線を描く
@@ -337,40 +338,43 @@ export class Area_Timeline {
         const mouseLocalPoint = calculateLocalMousePosition(this.canvas, inputManager.position, this.pixelDensity);
         const world = this.canvasToWorld(mouseLocalPoint);
         this.inputs.position = world;
-        if (Math.abs(world[0] - app.scene.frame_current) < 1) {
-            this.frameBarDrag = true;
-            return ;
-        }
         let consumed = await this.toolPanelOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
         if (consumed) return ;
         if (true) { // 最短のキーフレーム
             let selectKeyframes = [];
             let minDist = 15 * 5;
-            for (const keyframeBlock of this.spaceData.outlineKefyframeData) {
-                for (const keyframe of keyframeBlock.object.keys) {
-                    const pointDist = MathVec2.distanceR(this.worldToCanvas(keyframe.point), mouseLocalPoint);
-                    if (pointDist < minDist) {
-                        minDist = pointDist;
-                        selectKeyframes.length = 0;
-                        selectKeyframes.push({keyframe: keyframe, point: true});
-                    }
-                    const leftDist = MathVec2.distanceR(this.worldToCanvas(keyframe.leftHandle), mouseLocalPoint);
-                    if (leftDist < minDist) {
-                        minDist = leftDist;
-                        selectKeyframes.length = 0;
-                        selectKeyframes.push({keyframe: keyframe, left: true});
-                    }
-                    const rightDist = MathVec2.distanceR(this.worldToCanvas(keyframe.rightHandle), mouseLocalPoint);
-                    if (rightDist < minDist) {
-                        minDist = rightDist;
-                        selectKeyframes.length = 0;
-                        selectKeyframes.push({keyframe: keyframe, right: true});
+            for (const keyframeBlockData of this.spaceData.outlineKefyframeData) {
+                const keyframeBlock = keyframeBlockData.object;
+                if (keyframeBlock.visible) {
+                    for (const keyframe of keyframeBlock.keys) {
+                        const pointDist = MathVec2.distanceR(this.worldToCanvas(keyframe.point), mouseLocalPoint);
+                        if (pointDist < minDist) {
+                            minDist = pointDist;
+                            selectKeyframes.length = 0;
+                            selectKeyframes.push({keyframe: keyframe, point: true});
+                        }
+                        const leftDist = MathVec2.distanceR(this.worldToCanvas(keyframe.leftHandle), mouseLocalPoint);
+                        if (leftDist < minDist) {
+                            minDist = leftDist;
+                            selectKeyframes.length = 0;
+                            selectKeyframes.push({keyframe: keyframe, left: true});
+                        }
+                        const rightDist = MathVec2.distanceR(this.worldToCanvas(keyframe.rightHandle), mouseLocalPoint);
+                        if (rightDist < minDist) {
+                            minDist = rightDist;
+                            selectKeyframes.length = 0;
+                            selectKeyframes.push({keyframe: keyframe, right: true});
+                        }
                     }
                 }
             }
             if (app.operator.appendCommand(new SelectKeyframesCommand(selectKeyframes, !inputManager.keysDown["Shift"]))) {
                 if (app.operator.execute()) return ;
             }
+        }
+        if (Math.abs(world[0] - app.scene.frame_current) < 1) {
+            this.frameBarDrag = true;
+            return ;
         }
     }
     async mousemove(inputManager) {

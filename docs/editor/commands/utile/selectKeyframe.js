@@ -1,13 +1,10 @@
 import { app } from "../../../main.js";
-import { TimelineSpaceData } from "../../ui/area/areas/Graph/area_TimelineSpaceData.js";
 
 export class SelectKeyframesCommand {
     constructor(selectDatas,multiple) {
         this.error = false;
         this.multiple = multiple;
-        /** @type {TimelineSpaceData} */
-        this.timeLineSpaceData = app.appConfig.areasConfig["Timeline"];
-        this.targetKeyframe = this.timeLineSpaceData.keyframes;
+        this.targetKeyframe = app.scene.objects.keyframeBlocks.map(keyframeBlock => keyframeBlock.keys).flat();
         this.originalSelectData = this.targetKeyframe.map(keyframe => [keyframe.selectedPoint, keyframe.selectedLeftHandle, keyframe.selectedRightHandle]);
         /** @type {Keyframe[]} */
         this.selectDatas = selectDatas;
@@ -33,7 +30,7 @@ export class SelectKeyframesCommand {
                 selectData.keyframe.selectedRightHandle = true;
             }
         });
-        return {consumed: this.targetKeyframe.map(keyframe => [keyframe.selectedPoint, keyframe.selectedLeftHandle, keyframe.selectedRightHandle]).filter((bools, index) => bools.map((value, boolIndex) => value !== this.originalSelectData[index][boolIndex])).length > 0};
+        return {consumed: this.targetKeyframe.map(keyframe => [keyframe.selectedPoint, keyframe.selectedLeftHandle, keyframe.selectedRightHandle]).filter((bools, index) => bools[0] != this.originalSelectData[index][0] || bools[1] != this.originalSelectData[index][1] || bools[2] != this.originalSelectData[index][2]).length > 0};
     }
 
     undo() {

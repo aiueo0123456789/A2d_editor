@@ -10,14 +10,18 @@ struct BoneVertices {
     t: vec2<f32>,
 }
 
-@group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
-@group(1) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
-@group(1) @binding(2) var<storage, read> vertexSelected: array<u32>;
-@group(1) @binding(3) var<storage, read> boneSelected: array<u32>;
-@group(1) @binding(4) var<storage, read> relationships: array<u32>;
+struct VisualSettings {
+    vertexSize: f32,
+    boneSize: f32,
+    boneSectionRatio: f32,
+}
 
-const size = 0.05;
+@group(0) @binding(0) var<uniform> camera: Camera;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
+@group(2) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
+@group(2) @binding(2) var<storage, read> vertexSelected: array<u32>;
+@group(2) @binding(3) var<storage, read> relationships: array<u32>;
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -55,7 +59,7 @@ fn vmain(
 
     let fixIndex = index * 2u + (vertexIndex % 12) / 6;
 
-    output.position = worldPosToClipPos(p + point * size * length);
+    output.position = worldPosToClipPos(p + point * visualSetting.vertexSize * length);
     output.uv = point;
     output.kind = select(0.0, 1.0, (vertexIndex % 12) / 6 == 1);
     output.boneIndex = index;

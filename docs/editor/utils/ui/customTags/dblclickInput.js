@@ -17,6 +17,6 @@ export class DblClickInput extends CustomTag {
         this.element.addEventListener('blur', () => {
             this.element.setAttribute('readonly', true);
         });
-        this.dataBlocks = [creatorForUI.setWith(this.element, child.value, searchTarget, flag)];
+        this.dataBlocks = [creatorForUI.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
     }
 }

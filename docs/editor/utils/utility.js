@@ -331,3 +331,15 @@ export function objectInit(object) {
 export function roundUp(number, min) {
     return number > min ? number : min;
 }
+
+export function chunk(array, size) {
+    const res = [];
+    for (let i = 0; i < array.length; i += size) {
+        res.push(array.slice(i, i + size));
+    }
+    return res;
+}
+
+export function isEmpty(obj) {
+    return Object.keys(obj).length === 0;
+}

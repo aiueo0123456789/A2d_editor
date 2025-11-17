@@ -6,7 +6,7 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct BoneAllocation {
@@ -17,7 +17,7 @@ struct BoneAllocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct WeightBlock {
@@ -58,12 +58,8 @@ fn pointToLineDistance(point: vec2<f32>, lineStart: vec2<f32>, lineEnd: vec2<f32
     return distance(point, projection);
 }
 
-fn mathWeight(dist: f32) -> f32 {
-    return pow((dist - 40.0) / 1000.0, 10.0);
-}
-
 fn calculateWeight(position: vec2<f32>) -> WeightBlock {
-    let falloff = 1.5; // 数字を大きくすると近距離重視になる
+    let falloff = 1.1; // 数字を大きくすると近距離重視になる
     // 一番近いボーン二つを見つける
     var output: WeightBlock;
     var fIndex = 0u;

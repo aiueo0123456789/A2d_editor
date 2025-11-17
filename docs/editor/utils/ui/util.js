@@ -64,7 +64,7 @@ export function createMinButton(target, text) {
     return button;
 }
 
-export function createMinList(target, listName, appendEvent, deleteEvent) {
+export function createMinList(target, listName, onAppend, onDelete) {
     const listNameTag = document.createElement("p");
     listNameTag.textContent = listName;
     const container = document.createElement("div");

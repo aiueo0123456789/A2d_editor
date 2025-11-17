@@ -46,18 +46,18 @@ export class Area_Timeline2 {
                             {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "auto auto 1fr", children: [
                                 {tagType: "padding", size: "10px"},
                                 {tagType: "menu", title: "選択", struct: [
-                                    {label: "すべて選択", children: [], submitFunction: () => {app.context.selectAll()}},
-                                    {label: "属性選択", children: [], submitFunction: () => {app.context.selectByAttribute()}},
+                                    {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
+                                    {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
                                 ]},
                                 {tagType: "padding", size: "10px"},
                             ]},
                             {tagType: "box", class: "boxs", children: [
-                                {tagType: "button", icon: "reverseSkip", submitFunction: () => {
+                                {tagType: "button", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
                                 }},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isReversePlaying", look: {check: "stop", uncheck: "reverse"}, useCommand: false},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isPlaying", look: {check: "stop", uncheck: "playing"}, useCommand: false},
-                                {tagType: "button", icon: "skip", submitFunction: () => {
+                                {tagType: "button", icon: "skip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
@@ -78,7 +78,7 @@ export class Area_Timeline2 {
                                     // app.context.setSelectedObject(object, app.input.keysDown["Ctrl"]);
                                     // app.context.setActiveObject(object);
                                     event.stopPropagation();
-                                }, rangeSelectEventFn: (event, array, startIndex, endIndex) => {
+                                }, rangeonSelectFn: (event, array, startIndex, endIndex) => {
                                     // let minIndex = Math.min(startIndex, endIndex);
                                     // let maxIndex = Math.max(startIndex, endIndex);
                                     // for (let i = minIndex; i < maxIndex; i ++) {

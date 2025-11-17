@@ -31,7 +31,7 @@ export class InputCheckboxTag extends CustomTag {
         const icon = document.createElement("span");
         icon.classList.add(className)
         if (child.checked) {
-            this.dataBlocks = [creatorForUI.setWith(this.checkbox, child.checked, searchTarget, flag, child.useCommand)];
+            this.dataBlocks = [creatorForUI.setWith(this.checkbox, child.checked, searchTarget, flag, child.useCommand, child.onChange)];
         }
         this.element.append(this.checkbox,icon);
         t.append(this.element);

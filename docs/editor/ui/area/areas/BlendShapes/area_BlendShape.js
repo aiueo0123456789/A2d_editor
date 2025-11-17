@@ -33,7 +33,7 @@ export class Area_BlendShape {
                                     return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});
                                 }, options: {initValue: ""}
                             },
-                            {tagType: "button", textContent: "追加", submitFunction: () => {
+                            {tagType: "button", textContent: "追加", onClick: () => {
                                 app.operator.appendCommand(new CreateObjectCommand({type: "ブレンドシェイプ", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], shapeKeys: []}));
                                 app.operator.execute();
                             }},

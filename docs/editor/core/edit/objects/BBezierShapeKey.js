@@ -78,7 +78,7 @@ export class BBezierShapeKey {
     }
 
     // 頂点選択
-    select(/** @type {Array} */ indexs) {
+    selectVertices(/** @type {Array} */ indexs) {
         indexs.forEach(index => {
             this.vertices[index].selected = true;
             this.activeVertex = this.vertices[index];

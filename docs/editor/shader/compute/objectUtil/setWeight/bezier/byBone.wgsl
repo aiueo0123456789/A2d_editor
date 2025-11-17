@@ -6,7 +6,7 @@ struct Allocation {
     shapeKeysNum: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct BoneAllocation {
@@ -17,7 +17,7 @@ struct BoneAllocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct WeightBlock {
@@ -56,10 +56,6 @@ fn pointToLineDistance(point: vec2<f32>, lineStart: vec2<f32>, lineEnd: vec2<f32
     // 点が線分の内側にある場合
     let projection = lineStart + t * lineDir;
     return distance(point, projection);
-}
-
-fn mathWeight(dist: f32) -> f32 {
-    return pow((dist - 40.0) / 1000.0, 10.0);
 }
 
 fn calculateWeight(position: vec2<f32>) -> WeightBlock {

@@ -12,6 +12,76 @@ class EmptyGPUBuffer {
     }
 }
 
+// texture: GPUTexture (format: 'rgba8unorm' など)
+// device: GPUDevice
+// width, height: テクスチャの幅・高さ（ピクセル）
+async function downloadTextureAsPNG(device, texture, width, height, filename = 'texture.png') {
+    const bytesPerPixel = 4; // rgba8unorm の場合
+    const unpaddedBytesPerRow = width * bytesPerPixel;
+    const alignment = 256;
+    const bytesPerRow = Math.ceil(unpaddedBytesPerRow / alignment) * alignment;
+  
+    // バッファを作る（COPY_DST と MAP_READ が必要）
+    const readBuffer = device.createBuffer({
+      size: bytesPerRow * height,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
+    });
+  
+    // コマンドでテクスチャをバッファにコピー
+    const cmd = device.createCommandEncoder();
+    cmd.copyTextureToBuffer(
+      { texture: texture },
+      { buffer: readBuffer, bytesPerRow: bytesPerRow, rowsPerImage: height },
+      { width: width, height: height, depthOrArrayLayers: 1 }
+    );
+    device.queue.submit([cmd.finish()]);
+  
+    // GPU の完了を待つ（安全策）
+    // 一部の実装は mapAsync が内部で同期するが、明示的に待つのが確実
+    await device.queue.onSubmittedWorkDone();
+  
+    // バッファをマップして読み出し
+    await readBuffer.mapAsync(GPUMapMode.READ);
+    const mappedRange = readBuffer.getMappedRange();
+    const copyArray = new Uint8Array(mappedRange); // バッファ全体（行パディング含む）
+  
+    // パディングを取り除いて ImageData 用の連続配列に詰め替え
+    const imageDataArray = new Uint8ClampedArray(width * height * 4);
+    for (let y = 0; y < height; y++) {
+      const srcStart = y * bytesPerRow;
+      const dstStart = y * width * 4;
+      // unpaddedBytesPerRow バイトだけコピー（RGBA）
+      imageDataArray.set(copyArray.subarray(srcStart, srcStart + unpaddedBytesPerRow), dstStart);
+    }
+  
+    // 使い終わったらアンマップしてバッファ破棄（必要なら）
+    readBuffer.unmap();
+    readBuffer.destroy();
+  
+    // Canvas に描画して PNG 化
+    const canvas = document.createElement('canvas');
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext('2d');
+    const id = new ImageData(imageDataArray, width, height);
+    ctx.putImageData(id, 0, 0);
+  
+    // ダウンロードリンク作って click()
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+        resolve();
+      }, 'image/png');
+    });
+  }
+
 class WebGPU {
     constructor() {
         this.structures = new Map();
@@ -1636,34 +1706,112 @@ class WebGPU {
         return result;
     }
 
-    async createTextureAtlas(textures, textureSize) {
-        // アトラステクスチャのサイズ計算
-        const atlasRowCol = Math.ceil(Math.sqrt(textures.length));
-        const atlasSize = atlasRowCol * textureSize;
+    createTextureAtlas(textures) {
+        let totalPixcelNum = 0;
+        for (const texture of textures) {
+            totalPixcelNum += texture.width * texture.height;
+        }
+        let minAtlasSize = Math.ceil(Math.sqrt(totalPixcelNum));
+        let width = Math.pow(2, Math.ceil(Math.log2(minAtlasSize)));
+        let height = width;
+        const sortedTextures = [...textures].sort((a, b) =>
+            (b.width * b.height) - (a.width * a.height)
+        );
+        let isAllIncluded = false;
+        let isError = false;
+        const textureLeftBottom = [];
+        while (!isAllIncluded && !isError) {
+            let skyline = [[0,0]]; // 左下から始める
+            let isOverflowing = false;
+            textureLeftBottom.length = 0;
+            for (const texture of sortedTextures) {
+                let minIndex = -1;
+                for (let pointIndex = 0; pointIndex < skyline.length; pointIndex ++) {
+                    let widthBool = false; // 横幅が足りるか
+                    if (pointIndex == skyline.length - 1) widthBool = texture.width < width - skyline[pointIndex][0];
+                    else {
+                        widthBool = texture.width < skyline[pointIndex + 1][0] - skyline[pointIndex][0];
+                        if (!widthBool) { // 隣だけじゃ足りない場合
+                            let maxWidth = skyline[pointIndex][0];
+                            for (let pointIndex_ = pointIndex + 1; pointIndex_ < skyline.length; pointIndex_ ++) {
+                                if (skyline[pointIndex_][1] < skyline[pointIndex][1]) maxWidth = skyline[pointIndex_][0]; // 隣の方が低いなら
+                                else break ;
+                            }
+                            if (texture.width < maxWidth - skyline[pointIndex][0]) widthBool = true;
+                        }
+                    }
+
+                    if (widthBool && texture.height < height - skyline[pointIndex][1] && (minIndex == -1 || skyline[pointIndex][1] < skyline[minIndex][1])) { // 横縦も足りて現時点で見つかっているものより位置が低いか
+                        minIndex = pointIndex;
+                    }
+                }
+                if (minIndex == -1) { // 場所が足りない
+                    console.log(texture);
+                    isOverflowing = true;
+                    break ;
+                }
+                let [minX, minY] = skyline[minIndex]; // 左下
+                let [maxX, maxY] = [skyline[minIndex][0] + texture.width, skyline[minIndex][1] + texture.height]; // 右上
+                textureLeftBottom.push([minX, minY]);
+                skyline = skyline.filter(point => minX > point[0] || point[0] > maxX); // ボックスと重なっている頂点を削除
+                skyline.push([minX, maxY], [maxX, minY]); // 頂点を追加
+                // 同じ高さの連続する点を削除
+                for (let i = skyline.length - 2; i >= 0; i--) {
+                    if (skyline[i][1] === skyline[i + 1][1]) {
+                        skyline.splice(i + 1, 1);
+                    }
+                }
+                skyline = skyline.sort((a,b) => a[0] - b[0]); // 頂点を並び替える
+            }
+            if (!isOverflowing) isAllIncluded = true; // 一つも溢れなかったら終了
+            else { // 溢れたらサイズを増やす
+                if (height == width) { // 横長または正方形にしながら拡張
+                    width *= 2;
+                } else {
+                    height *= 2;
+                }
+                // if (width == 8192 * 2 || height == 8192 * 2) isError = true;
+                if (width == 8192 * 2 || height == 8192 * 2) {
+                    isError = true;
+                    console.log(skyline);
+                }
+                width = Math.min(width, 8192);
+                height = Math.min(height, 8192);
+            }
+        }
+        if (isError) {
+            console.warn("アトラスにおさまりませんでした")
+        }
+        console.log("アトラスサイズ", width, height)
+        console.log("テクスチャの位置", textureLeftBottom)
 
         const atlasTexture = device.createTexture({
-            size: [atlasSize, atlasSize],
-            format: format,
-            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.RENDER_ATTACHMENT,
+            size: [width, height],
+            format: "rgba8unorm",
+            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC |GPUTextureUsage.RENDER_ATTACHMENT,
         });
 
         // 各テクスチャをアトラスにコピー
         const commandEncoder = device.createCommandEncoder();
-        textures.forEach((texture, index) => {
-            const x = (index % atlasRowCol) * textureSize;
-            const y = Math.floor(index / atlasRowCol) * textureSize;
-
+        sortedTextures.forEach((texture, index) => {
+            if (textureLeftBottom.length <= index) return ;
+            // console.log(texture, textureLeftBottom[index])
             commandEncoder.copyTextureToTexture(
                 { texture },
-                { texture: atlasTexture, origin: { x, y } },
-                [textureSize, textureSize, 1]
+                { texture: atlasTexture, origin: textureLeftBottom[index] },
+                [texture.width, texture.height, 1]
             );
         });
 
         const commandBuffer = commandEncoder.finish();
         device.queue.submit([commandBuffer]);
 
-        return [atlasTexture, atlasRowCol];
+        // downloadTextureAsPNG(device, atlasTexture, width, height, "アトラステスト");
+
+        return {texture: atlasTexture, uvOffset: textures.map(texture => {
+            const point = textureLeftBottom[sortedTextures.indexOf(texture)];
+            return [point[0] / width, point[1] / height, texture.width / width, texture.height / height];
+        })};
     }
 
     decompression(data, t) {
@@ -2104,6 +2252,19 @@ class WebGPU {
         canvas.height = texture.height;
         const ctx = canvas.getContext("2d");
         ctx.putImageData(imageData, 0, 0);
+    }
+
+    async createTextureFromImageBitmap(imageBitmap) {
+        const width = imageBitmap.width;
+        const height = imageBitmap.height;
+        const texture = this.createTexture2D([width, height]);
+
+        device.queue.copyExternalImageToTexture(
+            { source: imageBitmap },
+            { texture: texture },
+            [width, height]
+        );
+        return texture;
     }
 
     async blobToTexture(blob) {

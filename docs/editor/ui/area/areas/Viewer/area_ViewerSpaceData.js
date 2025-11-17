@@ -1,3 +1,5 @@
+import { GPU } from "../../../../utils/webGPU.js";
+
 export class ViewerSpaceData {
     constructor() {
         this.mode = "オブジェクト";
@@ -24,6 +26,40 @@ export class ViewerSpaceData {
             decayType: "ミックス",
             decaySize: 50,
         }
+
+        this.visualSettings = {
+            mesh: {
+                vertexSize: 0.05,
+                edgeSize: 0.05,
+            },
+            bone: {
+                vertexSize: 0.05,
+                boneSize: 0.05,
+                boneSectionRatio: 0.1,
+            },
+            bezier: {
+                vertexSize: 0.05,
+                curveSize: 0.05,
+            }
+        };
+        this.GPUDataForVisualSettings = {
+            mesh: {
+                buffer: GPU.createUniformBuffer(4 * 2, [this.visualSettings.mesh.vertexSize, this.visualSettings.mesh.edgeSize], ["f32"]),
+                group: null,
+            },
+            bone: {
+                buffer: GPU.createUniformBuffer(4 * 3, [this.visualSettings.bone.vertexSize, this.visualSettings.bone.boneSize, this.visualSettings.bone.boneSectionRatio], ["f32"]),
+                group: null,
+            },
+            bezier: {
+                buffer: GPU.createUniformBuffer(4 * 2, [this.visualSettings.bezier.vertexSize, this.visualSettings.bezier.curveSize], ["f32"]),
+                group: null,
+            }
+        };
+
+        this.GPUDataForVisualSettings.bone.group = GPU.createGroup(GPU.getGroupLayout("VFu"), [this.GPUDataForVisualSettings.bone.buffer]);
+        this.GPUDataForVisualSettings.mesh.group = GPU.createGroup(GPU.getGroupLayout("VFu"), [this.GPUDataForVisualSettings.mesh.buffer]);
+        this.GPUDataForVisualSettings.bezier.group = GPU.createGroup(GPU.getGroupLayout("VFu"), [this.GPUDataForVisualSettings.bezier.buffer]);
 
         this.areas = [];
 

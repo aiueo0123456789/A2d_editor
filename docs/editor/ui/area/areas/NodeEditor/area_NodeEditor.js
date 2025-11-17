@@ -22,7 +22,7 @@ export class Area_NodeEditor {
                                     return app.scene.objects.scripts.map(script => {return {name: script.name, id: script.id}});
                                 }, options: {initValue: ""}
                             },
-                            {tagType: "button", textContent: "追加", submitFunction: () => {
+                            {tagType: "button", textContent: "追加", onClick: () => {
                                 app.operator.appendCommand(new CreateObjectCommand({
                                     type: "スクリプト",
                                     name: "名称未設定",

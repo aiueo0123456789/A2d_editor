@@ -39,16 +39,20 @@ export class MenuTag extends CustomTag {
                 const text = createTag(container, "div",{textContent: object.label});
                 if (object.type == "file") {
                     const fileInput = createTag(null, "input", {type: "file"});
+                    if (object.webkitdirectory) {
+                        fileInput.setAttribute("webkitdirectory", "");
+                        fileInput.setAttribute("directory", "");
+                    }
                     li.addEventListener("click", (event) => {
                         fileInput.click();
                         event.stopPropagation();
                     })
                     fileInput.addEventListener("change", (event) => {
-                        object.submitFunction(event);
+                        object.onClick(event);
                     });
                 } else {
                     li.addEventListener("click", (event) => {
-                        object.submitFunction(event);
+                        object.onClick(event);
                         event.stopPropagation();
                     })
                 }

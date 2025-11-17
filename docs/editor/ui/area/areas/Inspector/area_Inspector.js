@@ -98,13 +98,13 @@ export class Area_Inspector {
                         }
                     ]},
                     {tagType: "section", name: "シェイプキー", children: [
-                        {tagType: "list", label: "シェイプキー", appendEvent: () => {
+                        {tagType: "list", label: "シェイプキー", onAppend: () => {
                             // app.operator.appendCommand(new CreateShapeKeyCommand("名称未設定"));
                             // app.operator.execute();
-                        }, deleteEvent: (shapeKeys) => {
+                        }, onDelete: (shapeKeys) => {
                             // app.operator.appendCommand(new DeleteShapeKeyCommand(shapeKeys));
                             // app.operator.execute();
-                        }, activeEvent: (object) => {
+                        }, onActive: (object) => {
                             // /** @type {BMeshShapeKey} */
                             // const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
                             // changeParameter(bms, "activeShapeKey", object);
@@ -123,13 +123,13 @@ export class Area_Inspector {
                         tagType: "if", formula: {source: "/constructor/name", conditions: "==", value: "BMeshShapeKey"},
                         true: [
                             {tagType: "section", name: "シェイプキー", children: [
-                                {tagType: "list", label: "シェイプキー", appendEvent: () => {
+                                {tagType: "list", label: "シェイプキー", onAppend: () => {
                                     app.operator.appendCommand(new CreateShapeKeyCommand("名称未設定"));
                                     app.operator.execute();
-                                }, deleteEvent: (shapeKeys) => {
+                                }, onDelete: (shapeKeys) => {
                                     app.operator.appendCommand(new DeleteShapeKeyCommand(shapeKeys));
                                     app.operator.execute();
-                                }, activeEvent: (object) => {
+                                }, onActive: (object) => {
                                     /** @type {BMeshShapeKey} */
                                     const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
                                     changeParameter(bms, "activeShapeKey", object);
@@ -146,13 +146,13 @@ export class Area_Inspector {
                                 tagType: "if", formula: {source: "/constructor/name", conditions: "==", value: "BBezierShapeKey"},
                                 true: [
                                     {tagType: "section", name: "シェイプキー", children: [
-                                        {tagType: "list", label: "シェイプキー", appendEvent: () => {
+                                        {tagType: "list", label: "シェイプキー", onAppend: () => {
                                             app.operator.appendCommand(new CreateShapeKeyCommand("名称未設定"));
                                             app.operator.execute();
-                                        }, deleteEvent: (shapeKeys) => {
+                                        }, onDelete: (shapeKeys) => {
                                             app.operator.appendCommand(new DeleteShapeKeyCommand(shapeKeys));
                                             app.operator.execute();
-                                        }, activeEvent: (object) => {
+                                        }, onActive: (object) => {
                                             /** @type {BMeshShapeKey} */
                                             const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
                                             changeParameter(bms, "activeShapeKey", object);

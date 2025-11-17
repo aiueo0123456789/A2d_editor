@@ -13,12 +13,18 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
+}
+
+struct UVOffset {
+    offset: vec2<f32>,
+    scaleOffset: vec2<f32>
 }
 
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(1) @binding(0) var<storage, read> verticesPosition: array<vec2<f32>>;
 @group(1) @binding(1) var<storage, read> verticesUV: array<vec2<f32>>;
+@group(1) @binding(2) var<storage, read> uvOffsets: array<UVOffset>;
 @group(2) @binding(0) var<uniform> objectData: Allocation;
 
 struct VertexOutput {
@@ -35,12 +41,13 @@ fn vmain(
     var output: VertexOutput;
     let fixIndex = objectData.vertexBufferOffset + index;
     output.position = vec4f((verticesPosition[fixIndex] - camera.position) * camera.zoom * camera.cvsSize, 0.0, 1.0);
-    output.uv = verticesUV[fixIndex];
+    let uvOffset = uvOffsets[objectData.myIndex];
+    output.uv = verticesUV[fixIndex] * uvOffset.scaleOffset + uvOffset.offset;
     return output;
 }
 
 @group(0) @binding(1) var mySampler: sampler;
-@group(2) @binding(1) var myTexture: texture_2d<f32>;
+@group(1) @binding(3) var textureAtlas: texture_2d<f32>;
 
 struct FragmentOutput {
     @location(0) color: vec4<f32>,   // カラーバッファ (通常は0番目の出力)
@@ -56,7 +63,7 @@ fn fmain(
         discard ;
     }
 
-    let alpha = textureSample(myTexture, mySampler, uv).a;
+    let alpha = textureSample(textureAtlas, mySampler, uv).a;
     output.color = vec4<f32>(1.0,0.0,0.0,alpha);
     return output;
 }

@@ -19,19 +19,19 @@ export class ListTag extends CustomTag {
             /** @type {HTMLElement} */
             this.list = createTag(this.listContainer, "div", {class: "scrollable", style: "padding: 2px; gap: 2px;"});
             // アクション
-            if (data.appendEvent || data.deleteEvent) {
+            if (data.onAppend || data.onDelete) {
                 this.actionBar = createTag(this.element, "div", {style: "width: 20px;"});
-                if (data.appendEvent) this.appendButton = createMinButton(this.actionBar, "+");
-                if (data.deleteEvent) this.deleteButton = createMinButton(this.actionBar, "-");
+                if (data.onAppend) this.appendButton = createMinButton(this.actionBar, "+");
+                if (data.onDelete) this.deleteButton = createMinButton(this.actionBar, "-");
             }
         } else if (data.type == "noScroll") {
             this.listNameTag = createTag(t, "p", {textContent: data.label});
             this.element = createTag(t, "div", {style: ""});
             // アクション
-            if (data.appendEvent || data.deleteEvent) {
+            if (data.onAppend || data.onDelete) {
                 this.actionBar = createTag(this.element, "div", {style: "display: flex; height: 20px;"});
-                if (data.appendEvent) this.appendButton = createButton(this.actionBar, null, "新しい値を追加");
-                if (data.deleteEvent) this.deleteButton = createMinButton(this.actionBar, "-");
+                if (data.onAppend) this.appendButton = createButton(this.actionBar, null, "新しい値を追加");
+                if (data.onDelete) this.deleteButton = createMinButton(this.actionBar, "-");
             }
 
             this.listContainer = createTag(this.element, "div", {style: "height: fit-content;"});
@@ -42,10 +42,10 @@ export class ListTag extends CustomTag {
             this.listNameTag = createTag(t, "p", {textContent: data.label});
             this.element = createTag(t, "div", {style: ""});
             // アクション
-            if (data.appendEvent || data.deleteEvent) {
+            if (data.onAppend || data.onDelete) {
                 this.actionBar = createTag(this.element, "div", {style: "display: flex; height: 20px;"});
-                if (data.appendEvent) this.appendButton = createMinButton(this.actionBar, "+");
-                if (data.deleteEvent) this.deleteButton = createMinButton(this.actionBar, "-");
+                if (data.onAppend) this.appendButton = createMinButton(this.actionBar, "+");
+                if (data.onDelete) this.deleteButton = createMinButton(this.actionBar, "-");
             }
 
             this.listContainer = createTag(this.element, "div", {style: "height: 200px;"});
@@ -53,17 +53,17 @@ export class ListTag extends CustomTag {
             this.list = createTag(this.listContainer, "div", {class: "scrollable", style: "padding: 2px; gap: 2px;"});
         }
 
-        if (data.appendEvent) {
-            if (isFunction(data.appendEvent)) {
+        if (data.onAppend) {
+            if (isFunction(data.onAppend)) {
                 this.appendButton.addEventListener("click", () => {
-                    data.appendEvent(searchTarget);
+                    data.onAppend(searchTarget);
                 });
             }
         }
-        if (data.deleteEvent) {
-            if (isFunction(data.deleteEvent)) {
+        if (data.onDelete) {
+            if (isFunction(data.onDelete)) {
                 this.deleteButton.addEventListener("click", () => {
-                    data.deleteEvent(this.selected);
+                    data.onDelete(this.selected);
                 });
             }
         }
@@ -104,19 +104,19 @@ export class ListTag extends CustomTag {
                 }
                 if (!data.notUseActiveAndSelect) {
                     li.addEventListener("click", (e) => {
-                        if (isFunction(data.activeEvent)) {
+                        if (isFunction(data.onActive)) {
                             if (isPrimitive) {
-                                data.activeEvent(index);
+                                data.onActive(index);
                             } else {
-                                data.activeEvent(item);
+                                data.onActive(item);
                             }
                         }
                         this.active = item;
-                        if (isFunction(data.selectEvent)) {
+                        if (isFunction(data.onSelect)) {
                             if (isPrimitive) {
-                                data.selectEvent(index, this.selected);
+                                data.onSelect(index, this.selected);
                             } else {
-                                data.selectEvent(item, this.selected);
+                                data.onSelect(item, this.selected);
                             }
                         }
                         if (!e.shiftKey) {

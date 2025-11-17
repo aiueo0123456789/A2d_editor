@@ -137,8 +137,8 @@ export class Armature extends ObjectBase {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.allAnimations,
-                parameters: data.keyframeBlockManager.parameters,
-                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
+                parameters: data.keyframeBlockManager.parameters.slice(0, this.allAnimations.length),
+                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks.slice(0, this.allAnimations.length),
             });
         } else {
             /** @type {KeyframeBlockManager} */

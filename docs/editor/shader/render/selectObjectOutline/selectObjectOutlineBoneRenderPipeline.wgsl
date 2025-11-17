@@ -18,16 +18,20 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
+}
+
+struct VisualSettings {
+    vertexSize: f32,
+    boneSize: f32,
+    boneSectionRatio: f32,
 }
 
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
-@group(1) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
-@group(2) @binding(0) var<uniform> armatureAllocation: Allocation; // 配分情報
-
-const size = 0.04;
-const ratio = 0.1;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
+@group(2) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
+@group(3) @binding(0) var<uniform> armatureAllocation: Allocation; // 配分情報
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -50,11 +54,11 @@ fn vmain(
     let sub = position2 - position1;
     let normal = normalize(vec2<f32>(-sub.y, sub.x)); // 仮の法線
     var offset = vec2<f32>(0.0);
-    let sectionPosition = mix(position1, position2, ratio);
+    let sectionPosition = mix(position1, position2, visualSetting.boneSectionRatio);
 
     let vIndex = vertexIndex;
 
-    let k = (normal * size * length(sub));
+    let k = (normal * visualSetting.boneSize * length(sub));
     if (vIndex == 0u) {
         offset = sectionPosition - k;
     } else if (vIndex == 1u) {
@@ -74,7 +78,7 @@ fn vmain(
     return output;
 }
 
-@group(3) @binding(0) var<uniform> objectColor: f32;
+@group(3) @binding(1) var<uniform> objectColor: f32;
 
 struct FragmentOutput {
     @location(0) color: vec4<f32>,   // カラーバッファ (通常は0番目の出力)

@@ -110,11 +110,6 @@ export class GraphicMesh extends ObjectBase {
         }
     }
 
-    // 頂点のworldIndexs
-    get VWs() {
-        return range(this.runtimeOffsetData.start.verticesOffset, this.runtimeOffsetData.end.verticesOffset);
-    }
-
     get verticesNum() {
         return this.allVertices.length / 2;
     }
@@ -154,7 +149,6 @@ export class GraphicMesh extends ObjectBase {
         }
         this.clippingMask = target;
         const updateGroup = () => {
-            // this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vu_Vu_Ft_Ft_Fu"), [this.objectDataBuffer, this.zIndexBuffer, this.texture.view, this.clippingMask.view, this.maskTypeBuffer]);
             this.setGroup();
         }
         updateGroup();
@@ -167,8 +161,7 @@ export class GraphicMesh extends ObjectBase {
 
     setGroup() {
         if (!this.hasAllData) return ;
-        this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vu_Vu_Ft_Ft_Fu"), [this.objectDataBuffer, this.zIndexBuffer, this.texture.view, this.clippingMask.view, this.maskTypeBuffer]);
-        this.maskRenderGroup = GPU.createGroup(GPU.getGroupLayout("Vu_Ft"), [this.objectDataBuffer, this.texture.view]);
+        this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vu_Vu_Ft_Fu"), [this.objectDataBuffer, this.zIndexBuffer, this.clippingMask.view, this.maskTypeBuffer]);
     }
 
     async getSaveData() {

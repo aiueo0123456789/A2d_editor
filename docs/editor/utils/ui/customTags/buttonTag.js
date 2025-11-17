@@ -20,9 +20,9 @@ export class ButtonTag extends CustomTag {
         if (child.textContent) {
             this.text.textContent = child.textContent;
         }
-        if (isFunction(child.submitFunction)) {
+        if (isFunction(child.onClick)) {
             this.element.addEventListener("click", () => {
-                child.submitFunction(searchTarget);
+                child.onClick(searchTarget);
             })
         }
     }

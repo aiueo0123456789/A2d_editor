@@ -26,7 +26,7 @@ export class DualListboxTag extends CustomTag {
                 /** @type {HTMLElement} */
                 let li = createTag(this.selectedList, "li", {style: "width: 100%; minHeight: fit-content;"});
                 li.addEventListener("click", (e) => {
-                    child.deleteEvent(item);
+                    child.onDelete(item);
                     update();
                 })
                 if (tags.has(item)) { // すでにあるか
@@ -40,7 +40,7 @@ export class DualListboxTag extends CustomTag {
                     /** @type {HTMLElement} */
                     let li = createTag(this.availableList, "li", {style: "width: 100%; minHeight: fit-content;"});
                     li.addEventListener("click", (e) => {
-                        child.appendEvent(item);
+                        child.onAppend(item);
                         update();
                     })
                     if (tags.has(item)) { // すでにあるか

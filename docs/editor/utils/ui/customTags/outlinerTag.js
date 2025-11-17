@@ -147,8 +147,8 @@ export class OutlinerTag extends CustomTag {
                     container.addEventListener("click", (event) => {
                         if (app.input.keysDown["Shift"]) {
                             rangeEndIndex = array.indexOf(object);
-                            if (isFunction(options.rangeSelectEventFn)) {
-                                options.rangeSelectEventFn(event, array, rangeStartIndex, rangeEndIndex);
+                            if (isFunction(options.rangeonSelectFn)) {
+                                options.rangeonSelectFn(event, array, rangeStartIndex, rangeEndIndex);
                             }
                         } else {
                             rangeStartIndex = array.indexOf(object);

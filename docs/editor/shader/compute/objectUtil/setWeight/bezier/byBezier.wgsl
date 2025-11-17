@@ -6,7 +6,7 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct AllocationBezier {
@@ -17,7 +17,7 @@ struct AllocationBezier {
     shapeKeysNum: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct WeightBlock {

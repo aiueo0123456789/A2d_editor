@@ -161,11 +161,14 @@ class Objects {
 
     get allObject() {
         return this.previewCamera.concat(this.bezierModifiers).concat(this.graphicMeshs).concat(this.armatures).concat(this.keyframeBlocks).concat(this.parameterManagers).concat(this.particles).concat(this.scripts).concat(this.textures).concat(this.maskTextures).concat(this.blendShapes).concat(this.shapeKeys);
-        // return [...this.previewCamera, ...this.bezierModifiers, ...this.graphicMeshs, ...this.armatures, ...this.keyframeBlocks, ...this.parameterManagers, ...this.particles, ...this.scripts, ...this.textures, ...this.maskTextures, ...this.blendShapes, ...this.shapeKeys];
     }
 
     get shapeKeys() {
         return this.graphicMeshs.map(graphicMesh => graphicMesh.shapeKeyMetaDatas).concat(this.bezierModifiers.map(bezierModifier => bezierModifier.shapeKeyMetaDatas)).flat();
+    }
+
+    get keyframeBlockManagers() {
+        return this.armatures.map(armature => armature.keyframeBlockManager.keyframeBlocks).concat(this.blendShapes.map(blendShape => blendShape.keyframeBlockManager.keyframeBlocks)).flat();
     }
 
     get rootObjects() {
@@ -174,9 +177,16 @@ class Objects {
 
     // 参照されていないオブジェクトの削除
     clean() {
+        // 無駄なテクスチャを削除
         const removeTextures = this.textures.filter(texture => !texture.isReferenced);
         for (const texture of removeTextures) {
             this.removeObject(texture);
+        }
+        // 無駄なキーフレームブロックを削除
+        const useingKeyframeBlocks = this.armatures.map(armature => armature.keyframeBlockManager.keyframeBlocks).concat(this.blendShapes.map(blendShape => blendShape.keyframeBlockManager.keyframeBlocks)).flat();
+        const removeKeyframeBlocks = this.keyframeBlocks.filter(keyframeBlock => !useingKeyframeBlocks.includes(keyframeBlock));
+        for (const keyframeBlock of removeKeyframeBlocks) {
+            this.removeObject(keyframeBlock);
         }
     }
 

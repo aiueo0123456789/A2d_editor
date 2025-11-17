@@ -1,45 +1,41 @@
 import { app } from "../../../main.js";
 import { BArmature } from "../../core/edit/objects/BArmature.js";
 import { MathVec2 } from "../../utils/mathVec.js";
-import { indexOfSplice, removeDuplicates } from "../../utils/utility.js";
-
-class Base {
-    constructor(targets) {
-        this.targets = [...targets];
-        this.armatures = removeDuplicates(targets.map(bone => bone.armature));
-    }
-}
+import { indexOfSplice, insertToArray, removeDuplicates } from "../../utils/utility.js";
 
 export class BoneExtrudeMoveCommand {
     constructor() {
-        this.editObjects = app.scene.editData.allEditObjects;
+        this.error = false;
+        this.editObjects = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BArmature);
         this.value = [0,0];
-        if (this.editObjects[0] instanceof BArmature) {
+        if (this.editObjects.length) {
             this.isBArmature = true;
-            this.createBonesIneditObject = {};
+            this.createDatasInEditObject = {};
             for (const /** @type {BArmature} */ editObject of this.editObjects) {
-                const bones = [];
-                this.createBonesIneditObject[editObject.id] = bones;
+                const datas = [];
+                this.createDatasInEditObject[editObject.id] = datas;
                 editObject.selectedVertices.forEach(vertex => {
                     const bone = BArmature.createBone(vertex.co, vertex.co, editObject.getBoneByVertex(vertex));
                     editObject.bones.push(bone);
-                    bones.push({bone: bone, baseCo: vertex.co});
+                    datas.push({bone: bone, baseCo: vertex.co});
                 });
             }
+        } else {
+            this.error = true;
         }
     }
 
     extrudeMove(value) {
         this.value = [...value];
         this.editObjects.forEach(editObject => {
-            this.createBonesIneditObject[editObject.id].forEach(boneAndBaseCo => MathVec2.add(boneAndBaseCo.bone.tailVertex.co, boneAndBaseCo.baseCo, this.value));
+            this.createDatasInEditObject[editObject.id].forEach(data => MathVec2.add(data.bone.tailVertex.co, data.baseCo, this.value));
             editObject.updateGPUData();
         });
     }
 
     execute() {
         this.editObjects.forEach(editObject => {
-            this.createBonesIneditObject[editObject.id].forEach(boneAndBaseCo => MathVec2.add(boneAndBaseCo.bone.tailVertex.co, boneAndBaseCo.baseCo, this.value));
+            this.createDatasInEditObject[editObject.id].forEach(data => MathVec2.add(data.bone.tailVertex.co, data.baseCo, this.value));
             editObject.updateGPUData();
         });
         return {consumed: true};
@@ -47,49 +43,52 @@ export class BoneExtrudeMoveCommand {
 
     redo() {
         this.editObjects.forEach(editObject => {
-            this.createBonesIneditObject[editObject.id].forEach(boneAndBaseCo => editObject.bones.push(boneAndBaseCo.bone));
+            this.createDatasInEditObject[editObject.id].forEach(data => editObject.bones.push(data.bone));
             editObject.updateGPUData();
         });
     }
 
     undo() {
         this.editObjects.forEach(editObject => {
-            this.createBonesIneditObject[editObject.id].forEach(boneAndBaseCo => indexOfSplice(editObject.bones, boneAndBaseCo.bone));
+            this.createDatasInEditObject[editObject.id].forEach(data => indexOfSplice(editObject.bones, data.bone));
             editObject.updateGPUData();
         });
     }
 }
 
-export class BoneDelete extends Base{
-    constructor(targets) {
-        super(targets);
-        this.indexsMeta = new Array(targets.length);
-    }
-
-    update() {
+export class BoneDeleteCommand {
+    constructor() {
+        this.error = false;
+        this.editObjects = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BArmature);
+        if (this.editObjects.length) {
+            this.isBArmature = true;
+            this.deleteDatasInEditObject = {};
+            for (const /** @type {BArmature} */ editObject of this.editObjects) {
+                const datas = [];
+                this.deleteDatasInEditObject[editObject.id] = datas;
+                const editObjectInBones = editObject.selectedBones;
+                editObject.selectedBones.forEach(bone => {
+                    datas.push({bone: bone, index: editObjectInBones.indexOf(bone)});
+                });
+            }
+        } else {
+            this.error = true;
+        }
+        console.log(this)
     }
 
     execute() {
-        console.log("実行", this.targets)
-        this.targets.forEach((bone,index) => {
-            if (bone.parent) {
-                indexOfSplice(bone.parent.childrenBone, bone);
-            }
-            this.indexsMeta[index] = bone.armature.allBone.indexOf(bone);
-            bone.armature.allBone.splice(this.indexsMeta[index], 1);
+        this.editObjects.forEach(editObject => {
+            this.deleteDatasInEditObject[editObject.id].forEach(data => indexOfSplice(editObject.bones, data.bone));
+            editObject.updateGPUData();
         });
-        for (const armature of this.armatures) {
-            app.scene.runtimeData.armatureData.update(armature);
-        }
+        return {consumed: true};
     }
 
     undo() {
-        this.targets.forEach((bone,index) => {
-            bone.armature.allBone.splice(this.indexsMeta[index], 0, bone);
-            bone.parent.childrenBone.push(bone);
+        this.editObjects.forEach(editObject => {
+            this.deleteDatasInEditObject[editObject.id].reverse().forEach(data => insertToArray(editObject.bones, data.index, data.bone));
+            editObject.updateGPUData();
         });
-        for (const armature of this.armatures) {
-            app.scene.runtimeData.armatureData.update(armature);
-        }
     }
 }

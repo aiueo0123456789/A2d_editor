@@ -21,10 +21,10 @@ export class Area_Property {
                     {tagType: "input", label: "再生速度", value: "scene/frame_speed", type: "number", min: 0, max: 10, step: 0.1, custom: {visual: "range"}},
                 ]},
                 {tagType: "section", name: "マスク", children: [
-                    {tagType: "list", label: "マスク", appendEvent: () => {
+                    {tagType: "list", label: "マスク", onAppend: () => {
                         app.operator.appendCommand(new CreateObjectCommand({type: "マスクテクスチャ", name: "名称未設定"}));
                         app.operator.execute();
-                    }, deleteEvent: (masks) => {
+                    }, onDelete: (masks) => {
                         app.operator.appendCommand(new DeleteObjectCommand(masks));
                         app.operator.execute();
                     }, src: "scene/objects/maskTextures", type: "min", liStruct:[
@@ -34,10 +34,10 @@ export class Area_Property {
                     ]}
                 ]},
                 {tagType: "section", name: "パラメーターマネージャー", children: [
-                    {tagType: "list", appendEvent: () => {
+                    {tagType: "list", onAppend: () => {
                         app.operator.appendCommand(new CreateObjectCommand({type: "パラメーターマネージャー", name: "名称未設定"}));
                         app.operator.execute();
-                    }, deleteEvent: (parameterManagers) => {
+                    }, onDelete: (parameterManagers) => {
                         app.operator.appendCommand(new DeleteObjectCommand(parameterManagers));
                         app.operator.execute();
                     }, src: "scene/objects/parameterManagers", options: {}, notUseActiveAndSelect: true, liStruct:[
@@ -45,20 +45,20 @@ export class Area_Property {
                         {tagType: "section", name: {path: "/name"}, children: [
                             {tagType: "gridBox", axis: "c",  allocation: "auto 1fr auto", children: [
                                 {tagType: "dblClickInput", value: "/name"},
-                                {tagType: "button", textContent: "複製", submitFunction: (object) => {
+                                {tagType: "button", textContent: "複製", onClick: (object) => {
                                     console.log(object);
                                     app.operator.appendCommand(new CopyObjectCommand(object.normal));
                                     app.operator.execute();
                                 }},
                             ]},
-                            {tagType: "list", appendEvent: (object) => {
+                            {tagType: "list", onAppend: (object) => {
                                 app.operator.appendCommand(new AppendParameterInParameterManager(object.normal));
                                 app.operator.execute();
                             }, src: "/parameters", options: {}, notUseActiveAndSelect: true, type: "noScroll", liStruct:[
                                 {tagType: "gridBox", axis: "c",  allocation: "auto 1fr auto", children: [
                                     {tagType: "dblClickInput", value: "/label"},
                                     {tagType: "input", value: "/value", type: "number"},
-                                    {tagType: "button", textContent: "削除", submitFunction: (object) => {
+                                    {tagType: "button", textContent: "削除", onClick: (object) => {
                                         app.operator.appendCommand(new DeleteParameterInParameterManager(object.special.searchTarget.normal, object.normal));
                                         app.operator.execute();
                                     }},

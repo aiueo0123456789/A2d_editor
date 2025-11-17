@@ -13,7 +13,7 @@ import { ContextmenuOperator } from "../operators/contextmenuOperator.js";
 import { OutlinerSpaceData } from "../ui/area/areas/Outliner/area_OutlinerSpaceData.js";
 import { Area_Property } from "../ui/area/areas/Property/area_Property.js";
 import { GPU } from "../utils/webGPU.js";
-import { CreateObjectCommand, DeleteObjectCommand } from "../commands/object/object.js";
+import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from "../commands/object/object.js";
 import { CreateEdgeTool } from "../ui/tools/CreateEdge.js";
 import { NodeEditorSpaceData } from "../ui/area/areas/NodeEditor/area_NodeEditorSpaceData.js";
 import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/area_NodeEditor.js";
@@ -53,6 +53,7 @@ class AppOptions {
             "アーマチュア": {
                 "normal": {
                     type: "アーマチュア",
+                    name: "名称未設定",
                     bonesNum: 1,
                     boneMetaDatas: [{name: "ボーン0", index: 0, parentIndex: -1, depth: 0}],
                     bones: [[0,0, 1,1, 1.5707963267948966, 100]],
@@ -67,79 +68,17 @@ class AppOptions {
                     physicsDatas: [createArrayNAndFill(30, 0).map((x,index) => index == 14 ? 1 : 0)],
                     vertices: [[0,0, 0,100]]
                 },
-                "body": {
-                    type: "アーマチュア",
-                    bonesNum: 2,
-                    bones: [{
-                        index: 0,
-                        childrenBone: [
-                            {
-                                index: 1,
-                                childrenBone: [],
-                                baseHead: [0,110],
-                                baseTail: [0,210],
-                                animations: [],
-                                attachments: {
-                                    type: "アタッチメント",
-                                    list: [
-                                        {
-                                            type: "物理アタッチメント",
-                                            x: 0,
-                                            y: 0,
-                                            rotate: 0,
-                                            shearX: 0,
-                                            scaleX: 0,
-                                            inertia: 0,
-                                            strength: 0,
-                                            damping: 0,
-                                            mass: 0,
-                                            wind: 0,
-                                            gravity: 0,
-                                            mix: 0,
-                                            limit: 0,
-                                        }
-                                    ]
-                                }
-                            }
-                        ],
-                        baseHead: [0,-100],
-                        baseTail: [0,100],
-                        animations: {blocks: []},
-                        attachments: {
-                            type: "アタッチメント",
-                            list: [
-                                {
-                                    type: "物理アタッチメント",
-                                    x: 0,
-                                    y: 0,
-                                    rotate: 0,
-                                    shearX: 0,
-                                    scaleX: 0,
-                                    inertia: 0,
-                                    strength: 0,
-                                    damping: 0,
-                                    mass: 0,
-                                    wind: 0,
-                                    gravity: 0,
-                                    mix: 0,
-                                    limit: 0,
-                                }
-                            ]
-                        }
-                    }],
-                    editor: {
-                        boneColor: [0,0,0,1]
-                    }
-                }
             },
             "ベジェモディファイア": {
                 "normal": {
                     type: "ベジェモディファイア",
-                    points: [
-                        {point: {co: [-100,0]}, leftControlPoint: {co: [-150,0]}, rightControlPoint: {co: [-50,0]}},
-                        {point: {co: [100,0]}, leftControlPoint: {co: [50,0]}, rightControlPoint: {co: [150,0]}},
-                    ],
-                    animationKeyDatas: [],
+                    name: "名称未設定",
+                    autoWeight: true,
+                    parent: null,
+                    vertices: [[-150,0, -100, 0, -50,0], [50,0, 100, 0, 150,0]],
+                    weightBcloks: [[0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0], [0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0]],
+                    shapeKeyMetaDatas: [],
+                    shapeKeys: []
                 }
             },
             "グラフィックメッシュ": {
@@ -326,6 +265,10 @@ class AppConfig {
                             this.app.operator.execute();
                         }},
                     ]},
+                    {label: "複製", eventFn: async () => {
+                        this.app.operator.appendCommand(new CopyObjectCommand(this.app.context.activeObject));
+                        this.app.operator.execute();
+                    }}
                 ],
                 // "メッシュ編集": [
                 //     {label: "test"},

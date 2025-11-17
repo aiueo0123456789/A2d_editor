@@ -18,14 +18,21 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
+}
+
+struct VisualSettings {
+    vertexSize: f32,
+    boneSize: f32,
+    boneSectionRatio: f32,
 }
 
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
-@group(1) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
-@group(1) @binding(2) var<storage, read> relationships: array<u32>;
-@group(2) @binding(0) var<uniform> armatureAllocation: Allocation; // 配分情報
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
+@group(2) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
+@group(2) @binding(2) var<storage, read> relationships: array<u32>;
+@group(3) @binding(0) var<uniform> armatureAllocation: Allocation; // 配分情報
 
 const size = 2;
 

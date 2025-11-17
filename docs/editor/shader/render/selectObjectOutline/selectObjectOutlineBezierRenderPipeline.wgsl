@@ -19,7 +19,7 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 struct WeightBlock {
@@ -27,10 +27,16 @@ struct WeightBlock {
     weights: vec4<f32>,
 }
 
+struct VisualSettings {
+    vertexSize: f32,
+    curveSize: f32,
+}
+
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesPosition: array<Bezier>;
-@group(1) @binding(1) var<storage, read> weightBlocks: array<WeightBlock>; // indexと重みのデータ
-@group(2) @binding(0) var<uniform> bezierModifierAllocation: Allocation; // 配分情報
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesPosition: array<Bezier>;
+@group(2) @binding(1) var<storage, read> weightBlocks: array<WeightBlock>; // indexと重みのデータ
+@group(3) @binding(0) var<uniform> bezierModifierAllocation: Allocation; // 配分情報
 const size = 3.0;
 
 struct VertexOutput {
@@ -83,7 +89,7 @@ fn vmain(
     return output;
 }
 
-@group(3) @binding(0) var<uniform> objectColor: f32;
+@group(3) @binding(1) var<uniform> objectColor: f32;
 
 struct FragmentOutput {
     @location(0) color: vec4<f32>,   // カラーバッファ (通常は0番目の出力)

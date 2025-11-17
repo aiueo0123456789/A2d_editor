@@ -1,7 +1,7 @@
 import { indexOfSplice, isNumber, isPlainObject } from "../utility.js";
 import { managerForDOMs } from "./util.js";
 
-export class updateManager_DataBlock {
+export class UpdateManager_DataBlock {
     constructor(object, groupID, id, flag, fn, others) {
         this.object = object;
         this.groupID = groupID;
@@ -44,9 +44,17 @@ export class updateManager_DataBlock {
         // }
     }
 }
-const getFn = (map, key) => {
+function getFn(map, key) {
     if (key == "~@all") {
-        return [...map.values()].flat();
+        // return [...map.values()].flat();
+        // 単純なループで高速化
+        const result = [];
+        for (const updateManager_DataBlocks of map.values()) {
+            for (const updateManager_DataBlock of updateManager_DataBlocks) {
+                result.push(updateManager_DataBlock);
+            }
+        }
+        return result;
     } else {
         const result = [];
         if (map.has(key)) {
@@ -167,7 +175,7 @@ export class updateManager {
         const groupID = IDs.g;
         const ID = IDs.i;
         const flag = IDs.f;
-        const dataBlock = new updateManager_DataBlock(object, groupID, ID, flag, updateFn, others);
+        const dataBlock = new UpdateManager_DataBlock(object, groupID, ID, flag, updateFn, others);
         // o
         let o = this.objects.get(object);
         if (!this.objects.has(object)) {

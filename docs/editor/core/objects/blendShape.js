@@ -63,8 +63,8 @@ export class BlendShape {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.value,
-                parameters: data.keyframeBlockManager.parameters,
-                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
+                parameters: data.keyframeBlockManager.parameters.slice(0, this.dimension),
+                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks.slice(0, this.dimension),
             });
         } else {
             /** @type {KeyframeBlockManager} */

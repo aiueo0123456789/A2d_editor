@@ -71,7 +71,7 @@ export class Operator {
         let noError = true;
         const commandsToStack = [];
         while (this.commands.length != 0) {
-            const command = this.commands.pop();
+            const command = this.commands.shift();
             const result = command.execute();
             if (result.error) {
                 this.errorLog.push(result.error);

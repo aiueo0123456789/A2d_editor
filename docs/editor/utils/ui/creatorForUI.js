@@ -485,7 +485,7 @@ export class CreatorForUI {
     }
 
     // inputとselectを値と関連付ける
-    setWith(/** @type {HTMLElement} */t, path, searchTarget, flag, useCommand = true) {
+    setWith(/** @type {HTMLElement} */t, path, searchTarget, flag, useCommand = true, submitFunction = null) {
         let source = this.getParameter(searchTarget, path, 1);
         if (!source) { // 取得できなかったら切り上げ
             console.warn("UIとパラメータの連携ができませんでした", path, searchTarget, this.globalInputObject);
@@ -533,8 +533,14 @@ export class CreatorForUI {
             else newValue = t.value;
             if (useCommand) {
                 if (command) command.update(newValue); // commandがある場合は値だけ更新
-                else command = new ChangeParameterCommand(source.object, source.parameter, newValue); // commandを作成
-            } else changeParameter(source.object, source.parameter, newValue);
+                else command = new ChangeParameterCommand(source.object, source.parameter, newValue, (object, parameter, value) => {
+                    changeParameter(object, parameter, value);
+                    if (isFunction(submitFunction)) submitFunction(value);
+                }); // commandを作成
+            } else {
+                changeParameter(source.object, source.parameter, newValue);
+                if (isFunction(submitFunction)) submitFunction(newValue);
+            }
         }
         t.addEventListener("input", update);
         t.addEventListener("change", () => {

@@ -19,16 +19,16 @@ export class BlendShapePanel {
                             {tagType: "input", label: "valueY", value: "/value/1", type: "number"},
                             {tagType: "hasKeyframeCheck", src: "/keyframeBlockManager/keyframeBlocks/1", value: "/value/1"},
 
-                            {tagType: "button", textContent: "追加", submitFunction: (object) => {
+                            {tagType: "button", textContent: "追加", onClick: (object) => {
                                 app.operator.appendCommand(new AppendBlendShapePointCommand(object.normal));
                                 app.operator.execute();
                             }},
                             {tagType: "dualListbox", available: "scene/objects/shapeKeys", selected: "/shapeKeys",
-                                appendEvent: (shapeKey) => {
+                                onAppend: (shapeKey) => {
                                     app.operator.appendCommand(new AppendShapeKeyInBlendShapeCommand(app.appConfig.areasConfig["BlendShape"].activeBlendShape, shapeKey));
                                     app.operator.execute();
                                 },
-                                deleteEvent: (shapeKey) => {
+                                onDelete: (shapeKey) => {
                                     app.operator.appendCommand(new DeleteShapeKeyInBlendShapeCommand(app.appConfig.areasConfig["BlendShape"].activeBlendShape, shapeKey));
                                     app.operator.execute();
                                 }

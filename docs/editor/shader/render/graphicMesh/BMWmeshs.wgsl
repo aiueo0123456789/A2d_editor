@@ -13,7 +13,7 @@ struct Allocation {
     MAX_ANIMATIONS: u32,
     parentType: u32, // 親がなければ0
     parentIndex: u32, // 親がなければ0
-    myType: u32,
+    myIndex: u32,
 }
 
 @group(0) @binding(0) var<uniform> camera: Camera;

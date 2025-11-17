@@ -1,7 +1,9 @@
 import { app } from "../../../../main.js";
-import { createArrayNAndFill, roundUp } from "../../../utils/utility.js";
+import { MathVec2 } from "../../../utils/mathVec.js";
+import { createArrayN, createArrayNAndFill, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { Armature } from "../../objects/armature.js";
+import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 
 class Vert {
     constructor(data) {
@@ -19,11 +21,34 @@ class Bone {
         this.headVertex = new Vert(data.headVertex);
         this.tailVertex = new Vert(data.tailVertex);
 
-        this.selected = false;
-
         this.physics = data.physics;
 
         this.color = data.color;
+
+        this.keyframeBlocks = data.keyframeBlocks ? data.keyframeBlocks : createArrayN(6).map(() => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}));
+    }
+
+    get polygon() {
+        const size = 0.04;
+        const ratio = 0.1;
+
+        let position1 = this.headVertex.co;
+        let position2 = this.tailVertex.co;
+        let sub = MathVec2.subR(position2, position1);
+        let normal = MathVec2.normalizeR([-sub[1], sub[0]]); // 仮の法線
+        let sectionPosition = MathVec2.mixR(position1, position2, ratio);
+
+        let k = MathVec2.scaleR(normal, size * MathVec2.lengthR(sub));
+        const result = [];
+        result.push(position1);
+        result.push(MathVec2.subR(sectionPosition, k));
+        result.push(MathVec2.addR(sectionPosition, k));
+        result.push(position2);
+        return result;
+    }
+
+    get selected() {
+        return this.headVertex.selected && this.tailVertex.selected;
     }
 
     get depth() {
@@ -42,6 +67,7 @@ export class BArmature {
         this.object = null;
         /** @type {Bone[]} */
         this.bones = [];
+        this.activeBone = null;
     }
 
     get id() {
@@ -55,6 +81,10 @@ export class BArmature {
 
     get verticesSelectData() {
         return this.vertices.map(vertex => vertex.selected);
+    }
+
+    get bonesSelectData() {
+        return this.bones.map(bone => bone.selected);
     }
 
     get vertices() {
@@ -75,13 +105,14 @@ export class BArmature {
 
     selectedClear() {
         this.vertices.forEach(vertex => {
-            vertex.selected = false
+            vertex.selected = false;
             GPU.writeBuffer(this.vertexSelectedBuffer, GPU.createBitData([0], ["u32"]), this.getVertexIndexByVertex(vertex) * 4);
         });
+        this.activeBone = null;
         // this.updateGPUData();
     }
 
-    select(/** @type {Array} */ indexs) {
+    selectVertices(/** @type {Array} */ indexs) {
         indexs.forEach(index => {
             this.vertices[index].selected = true;
             GPU.writeBuffer(this.vertexSelectedBuffer, GPU.createBitData([1], ["u32"]), index * 4);
@@ -89,8 +120,20 @@ export class BArmature {
         // this.updateGPUData();
     }
 
+    selectBones(/** @type {Array} */ indexs) {
+        indexs.forEach(index => {
+            this.activeBone = this.bones[index];
+            this.selectVertices([index * 2, index * 2 + 1]); // ヘッドとテールを選択
+        });
+        // this.updateGPUData();
+    }
+
     get selectedVertices() {
         return this.vertices.filter(vert => vert.selected);
+    }
+
+    get selectedBones() {
+        return this.bones.filter(bone => bone.selected);
     }
 
     get verticesNum() {
@@ -105,10 +148,9 @@ export class BArmature {
         this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
         // this.relatedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
         this.vertexSelectedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.vertices.map(vertex => vertex.selected ? 1 : 0), ["u32"]);
-        this.bonesSelectedBuffer = GPU.createStorageBuffer(roundUp(this.bones.length * 4, 4), this.bones.map(bone => bone.selected ? 1 : 0), ["u32"]);
         this.boneColorsBuffer = GPU.createStorageBuffer(roundUp(this.bones.length * 4 * 4, 4 * 4), this.bones.map(bone => bone.color).flat(), ["f32", "f32", "f32", "f32"]);
         this.r = GPU.createStorageBuffer(roundUp(this.bones.length * 4, 4), this.bones.map(bone => 1), ["u32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr_Vsr"), [this.verticesBuffer, this.boneColorsBuffer, this.vertexSelectedBuffer, this.bonesSelectedBuffer, this.r]);
+        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr"), [this.verticesBuffer, this.boneColorsBuffer, this.vertexSelectedBuffer, this.r]);
     }
 
     get root() {
@@ -127,7 +169,7 @@ export class BArmature {
         const createBones = (children, parent) => {
             for (const childData of children) {
                 const boneIndex = childData.index;
-                const bone = new Bone({name: object.boneMetaDatas[boneIndex].name, parent: parent, headVertex: {co: coordinates[boneIndex].slice(0,2)}, tailVertex: {co: coordinates[boneIndex].slice(2,4)}, color: colors[boneIndex], physics: physics[boneIndex].slice(0, 13)});
+                const bone = new Bone({name: object.boneMetaDatas[boneIndex].name, parent: parent, headVertex: {co: coordinates[boneIndex].slice(0,2)}, tailVertex: {co: coordinates[boneIndex].slice(2,4)}, color: colors[boneIndex], physics: physics[boneIndex].slice(0, 13), keyframeBlocks: object.keyframeBlockManager.keyframeBlocks.slice(boneIndex * 6, boneIndex * 6 + 6)});
                 this.bones[boneIndex] = bone;
                 createBones(object.getBoneChildren(childData), bone);
             }
@@ -145,6 +187,7 @@ export class BArmature {
         this.object.allColors.length = 0;
         this.object.root.length = 0;
         this.object.allAnimations.length = 0;
+        const keyframeBlocks = [];
         for (const bone of this.bones) {
             const parent = bone.parent;
             this.object.boneMetaDatas.push(Armature.createBoneMetaData(bone.name, this.getBoneIndex(bone), this.getBoneIndex(parent), bone.depth, false));
@@ -168,14 +211,9 @@ export class BArmature {
             this.object.allBoneWorldMatrix.push(...boneData.worldMatrix.flat());
             this.object.allColors.push(...bone.color);
             this.object.allAnimations.push(0,0,0,0,0,0); // x y sx sy r l
-
-            this.object.keyframeBlockManager.appendParameter(this.object.allAnimations.length - 5);
-            this.object.keyframeBlockManager.appendParameter(this.object.allAnimations.length - 4);
-            this.object.keyframeBlockManager.appendParameter(this.object.allAnimations.length - 3);
-            this.object.keyframeBlockManager.appendParameter(this.object.allAnimations.length - 2);
-            this.object.keyframeBlockManager.appendParameter(this.object.allAnimations.length - 1);
-            this.object.keyframeBlockManager.appendParameter(this.object.allAnimations.length);
+            keyframeBlocks.push(...bone.keyframeBlocks);
         }
+        this.object.keyframeBlockManager.setKeyframeBlocks(createArrayN(this.object.allAnimations.length), keyframeBlocks);
         const armatureData = app.scene.runtimeData.armatureData;
         armatureData.update(this.object);
     }
