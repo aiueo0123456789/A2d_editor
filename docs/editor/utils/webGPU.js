@@ -1740,13 +1740,11 @@ class WebGPU {
                             if (texture.width < maxWidth - skyline[pointIndex][0]) widthBool = true;
                         }
                     }
-
                     if (widthBool && texture.height < height - skyline[pointIndex][1] && (minIndex == -1 || skyline[pointIndex][1] < skyline[minIndex][1])) { // 横縦も足りて現時点で見つかっているものより位置が低いか
                         minIndex = pointIndex;
                     }
                 }
                 if (minIndex == -1) { // 場所が足りない
-                    console.log(texture);
                     isOverflowing = true;
                     break ;
                 }

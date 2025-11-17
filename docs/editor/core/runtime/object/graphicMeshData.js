@@ -1,6 +1,7 @@
 import { Application } from "../../../app/app.js";
 import { objectToNumber } from "../../../app/scene/scene.js";
 import { UnfixedReference } from "../../../utils/objects/util.js";
+import { changeParameter } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { GraphicMesh } from "../../objects/graphicMesh.js";
 import { BufferManager } from "../bufferManager.js";
@@ -61,7 +62,7 @@ export class GraphicMeshData extends RuntimeDataBase {
         if (this.order.length) {
             const result = GPU.createTextureAtlas(this.order.map(object => object.texture.texture));
             GPU.writeBuffer(this.uvOffsets.buffer, GPU.createBitData(result.uvOffset.flat(), ["f32"]), 0);
-            this.textureAtls = result.texture;
+            changeParameter(this, "textureAtls", result.texture)
             this.textureAtlsView = this.textureAtls.createView();
             this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), [this.renderingVertices.buffer, this.uv.buffer, this.uvOffsets.buffer, this.textureAtlsView ? this.textureAtlsView : GPU.isNotTexture.createView()]); // 表示用
             this.shapeKeyApplyGroup = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Csr_Csr_Csr"), [this.renderingVertices.buffer, this.baseVertices.buffer, this.shapeKeys.minimumOrMoreBuffer, this.shapeKeyWights.minimumOrMoreBuffer, this.allocations.buffer]); // アニメーション用

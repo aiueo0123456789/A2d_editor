@@ -811,11 +811,11 @@ export class Renderer {
             renderPass.setPipeline(selectObjectOutlineMixPipeline);
             renderPass.draw(4, 1, 0, 0);
         }
-        if (app.scene.runtimeData.graphicMeshData.textureAtls) {
-            renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft"), [GPU.sampler, app.scene.runtimeData.graphicMeshData.textureAtls.createView()]));
-            renderPass.setPipeline(devMaskTexturePipeline);
-            renderPass.draw(4, 1, 0, 0);
-        }
+        // if (app.scene.runtimeData.graphicMeshData.textureAtls) {
+        //     renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft"), [GPU.sampler, app.scene.runtimeData.graphicMeshData.textureAtls.createView()]));
+        //     renderPass.setPipeline(devMaskTexturePipeline);
+        //     renderPass.draw(4, 1, 0, 0);
+        // }
         // 処理の終了と送信
         renderPass.end();
         device.queue.submit([commandEncoder.finish()]);

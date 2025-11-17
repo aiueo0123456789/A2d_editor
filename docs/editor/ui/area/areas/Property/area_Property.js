@@ -71,6 +71,11 @@ export class Area_Property {
                     {tagType: "input", label: "表示範囲x", value: "scene/objects/renderingCamera/displayRange/0", type: "number", min: 1, max: 2048, step: 1, custom: {visual: "range"}},
                     {tagType: "input", label: "表示範囲y", value: "scene/objects/renderingCamera/displayRange/1", type: "number", min: 1, max: 2048, step: 1, custom: {visual: "range"}},
                 ]},
+                {tagType: "section", name: "デバッグ", children: [
+                    {tagType: "path", sourceObject: "scene/runtimeData/graphicMeshData", updateEventTarget: {path: "scene/runtimeData/graphicMeshData/%textureAtls"}, children: [
+                        {tagType: "texture", label: "アトラス", sourceTexture: "/textureAtls"},
+                    ]},
+                ]},
             ],
         };
 

@@ -10,7 +10,7 @@ export class TextureTag extends CustomTag {
         this.canvas.style.width = "100%";
         this.canvas.style.height = "100%";
         this.canvas.style.objectFit = "contain";
-        GPU.textureToViewCanvas(this.texture, this.canvas);
+        if (this.texture instanceof GPUTexture) GPU.textureToViewCanvas(this.texture, this.canvas);
         this.element = document.createElement("div");
         this.element.style.width = "100%";
         this.element.style.height = "100%";
