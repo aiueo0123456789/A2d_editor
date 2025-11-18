@@ -11,11 +11,15 @@ struct Bezier {
     c2: vec2<f32>,
 }
 
-@group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesPosition: array<array<vec2<f32>, 3>>;
-@group(1) @binding(1) var<storage, read> verticesSelected: array<u32>; // array<vec3<u32>>だとpaddingが入る
+struct VisualSettings {
+    vertexSize: f32,
+    curveSize: f32,
+}
 
-const size = 10.0;
+@group(0) @binding(0) var<uniform> camera: Camera;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesPosition: array<array<vec2<f32>, 3>>;
+@group(2) @binding(1) var<storage, read> verticesSelected: array<u32>; // array<vec3<u32>>だとpaddingが入る
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -49,7 +53,7 @@ fn vmain(
     let vertexType = (vertexIndex % 18) / 6;
     let p = bezier[vertexType];
     var output: VertexOutput;
-    output.position = worldPosToClipPos(p + (point * size) / camera.zoom);
+    output.position = worldPosToClipPos(p + (point * visualSetting.vertexSize) / camera.zoom);
     output.uv = point;
     output.kind = select(1.0, 0.0, vertexType == 0);
     output.color = select(vec4<f32>(0.0,1.0,0.0,1.0), vec4<f32>(1.0,0.0,0.0,1.0), verticesSelected[index * 3u + vertexType] == 1u);

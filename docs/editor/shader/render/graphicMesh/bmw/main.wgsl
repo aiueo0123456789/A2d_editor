@@ -13,8 +13,8 @@ struct VisualSettings {
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(1) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
 @group(1) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
-@group(1) @binding(2) var<storage, read> meshLoops: array<u32>;
-@group(1) @binding(3) var<storage, read> vertexSelected: array<u32>;
+@group(1) @binding(2) var<storage, read> weightBlocks: array<f32>; // indexと重みのデータ
+@group(1) @binding(3) var<storage, read> meshLoops: array<u32>;
 @group(1) @binding(4) var<uniform> zIndex: f32;
 
 struct VertexOutput {

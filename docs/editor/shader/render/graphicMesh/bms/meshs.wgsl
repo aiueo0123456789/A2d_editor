@@ -5,12 +5,18 @@ struct Camera {
     padding: f32,
 }
 
+struct VisualSettings {
+    vertexSize: f32,
+    edgeSize: f32,
+}
+
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
-@group(1) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
-@group(1) @binding(2) var<storage, read> meshLoops: array<u32>;
-@group(1) @binding(3) var<storage, read> vertexSelected: array<u32>;
-@group(1) @binding(4) var<uniform> zIndex: f32;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
+@group(2) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
+@group(2) @binding(2) var<storage, read> meshLoops: array<u32>;
+@group(2) @binding(3) var<storage, read> vertexSelected: array<u32>;
+@group(2) @binding(4) var<uniform> zIndex: f32;
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -74,7 +80,7 @@ fn vmain(
 }
 
 @group(0) @binding(1) var mySampler: sampler;
-@group(1) @binding(5) var myTexture: texture_2d<f32>;
+@group(2) @binding(5) var myTexture: texture_2d<f32>;
 
 struct FragmentOutput {
     @location(0) color: vec4<f32>,   // カラーバッファ (通常は0番目の出力)

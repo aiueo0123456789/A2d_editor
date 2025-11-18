@@ -16,11 +16,15 @@ struct Allocation {
     myIndex: u32,
 }
 
-@group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
-@group(1) @binding(1) var<storage, read> weightBlocks: array<f32>; // indexと重みのデータ
+struct VisualSettings {
+    vertexSize: f32,
+    curveSize: f32,
+}
 
-const size = 10;
+@group(0) @binding(0) var<uniform> camera: Camera;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
+@group(2) @binding(1) var<storage, read> weightBlocks: array<f32>; // indexと重みのデータ
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -47,7 +51,7 @@ fn vmain(
     let point = pointData[vertexIndex % 4u];
 
     var output: VertexOutput;
-    output.position = vec4f((verticesCoordinates[fixIndex] + point.xy * size / camera.zoom - camera.position) * camera.zoom * camera.cvsSize, 0, 1.0);
+    output.position = vec4f((verticesCoordinates[fixIndex] + point.xy * visualSetting.vertexSize / camera.zoom - camera.position) * camera.zoom * camera.cvsSize, 0, 1.0);
     output.uv = point.zw;
     // 表示ターゲットのindexを検索する
     let weight = weightBlocks[fixIndex];

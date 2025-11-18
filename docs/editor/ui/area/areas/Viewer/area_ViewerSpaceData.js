@@ -29,8 +29,8 @@ export class ViewerSpaceData {
 
         this.visualSettings = {
             mesh: {
-                vertexSize: 0.05,
-                edgeSize: 0.05,
+                vertexSize: 10,
+                edgeSize: 2,
             },
             bone: {
                 vertexSize: 0.05,
@@ -38,8 +38,8 @@ export class ViewerSpaceData {
                 boneSectionRatio: 0.1,
             },
             bezier: {
-                vertexSize: 0.05,
-                curveSize: 0.05,
+                vertexSize: 10,
+                curveSize: 3,
             }
         };
         this.GPUDataForVisualSettings = {

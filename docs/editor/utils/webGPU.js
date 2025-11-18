@@ -1771,7 +1771,7 @@ class WebGPU {
                 // if (width == 8192 * 2 || height == 8192 * 2) isError = true;
                 if (width == 8192 * 2 || height == 8192 * 2) {
                     isError = true;
-                    console.log(skyline);
+                    // console.log(skyline);
                 }
                 width = Math.min(width, 8192);
                 height = Math.min(height, 8192);
@@ -1780,8 +1780,8 @@ class WebGPU {
         if (isError) {
             console.warn("アトラスにおさまりませんでした")
         }
-        console.log("アトラスサイズ", width, height)
-        console.log("テクスチャの位置", textureLeftBottom)
+        // console.log("アトラスサイズ", width, height)
+        // console.log("テクスチャの位置", textureLeftBottom)
 
         const atlasTexture = device.createTexture({
             size: [width, height],
@@ -1793,7 +1793,6 @@ class WebGPU {
         const commandEncoder = device.createCommandEncoder();
         sortedTextures.forEach((texture, index) => {
             if (textureLeftBottom.length <= index) return ;
-            // console.log(texture, textureLeftBottom[index])
             commandEncoder.copyTextureToTexture(
                 { texture },
                 { texture: atlasTexture, origin: textureLeftBottom[index] },

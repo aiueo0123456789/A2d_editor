@@ -48,16 +48,17 @@ const renderParticlePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroup
 const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t");
 
 const BMSMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/main.wgsl"), [], "2d", "t", "wl");
-const BMSMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/meshs.wgsl"), [], "2d", "s");
-const BMSVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/vertices.wgsl"), [], "2d", "s");
-const BMWMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/BMWmeshs.wgsl"), [], "2d", "t", "wl");
-const BMWWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/BMWweights.wgsl"), [], "2d", "s");
-const BMeshMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/main.wgsl"), [], "2d", "t", "wl");
-const BMeshVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/verticesShader.wgsl"), [], "2d", "s");
-const BMeshMeshRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/meshShader.wgsl"), [], "2d", "s");
-const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/edgeShader.wgsl"), [], "2d", "s");
-const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/silhouetteEdgesShader.wgsl"), [], "2d", "s");
-// const graphicMeshsWeightRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr"), GPU.getGroupLayout("Vu"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/graphicMesh/weightShader.wgsl"), [], "2d", "s");
+const BMSMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/meshs.wgsl"), [], "2d", "s");
+const BMSVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/vertices.wgsl"), [], "2d", "s");
+
+const BMWMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bmw/main.wgsl"), [], "2d", "t", "wl");
+const BMWWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bmw/weights.wgsl"), [], "2d", "s");
+
+const BMeshMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/main.wgsl"), [], "2d", "t", "wl");
+const BMeshVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/vertices.wgsl"), [], "2d", "s");
+const BMeshMeshRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/meshs.wgsl"), [], "2d", "s");
+const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/edges.wgsl"), [], "2d", "s");
+const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/silhouetteEdges.wgsl"), [], "2d", "s");
 
 const BAABoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr")], await loadFile("./editor/shader/render/bone/baa/bones.wgsl"), [], "2d", "s");
 const BArmatureVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/vertices.wgsl"), [], "2d", "t");
@@ -68,10 +69,10 @@ const boneBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroup
 const boneRelationshipsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/relationships.wgsl"), [], "2d", "s");
 
 const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "mask", "s");
-const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/bezier.wgsl"), [], "2d", "s");
-const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/BBezier.wgsl"), [], "2d", "s");
-const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/vertices.wgsl"), [], "2d", "t");
-const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s");
+const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/curve.wgsl"), [], "2d", "s");
+const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/curve.wgsl"), [], "2d", "s");
+const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/vertices.wgsl"), [], "2d", "t");
+const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s");
 
 const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vu_VFu_Fu_VFu_Fu_VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s");
 
@@ -643,7 +644,7 @@ export class Renderer {
                 } else if (graphicMesh.mode == "メッシュウェイト編集") {
                     const bmw = app.scene.editData.getEditObjectByObject(graphicMesh);
                     renderPass.setBindGroup(1, bmw.renderingGroup);
-                    renderPass.setPipeline(BMWMeshsRenderPipeline);
+                    renderPass.setPipeline(BMWMainRenderPipeline);
                     renderPass.draw(3 * bmw.meshesNum, 1, 0, 0); // 3つの頂点から三角形を表示する * meshNum
 
                     // パイプラインやグループを元に戻す
@@ -672,12 +673,13 @@ export class Renderer {
         // エディット表示
         if (app.scene.objects.graphicMeshs.length) {
             if (this.viewer.spaceData.visibleObjects.graphicMesh) {
+                renderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.mesh.group);
                 for (const graphicMesh of app.scene.renderingOrder) {
                     if (graphicMesh.visible) {
                         // モード別
                         if (graphicMesh.mode == "メッシュ編集") {
                             const bm = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            renderPass.setBindGroup(1, bm.renderingGroup);
+                            renderPass.setBindGroup(2, bm.renderingGroup);
                             renderPass.setPipeline(BMeshMeshRenderPipeline);
                             renderPass.draw(3 * 4, bm.meshesNum, 0, 0); // 3つの辺を4つの頂点から四角形で表示する
                             renderPass.setPipeline(BMeshEdgeRenderPipeline);
@@ -688,12 +690,12 @@ export class Renderer {
                             renderPass.draw(4, bm.verticesNum, 0, 0); // 4つの頂点から四角形を表示
                         } else if (graphicMesh.mode == "メッシュウェイト編集") {
                             const bmw = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            renderPass.setBindGroup(1, bmw.renderingGroup);
+                            renderPass.setBindGroup(2, bmw.renderingGroup);
                             renderPass.setPipeline(BMWWeightsRenderPipeline);
                             renderPass.draw(4, bmw.verticesNum, 0, 0);
                         } else if (graphicMesh.mode == "メッシュシェイプキー編集") {
                             const bms = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            renderPass.setBindGroup(1, bms.renderingGroup);
+                            renderPass.setBindGroup(2, bms.renderingGroup);
                             renderPass.setPipeline(BMSMeshsRenderPipeline);
                             renderPass.draw(3 * 4, bms.meshesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
                             renderPass.setPipeline(BMSVerticesRenderPipeline);
@@ -738,34 +740,35 @@ export class Renderer {
             }
         }
         if (this.viewer.spaceData.visibleObjects.bezierModifier && app.scene.objects.bezierModifiers.length) {
-            renderPass.setBindGroup(1, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
+            renderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.bezier.group);
+            renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
             renderPass.setPipeline(bezierRenderPipeline);
             for (const bezierModifier of app.scene.objects.bezierModifiers) {
                 if (bezierModifier.visible) {
                     if (bezierModifier.mode == "ベジェ編集" || bezierModifier.mode == "ベジェシェイプキー編集") {
                         /** @type {BBezier} */
                         const bb = app.scene.editData.getEditObjectByObject(bezierModifier);
-                        renderPass.setBindGroup(1, bb.renderingGroup);
+                        renderPass.setBindGroup(2, bb.renderingGroup);
                         renderPass.setPipeline(BBezierVerticesRenderPipeline);
                         renderPass.draw(2 * 3 * 3, bb.pointsNum, 0, 0);
                         renderPass.setPipeline(BBezierBezierRenderPipeline);
                         renderPass.draw(2 * 50, bb.pointsNum - 1, 0, 0);
 
-                        renderPass.setBindGroup(1, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
+                        renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
                         renderPass.setPipeline(bezierRenderPipeline);
                     } else if (bezierModifier.mode == "ベジェウェイト編集") {
                         /** @type {BBezierWeight} */
                         const bbw = app.scene.editData.getEditObjectByObject(bezierModifier);
-                        renderPass.setBindGroup(1, bbw.renderingGroup);
+                        renderPass.setBindGroup(2, bbw.renderingGroup);
                         renderPass.setPipeline(BBezierWeightsRenderPipeline);
                         renderPass.draw(4, bbw.verticesNum, 0, 0);
                         renderPass.setPipeline(BBezierBezierRenderPipeline);
                         renderPass.draw(2 * 50, bbw.pointsNum - 1, 0, 0);
 
-                        renderPass.setBindGroup(1, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
+                        renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
                         renderPass.setPipeline(bezierRenderPipeline);
                     } else {
-                        renderPass.setBindGroup(2, bezierModifier.objectDataGroup);
+                        renderPass.setBindGroup(3, bezierModifier.objectDataGroup);
                         renderPass.draw(2 * 50, bezierModifier.pointsNum - 1, 0, 0);
                     }
                 }

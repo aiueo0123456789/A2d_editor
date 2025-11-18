@@ -11,10 +11,32 @@ struct Bezier {
     c2: vec2<f32>,
 }
 
+struct Allocation {
+    vertexBufferOffset: u32,
+    animationBufferOffset: u32,
+    weightBufferOffset: u32,
+    MAX_VERTICES: u32,
+    MAX_ANIMATIONS: u32,
+    parentType: u32, // 親がなければ0
+    parentIndex: u32, // 親がなければ0
+    myIndex: u32,
+}
+
+struct WeightBlock {
+    indexs: vec4<u32>,
+    weights: vec4<f32>,
+}
+
+struct VisualSettings {
+    vertexSize: f32,
+    curveSize: f32,
+}
+
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesPosition: array<array<vec2<f32>, 3>>;
-@group(1) @binding(1) var<storage, read> verticesSelected: array<u32>; // array<vec3<u32>>だとpaddingが入る
-const size = 3.0;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesPosition: array<Bezier>;
+@group(2) @binding(1) var<storage, read> weightBlocks: array<WeightBlock>; // indexと重みのデータ
+@group(3) @binding(0) var<uniform> bezierModifierAllocation: Allocation; // 配分情報
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -39,18 +61,18 @@ fn vmain(
     @builtin(vertex_index) vertexIndex: u32
 ) -> VertexOutput {
     // 頂点データを取得
-    let index = instanceIndex;
+    let index = instanceIndex + bezierModifierAllocation.vertexBufferOffset;
     let point1 = verticesPosition[index];
     let point2 = verticesPosition[index + 1u];
     let deltaT = 1.0 / 50.0;
     let t = f32(vertexIndex / 2u) / 50.0;
-    let position1 = mathBezier(point1[0], point1[2], point2[1], point2[0], t);
-    let position2 = mathBezier(point1[0], point1[2], point2[1], point2[0], t + deltaT);
+    let position1 = mathBezier(point1.p, point1.c2, point2.c1, point2.p, t);
+    let position2 = mathBezier(point1.p, point1.c2, point2.c1, point2.p, t + deltaT);
     let sub = position2 - position1;
     let normal = normalize(vec2<f32>(-sub.y, sub.x)); // 仮の法線
     var offset = vec2<f32>(0.0);
 
-    let v = (normal * size) / camera.zoom;
+    let v = (normal * visualSetting.curveSize) / camera.zoom;
     if (vertexIndex % 4u == 0u) {
         offset = position1 - v;
     } else if (vertexIndex % 4u == 1u) {

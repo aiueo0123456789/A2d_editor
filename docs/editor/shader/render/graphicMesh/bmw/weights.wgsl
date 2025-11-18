@@ -5,23 +5,18 @@ struct Camera {
     padding: f32,
 }
 
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
+struct VisualSettings {
+    vertexSize: f32,
+    edgeSize: f32,
 }
 
 @group(0) @binding(0) var<uniform> camera: Camera;
-@group(1) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
-@group(1) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
-@group(1) @binding(2) var<storage, read> weightBlocks: array<f32>; // indexと重みのデータ
-@group(1) @binding(3) var<storage, read> meshLoops: array<u32>;
-@group(1) @binding(4) var<uniform> zIndex: f32;
+@group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
+@group(2) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
+@group(2) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
+@group(2) @binding(2) var<storage, read> weightBlocks: array<f32>; // indexと重みのデータ
+@group(2) @binding(3) var<storage, read> meshLoops: array<u32>;
+@group(2) @binding(4) var<uniform> zIndex: f32;
 
 const size = 10;
 
@@ -59,7 +54,7 @@ fn vmain(
 }
 
 @group(0) @binding(1) var mySampler: sampler;
-@group(1) @binding(5) var myTexture: texture_2d<f32>;
+@group(2) @binding(5) var myTexture: texture_2d<f32>;
 
 fn is_point_in_sector(
     // テストする点（中心からの相対位置）
