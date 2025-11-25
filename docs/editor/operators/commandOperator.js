@@ -52,6 +52,7 @@ export class Operator {
     }
 
     appendCommand(command) {
+        console.log(command)
         if (command.error) {
             console.error("コマンドの初期化でエラーが出た可能性があります");
             return false;
@@ -67,12 +68,12 @@ export class Operator {
         managerForDOMs.update({o: this.errorLog});
     }
 
-    execute() {
+    async execute() {
         let noError = true;
         const commandsToStack = [];
         while (this.commands.length != 0) {
             const command = this.commands.shift();
-            const result = command.execute();
+            const result = await command.execute();
             if (result.error) {
                 this.errorLog.push(result.error);
                 console.error("コマンド実行時のエラー", result, command)

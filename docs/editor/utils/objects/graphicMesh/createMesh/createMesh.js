@@ -35,7 +35,7 @@ fn main(@builtin(global_invocation_id) id: vec3<u32>) {
 
     outputData[id.x + id.y * u32(dimensions.x + 1)] = binary4ToU32Direct(b0,b1,b2,b3);
 }`));
-const worker = new Worker('./editor/utils/objects/graphicMesh/メッシュの自動生成/画像からメッシュを作るサブスレッド.js');
+const worker = new Worker("./editor/utils/objects/graphicMesh/createMesh/createMeshSubThread.js");
 
 export function cutSilhouetteOutTriangle(vertices, meshes, edges) {
     // 点がポリゴン内にあるかを判定する関数
@@ -134,26 +134,25 @@ function fixSelfIntersectingPolygon(vertices) {
 }
 
 // export async function createEdgeFromTexture(texture, pixelDensity, padding, simplEpsilon = Math.max(texture.width, texture.height) / 50, option = "center") {
-export async function createEdgeFromTexture(texture, pixelDensity, padding, simplEpsilon = 5.0, option = "center") {
+export async function createEdgeFromTexture(texture, pixelDensity, padding, simplEpsilon = 5, option = "center") {
     const imageSize = [texture.width, texture.height];
     const imageBufferSize = MathVec2.addR(imageSize, [1,1]);
     const validImageSize = MathVec2.reverseScaleR(imageSize, pixelDensity);
     const createUVAndFixVertices = (data) => {
-        const newData = {vertices: [], uv: []};
+        const newData = {vertices: []};
+        newData.vertices = data.map(x => {
+            const a = MathVec2.mulR(x, [1 / validImageSize[0], 1 / validImageSize[1]]);
+            return {uv: [a[0], 1 - a[1]]};
+        });
         if (option == "center") {
-            newData.vertices = data.map(x => {
-                return MathVec2.subR(x, MathVec2.scaleR(validImageSize, 0.5));
+            data.forEach((x, vertexIndex) => {
+                newData.vertices[vertexIndex].co = MathVec2.subR(x, MathVec2.scaleR(validImageSize, 0.5));
             });
         } else if (option == "bottomLeft") {
-            newData.vertices = data.map(x => {
-                const validPosition = MathVec2.mulR(MathVec2.mulR(x, [1 / imageSize[0], 1 / imageSize[1]]), validImageSize);
-                return [validPosition[0], validImageSize[1] - validPosition[1]];
+            data.forEach((x, vertexIndex) => {
+                newData.vertices[vertexIndex].co = MathVec2.mulR(MathVec2.mulR(x, [1 / imageSize[0], 1 / imageSize[1]]), validImageSize);
             });
         }
-        newData.uv = data.map(x => {
-            const a = MathVec2.mulR(x, [1 / validImageSize[0], 1 / validImageSize[1]]);
-            return [a[0], 1 - a[1]];
-        });
         return newData;
     }
 
@@ -377,7 +376,6 @@ export async function createEdgeFromTexture(texture, pixelDensity, padding, simp
             const cnEdges = [...Array(vertices.length)].map((_, i) => [i + verticesNumOffset,(i + 1) % vertices.length + verticesNumOffset]);
             const fixVertices = createUVAndFixVertices(vertices);
             resultData.vertices.push(...fixVertices.vertices);
-            resultData.uv.push(...fixVertices.uv);
             resultData.edges.push(...cnEdges);
             verticesNumOffset += vertices.length;
         }
@@ -385,7 +383,7 @@ export async function createEdgeFromTexture(texture, pixelDensity, padding, simp
     return resultData;
 }
 
-export function createMeshFromTexture(vertices, cnEdges) {
+export function createMeshByCBT(vertices, cnEdges) {
     const delaunayResult = cdt(vertices, cnEdges);
     return delaunayResult.meshes;
 }

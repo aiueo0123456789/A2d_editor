@@ -17,7 +17,7 @@ import { Camera } from '../../../../core/objects/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
 import { ViewerSpaceData } from './area_ViewerSpaceData.js';
 import { ToolPanelOperator } from '../../../../operators/toolPanelOperator.js';
-import { CreateEdgeTool } from '../../../tools/CreateEdge.js';
+import { CreateMeshTool } from '../../../tools/CreateMesh.js';
 import { Particle } from '../../../../core/objects/particle.js';
 import { app } from '../../../../../main.js';
 import { SelectOnlyVertexCommand } from '../../../../commands/utile/selectVertices.js';
@@ -48,7 +48,7 @@ const renderParticlePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroup
 const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t");
 
 const BMSMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/main.wgsl"), [], "2d", "t", "wl");
-const BMSMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/meshs.wgsl"), [], "2d", "s");
+const BMSMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/meshes.wgsl"), [], "2d", "s");
 const BMSVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/vertices.wgsl"), [], "2d", "s");
 
 const BMWMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bmw/main.wgsl"), [], "2d", "t", "wl");
@@ -56,7 +56,7 @@ const BMWWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGro
 
 const BMeshMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/main.wgsl"), [], "2d", "t", "wl");
 const BMeshVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/vertices.wgsl"), [], "2d", "s");
-const BMeshMeshRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/meshs.wgsl"), [], "2d", "s");
+const BMeshMeshRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/meshes.wgsl"), [], "2d", "s");
 const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/edges.wgsl"), [], "2d", "s");
 const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/silhouetteEdges.wgsl"), [], "2d", "s");
 
@@ -82,8 +82,8 @@ const alphaBuffers = {
 };
 
 const useingToolPanelInMode = {
-    "メッシュ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateEdgeTool},
-    "ベジェ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateEdgeTool},
+    "メッシュ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateMeshTool},
+    "ベジェ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateMeshTool},
     "ボーン編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "e": ExtrudeMove, "x": DeleteTool},
     "ボーンアニメーション編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},
     "メッシュシェイプキー編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},

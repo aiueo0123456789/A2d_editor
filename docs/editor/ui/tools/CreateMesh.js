@@ -1,11 +1,10 @@
 import { app } from "../../../main.js";
+import { CreateMeshCommand } from "../../commands/mesh/mesh.js";
 import { managerForDOMs } from "../../utils/ui/util.js";
 
 // 制作途中
-export class CreateEdgeTool {
+export class CreateMeshTool {
     constructor(/** @type {ModalOperator} */operator) {
-        this.operator = operator;
-        // this.command = new CreateEdgeFromeTextureCommand(app.context.selectedObjects);
         this.values = [
             1,10, // スライド量
         ];
@@ -26,15 +25,15 @@ export class CreateEdgeTool {
         }
 
         managerForDOMs.set({o: this.values, i: "&all"}, update);
-        update();
+    }
+
+    init() {
+        this.command = new CreateMeshCommand();
+        app.operator.appendCommand(this.command);
+        return {complete: true};
     }
 
     execute() {
-        app.operator.appendCommand(this.command);
         app.operator.execute();
-    }
-
-    async init() {
-        return {complete: true};
     }
 }

@@ -61,6 +61,41 @@ export class BMesh {
         return this.object.id;
     }
 
+    get boundingBox() {
+        
+    }
+
+    get imageBoundingBox() {
+        let min = [Infinity,Infinity];
+        let max = [-Infinity,-Infinity];
+        let minUV = [Infinity,Infinity];
+        let maxUV = [-Infinity,-Infinity];
+        for (const vertex of this.vertices) {
+            if (min[0] > vertex.co[0]) {
+                min[0] = vertex.co[0];
+                minUV[0] = vertex.uv[0];
+            }
+            if (min[1] > vertex.co[1]) {
+                min[1] = vertex.co[1];
+                minUV[1] = vertex.uv[1];
+            }
+            if (max[0] < vertex.co[0]) {
+                max[0] = vertex.co[0];
+                maxUV[0] = vertex.uv[0];
+            }
+            if (max[1] < vertex.co[1]) {
+                max[1] = vertex.co[1];
+                maxUV[1] = vertex.uv[1];
+            }
+        }
+        let minDiff = MathVec2.subR([0,1], minUV);
+        let maxDiff = MathVec2.subR([1,0], maxUV);
+        let raitoUV = MathVec2.divR(MathVec2.subR(max, min), MathVec2.subR(maxUV, minUV)); // 座標に対するuvの影響力
+        const result = {min: MathVec2.subR(min, MathVec2.mulR(raitoUV, minDiff)), max: MathVec2.addR(max, MathVec2.mulR(raitoUV, maxDiff))};
+        result.size = MathVec2.subR(result.max, result.min);
+        return result;
+    }
+
     // 頂点の表示状況をbool[]でかえす
     get verticesSelectData() {
         return this.vertices.map(vertex => vertex.selected);
@@ -99,31 +134,6 @@ export class BMesh {
         });
     }
 
-    deleteVert() {
-        this.meshes = this.meshes.filter(mesh => !mesh.vertices.filter(vertex => vertex.selected).length);
-        this.edges = this.edges.filter(edge => !edge.vertices.filter(vertex => vertex.selected).length);
-        this.silhouetteEdges = this.silhouetteEdges.filter(silhouetteEdge => !silhouetteEdge.vertices.filter(vertex => vertex.selected).length);
-        this.vertices = this.vertices.filter(vert => !vert.selected);
-        this.updateGPUData();
-    }
-
-    deleteEdge() {
-        this.edges = this.edges.filter(edge => !edge.selected);
-        this.silhouetteEdges = this.silhouetteEdges.filter(silhouetteEdge => !silhouetteEdge.selected);
-        this.updateGPUData();
-    }
-
-    appendEdge() {
-        if (this.selectedVertices.length == 2) {
-            this.edges.push(new Edge({vertices: this.selectedVertices}));
-        }
-        this.updateGPUData();
-    }
-
-    appendVert(data) {
-        this.vertices.push(new Vert(data));
-    }
-
     get selectedVertices() {
         return this.vertices.filter(vert => vert.selected);
     }
@@ -158,7 +168,22 @@ export class BMesh {
         this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.uvsBuffer, this.silhouetteEdgesBuffer, this.edgesBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.silhouetteEdgeSelectedBuffer, this.edgeSelectedBuffer, this.meshSelectedBuffer, this.zIndexBuffer, this.texture.view]);
     }
 
-    async fromMesh(object) {
+    setMeshData(data) {
+        console.log(data)
+        this.vertices.length = 0;
+        this.meshes.length = 0;
+        for (let i = 0; i < data.vertices.length; i ++) {
+            this.vertices.push(new Vert({co: data.vertices[i].co, uv: data.vertices[i].uv, weightBlock: [0,0,0,0, 1,0,0,0]}));
+        }
+        for (let i = 0; i < data.meshes.length; i ++) {
+            this.meshes.push(new Mesh({vertices: data.meshes[i].map(vertexIndex => this.vertices[vertexIndex])}));
+        }
+        this.updateGPUData();
+    }
+
+    async fromMesh(/** @type {GraphicMesh} */ object) {
+        this.vertices.length = 0;
+        this.meshes.length = 0;
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         this.object = object;
         const [coordinates,meshes,weightBlocks,uvs] = await Promise.all([

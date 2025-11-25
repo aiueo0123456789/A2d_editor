@@ -14,7 +14,7 @@ import { OutlinerSpaceData } from "../ui/area/areas/Outliner/area_OutlinerSpaceD
 import { Area_Property } from "../ui/area/areas/Property/area_Property.js";
 import { GPU } from "../utils/webGPU.js";
 import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from "../commands/object/object.js";
-import { CreateEdgeTool } from "../ui/tools/CreateEdge.js";
+import { CreateMeshTool } from "../ui/tools/CreateMesh.js";
 import { NodeEditorSpaceData } from "../ui/area/areas/NodeEditor/area_NodeEditorSpaceData.js";
 import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/area_NodeEditor.js";
 import { Area_Previewer } from "../ui/area/areas/Previewer/area_Previewer.js";
@@ -256,7 +256,7 @@ class AppConfig {
                         ]},
                     ]},
                     {label: "メッシュの生成", eventFn: async () => {
-                        this.app.activeArea.uiModel.modalOperator.setModal(CreateEdgeTool, this.app.activeArea.uiModel.inputs);
+                        this.app.activeArea.uiModel.modalOperator.setModal(CreateMeshTool, this.app.activeArea.uiModel.inputs);
                     }},
                     {label: "削除", children: [
                         {label: "選択物", eventFn: () => {
