@@ -1706,15 +1706,15 @@ class WebGPU {
         return result;
     }
 
-    createTextureAtlas(textures) {
+    createTextureAtlas(textures, padding = 100) {
         let totalPixcelNum = 0;
         for (const texture of textures) {
-            totalPixcelNum += texture.width * texture.height;
+            totalPixcelNum += (texture.width + padding) * (texture.height + padding);
         }
         let minAtlasSize = Math.ceil(Math.sqrt(totalPixcelNum));
         let width = Math.pow(2, Math.ceil(Math.log2(minAtlasSize)));
         let height = width;
-        const sortedTextures = [...textures].sort((a, b) =>
+        const sortedTextures = textures.sort((a, b) =>
             (b.width * b.height) - (a.width * a.height)
         );
         let isAllIncluded = false;
@@ -1725,22 +1725,23 @@ class WebGPU {
             let isOverflowing = false;
             textureLeftBottom.length = 0;
             for (const texture of sortedTextures) {
+                const textureSize = [texture.width + padding, texture.height + padding];
                 let minIndex = -1;
                 for (let pointIndex = 0; pointIndex < skyline.length; pointIndex ++) {
                     let widthBool = false; // 横幅が足りるか
-                    if (pointIndex == skyline.length - 1) widthBool = texture.width < width - skyline[pointIndex][0];
+                    if (pointIndex == skyline.length - 1) widthBool = textureSize[0] < width - skyline[pointIndex][0];
                     else {
-                        widthBool = texture.width < skyline[pointIndex + 1][0] - skyline[pointIndex][0];
+                        widthBool = textureSize[0] < skyline[pointIndex + 1][0] - skyline[pointIndex][0];
                         if (!widthBool) { // 隣だけじゃ足りない場合
                             let maxWidth = skyline[pointIndex][0];
                             for (let pointIndex_ = pointIndex + 1; pointIndex_ < skyline.length; pointIndex_ ++) {
                                 if (skyline[pointIndex_][1] < skyline[pointIndex][1]) maxWidth = skyline[pointIndex_][0]; // 隣の方が低いなら
                                 else break ;
                             }
-                            if (texture.width < maxWidth - skyline[pointIndex][0]) widthBool = true;
+                            if (textureSize[0] < maxWidth - skyline[pointIndex][0]) widthBool = true;
                         }
                     }
-                    if (widthBool && texture.height < height - skyline[pointIndex][1] && (minIndex == -1 || skyline[pointIndex][1] < skyline[minIndex][1])) { // 横縦も足りて現時点で見つかっているものより位置が低いか
+                    if (widthBool && textureSize[1] < height - skyline[pointIndex][1] && (minIndex == -1 || skyline[pointIndex][1] < skyline[minIndex][1])) { // 横縦も足りて現時点で見つかっているものより位置が低いか
                         minIndex = pointIndex;
                     }
                 }
@@ -1749,7 +1750,7 @@ class WebGPU {
                     break ;
                 }
                 let [minX, minY] = skyline[minIndex]; // 左下
-                let [maxX, maxY] = [skyline[minIndex][0] + texture.width, skyline[minIndex][1] + texture.height]; // 右上
+                let [maxX, maxY] = [skyline[minIndex][0] + textureSize[0], skyline[minIndex][1] + textureSize[1]]; // 右上
                 textureLeftBottom.push([minX, minY]);
                 skyline = skyline.filter(point => minX > point[0] || point[0] > maxX); // ボックスと重なっている頂点を削除
                 skyline.push([minX, maxY], [maxX, minY]); // 頂点を追加
@@ -1768,11 +1769,7 @@ class WebGPU {
                 } else {
                     height *= 2;
                 }
-                // if (width == 8192 * 2 || height == 8192 * 2) isError = true;
-                if (width == 8192 * 2 || height == 8192 * 2) {
-                    isError = true;
-                    // console.log(skyline);
-                }
+                if (width == 8192 * 2 || height == 8192 * 2) isError = true;
                 width = Math.min(width, 8192);
                 height = Math.min(height, 8192);
             }
@@ -1802,8 +1799,6 @@ class WebGPU {
 
         const commandBuffer = commandEncoder.finish();
         device.queue.submit([commandBuffer]);
-
-        // downloadTextureAsPNG(device, atlasTexture, width, height, "アトラステスト");
 
         return {texture: atlasTexture, uvOffset: textures.map(texture => {
             const point = textureLeftBottom[sortedTextures.indexOf(texture)];

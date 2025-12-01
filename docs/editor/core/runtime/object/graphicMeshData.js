@@ -25,8 +25,6 @@ export class GraphicMeshData extends RuntimeDataBase {
         this.renderingGizumoGroup = null;
         this.shapeKeyApplyGroup = null;
 
-        this.meshBlockByteLength = 3 * 4; // uint32x3
-
         this.write = false;
 
         this.offsetCreate();
@@ -41,6 +39,8 @@ export class GraphicMeshData extends RuntimeDataBase {
         map.set(this.shapeKeys, graphicMesh.allShapeKeys);
         map.set(this.shapeKeyWights, null);
         map.set(this.uvOffsets, null);
+        map.set(this.renderingVertices, graphicMesh.allVertices);
+        console.log(this);
         return map;
     }
 

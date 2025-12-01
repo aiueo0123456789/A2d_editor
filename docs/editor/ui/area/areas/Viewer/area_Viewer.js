@@ -11,7 +11,7 @@ import { ToolsBarOperator } from '../../../../operators/toolsBarOperator.js';
 import { EdgeJoinTool } from '../../../tools/EdgeJoin.js';
 import { AppendVertex } from '../../../tools/AppendVertex.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
-import { boolTo0or1, calculateLocalMousePosition, changeParameter, chunk, hitTestPointTriangle, isEmpty, loadFile, range } from '../../../../utils/utility.js';
+import { calculateLocalMousePosition, chunk, hitTestPointTriangle, isEmpty, loadFile } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/objects/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
@@ -556,7 +556,7 @@ export class Renderer {
                     if (object.type == "グラフィックメッシュ") {
                         selectObjectOutlineRenderPass.setBindGroup(1, this.viewer.areasConfig.GPUDataForVisualSettings.mesh.group);
                         selectObjectOutlineRenderPass.setBindGroup(2, app.scene.runtimeData.graphicMeshData.renderGroup);
-                        selectObjectOutlineRenderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, object.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshBlockByteLength, object.meshesNum * app.scene.runtimeData.graphicMeshData.meshBlockByteLength);
+                        selectObjectOutlineRenderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, object.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshes.structByteSize, object.meshesNum * app.scene.runtimeData.graphicMeshData.meshes.structByteSize);
                         selectObjectOutlineRenderPass.setPipeline(selectObjectOutlinePipeline);
                         selectObjectOutlineRenderPass.draw(object.meshesNum * 3, 1, 0, 0);
                     } else if (object.type == "アーマチュア") {
@@ -593,7 +593,7 @@ export class Renderer {
                 maskRenderPass.setBindGroup(1, app.scene.runtimeData.graphicMeshData.renderGroup);
                 for (const graphicMesh of maskTexture.renderingObjects) {
                     maskRenderPass.setBindGroup(2, graphicMesh.objectDataGroup);
-                    maskRenderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, graphicMesh.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshBlockByteLength, graphicMesh.meshesNum * app.scene.runtimeData.graphicMeshData.meshBlockByteLength);
+                    maskRenderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, graphicMesh.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshes.structByteSize, graphicMesh.meshesNum * app.scene.runtimeData.graphicMeshData.meshes.structByteSize);
                     maskRenderPass.draw(graphicMesh.meshesNum * 3, 1, 0, 0);
                 }
                 // 処理の終了と送信
@@ -630,7 +630,7 @@ export class Renderer {
                 if (graphicMesh.mode == "オブジェクト" && graphicMesh.visible) {
                     renderPass.setBindGroup(2, graphicMesh.renderGroup);
                     renderPass.setBindGroup(3, alphaBuffers["1"]);
-                    renderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, graphicMesh.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshBlockByteLength, graphicMesh.meshesNum * app.scene.runtimeData.graphicMeshData.meshBlockByteLength);
+                    renderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, graphicMesh.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshes.structByteSize, graphicMesh.meshesNum * app.scene.runtimeData.graphicMeshData.meshes.structByteSize);
                     renderPass.draw(graphicMesh.meshesNum * 3, 1, 0, 0);
                 } else if (graphicMesh.mode == "メッシュ編集") {
                     const bm = app.scene.editData.getEditObjectByObject(graphicMesh);

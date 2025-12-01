@@ -8,7 +8,6 @@ export class Context {
         this.app = app;
         this.currentMode = "オブジェクト";
         this.activeObject = null; // 注目されているオブジェクト
-        this.activeBlendShapePoint = null;
     }
 
     // 選択されているオブジェクト
