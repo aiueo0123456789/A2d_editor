@@ -3,12 +3,12 @@ import { CustomTag } from "./customTag.js";
 import { createTag, useEffect } from "../ui/util.js";
 
 export class DualListboxTag extends CustomTag {
-    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,child,flag) {
         super();
         /** @type {Array} */
-        const availableItems = Array.isArray(child.available) ? child.available : creatorForUI.getParameter(searchTarget, child.available);
+        const availableItems = Array.isArray(child.available) ? child.available : jTag.getParameter(searchTarget, child.available);
         /** @type {Array} */
-        const selectedItems = Array.isArray(child.selected) ? child.selected : creatorForUI.getParameter(searchTarget, child.selected);
+        const selectedItems = Array.isArray(child.selected) ? child.selected : jTag.getParameter(searchTarget, child.selected);
         this.element = createTag(t, "div", {style: "width: 100%; minHeight: fit-content; display: grid; gridTemplateColumns: 1fr 2px 1fr;"});
         /** @type {HTMLElement} */
         this.availableList = createTag(this.element, "div", {style: "width: 100%; minHeight: 100px; height: fit-content; backgroundColor: var(--inputColor);"});
@@ -32,7 +32,7 @@ export class DualListboxTag extends CustomTag {
                 if (tags.has(item)) { // すでにあるか
                     JTag.tagAppendChildren(li, tags.get(item));
                 } else {
-                    tags.set(item, creatorForUI.createFromChildren(li, this, child.liStruct, {normal: item, special: {}}, flag));
+                    tags.set(item, jTag.createFromChildren(li, this, child.liStruct, {normal: item, special: {}}, flag));
                 }
             }
             for (const item of availableItems) {
@@ -46,7 +46,7 @@ export class DualListboxTag extends CustomTag {
                     if (tags.has(item)) { // すでにあるか
                         JTag.tagAppendChildren(li, tags.get(item));
                     } else {
-                        tags.set(item, creatorForUI.createFromChildren(li, this, child.liStruct,  {normal: item, special: {}}, flag));
+                        tags.set(item, jTag.createFromChildren(li, this, child.liStruct,  {normal: item, special: {}}, flag));
                     }
                 }
             }

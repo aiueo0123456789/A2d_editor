@@ -20,7 +20,7 @@ function isFilterIncluded(object, filter = "all") {
 }
 
 export class OutlinerTag extends CustomTag {
-    constructor(creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,searchTarget,child,flag) {
         super();
         const options = child.options;
         const isSourceFunction = isFunction(child.withObject);
@@ -49,11 +49,11 @@ export class OutlinerTag extends CustomTag {
 
         let result = {active: null, selects: []};
         if (options.selectSource) {
-            result.selects = creatorForUI.getParameter(searchTarget, options.selectSource.object);
+            result.selects = jTag.getParameter(searchTarget, options.selectSource.object);
         }
         let activeSource = null;
         if (options.activeSource) {
-            activeSource = {object: creatorForUI.getParameter(searchTarget, options.activeSource.object), parameter: options.activeSource.parameter};
+            activeSource = {object: jTag.getParameter(searchTarget, options.activeSource.object), parameter: options.activeSource.parameter};
         } else {
             activeSource = {object: result, parameter: "active"};
         }
@@ -65,7 +65,7 @@ export class OutlinerTag extends CustomTag {
         /** @type {HTMLElement} */
         this.scrollable = createTag(this.scrollableContainer, "div", {class: "scrollable"});
         const array = [];
-        let rootObject = isSourceFunction ? source() : creatorForUI.getParameter(searchTarget, source);
+        let rootObject = isSourceFunction ? source() : jTag.getParameter(searchTarget, source);
         let lastScroll = 0;
         const getAllObject = () => {
             const getLoopChildren = (children, resultObject = []) => {
@@ -78,7 +78,7 @@ export class OutlinerTag extends CustomTag {
                         const targetType = child[loopTarget.parameter];
                         const loopTargets = loopTarget.loopTargets[targetType] ? loopTarget.loopTargets[targetType] : loopTarget.loopTargets["others"] ? loopTarget.loopTargets["others"] : [];
                         for (const l of loopTargets) {
-                            const nextChildren = creatorForUI.getParameter({normal: child, special: {}}, l);
+                            const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                             if (nextChildren) { // 子要素がある場合ループする
                                 const fnResult = getLoopChildren(nextChildren, resultObject);
                                 if (fnResult.filter) {
@@ -88,7 +88,7 @@ export class OutlinerTag extends CustomTag {
                         }
                     } else {
                         for (const l of loopTarget) {
-                            const nextChildren = creatorForUI.getParameter({normal: child, special: {}}, l);
+                            const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                             if (nextChildren) { // 子要素がある場合ループする
                                 const fnResult = getLoopChildren(nextChildren, resultObject);
                                 if (fnResult.filter) {
@@ -114,7 +114,7 @@ export class OutlinerTag extends CustomTag {
             return getLoopChildren(rootObject).result;
         }
         const outlinerUpdate = () => {
-            rootObject = isSourceFunction ? source() : creatorForUI.getParameter(searchTarget, source);
+            rootObject = isSourceFunction ? source() : jTag.getParameter(searchTarget, source);
             array.length = 0;
             const allObject = getAllObject();
             // 削除があった場合対応するDOMを削除
@@ -173,7 +173,7 @@ export class OutlinerTag extends CustomTag {
                     /** @type {HTMLElement} */
                     const myContainer = createTag(upContainer, "div");
                     const childrenContainer = createTag(container, "div", {style: "marginLeft: 10px; height: fit-content;"});
-                    const children = creatorForUI.createFromChildren(myContainer, this, structures, {normal: object, special: {}}, flag);
+                    const children = jTag.createFromChildren(myContainer, this, structures, {normal: object, special: {}}, flag);
                     visibleCheck.checkbox.addEventListener("change", () => {
                         childrenContainer.classList.toggle("hidden");
                     })
@@ -186,7 +186,7 @@ export class OutlinerTag extends CustomTag {
                 const fn0 = (child) => {
                     if (allObject.includes(child)) {
                         try {
-                            // const managerObject = managerForDOMs.get({o: child, g: creatorForUI.groupID, i: outlinerID})[0].others;
+                            // const managerObject = managerForDOMs.get({o: child, g: jTag.groupID, i: outlinerID})[0].others;
                             /** @type {HTMLElement} */
                             const container = this.objectDomMap.get(child);
                             targetDOM.append(container);
@@ -194,14 +194,14 @@ export class OutlinerTag extends CustomTag {
                                 const targetType = child[loopTarget.parameter];
                                 const loopTargets = loopTarget.loopTargets[targetType] ? loopTarget.loopTargets[targetType] : loopTarget.loopTargets["others"];
                                 for (const l of loopTargets) {
-                                    const nextChildren = creatorForUI.getParameter({normal: child, special: {}}, l);
+                                    const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                                     if (nextChildren) { // 子要素がある場合ループする
                                         looper(nextChildren, container.children[1]);
                                     }
                                 }
                             } else {
                                 for (const l of loopTarget) {
-                                    const nextChildren = creatorForUI.getParameter({normal: child, special: {}}, l);
+                                    const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                                     if (nextChildren) { // 子要素がある場合ループする
                                         looper(nextChildren, container.children[1]);
                                     }
@@ -226,7 +226,7 @@ export class OutlinerTag extends CustomTag {
         // 選択表示の更新
         const listActive = (o, gID, t) => {
             // console.log("ヒエラルキーアクティブ")
-            // const createdTags = managerForDOMs.get({g: creatorForUI.groupID, i: outlinerID}); // すでに作っている場合
+            // const createdTags = managerForDOMs.get({g: jTag.groupID, i: outlinerID}); // すでに作っている場合
             // createdTags.forEach((data, object) => {
             //     const bool_ = activeSource.object[activeSource.parameter] == object;
             //     if (bool_) {
@@ -242,14 +242,14 @@ export class OutlinerTag extends CustomTag {
             //     }
             // })
         }
-        useEffect.set({o: activeSource.object, g: creatorForUI.groupID, i: activeSource.parameter, f: flag}, listActive);
-        useEffect.set({o: result.selects, g: creatorForUI.groupID, f: flag}, listActive);
+        useEffect.set({o: activeSource.object, g: jTag.groupID, i: activeSource.parameter, f: flag}, listActive);
+        useEffect.set({o: result.selects, g: jTag.groupID, f: flag}, listActive);
         console.log("ヒエラルキー更新対象", child.updateEventTarget)
         const setUpdateEventTarget = (updateEventTarget) => {
             if (updateEventTarget.path) {
-                creatorForUI.setUpdateEventByPath(searchTarget, updateEventTarget.path, outlinerUpdate, flag);
+                jTag.setUpdateEventByPath(searchTarget, updateEventTarget.path, outlinerUpdate, flag);
             } else { // 文字列に対応
-                useEffect.set({o: updateEventTarget, g: creatorForUI.groupID, f: flag}, outlinerUpdate);
+                useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag}, outlinerUpdate);
             }
         }
         if (child.updateEventTarget) {
@@ -262,7 +262,7 @@ export class OutlinerTag extends CustomTag {
             }
         } else {
             if (!isSourceFunction) {
-                useEffect.set({o: creatorForUI.getParameter(searchTarget, source), g: creatorForUI.groupID, f: flag}, outlinerUpdate);
+                useEffect.set({o: jTag.getParameter(searchTarget, source), g: jTag.groupID, f: flag}, outlinerUpdate);
             }
         }
         outlinerUpdate();

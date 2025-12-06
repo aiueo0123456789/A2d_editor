@@ -3,10 +3,10 @@ import { isFunction } from "../utility.js";
 import { JTag } from "./JTag.js";
 import { CustomTag } from "./customTag.js";
 import { ResizerForDOM } from "../ui/resizer.js";
-import { createButton, createMinButton, createTag, deepCopy, useEffect } from "../ui/util.js";
+import { createButton, createMinButton, createTag, useEffect } from "../ui/util.js";
 
 export class ListTag extends CustomTag {
-    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,data,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,data,flag) {
         super(false);
         this.element;
         this.selected = [];
@@ -70,7 +70,7 @@ export class ListTag extends CustomTag {
 
         let lastItems = [];
         let tags = new Map();
-        let items = creatorForUI.getParameter(searchTarget, data.src);
+        let items = jTag.getParameter(searchTarget, data.src);
         this.children = [];
         const isPrimitive = data.isPrimitive;
         const listUpdate = () => {
@@ -133,14 +133,14 @@ export class ListTag extends CustomTag {
                 let child = [];
                 if (isPrimitive) {
                     if (!lastItems.includes(item)) { // 新規追加
-                        child = creatorForUI.createFromChildren(li, this, data.liStruct, {normal: items, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
+                        child = jTag.createFromChildren(li, this, data.liStruct, {normal: items, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
                         tags.set(index, child);
                     } else {
                         JTag.tagAppendChildren(li, tags.get(index));
                     }
                 } else {
                     if (!lastItems.includes(item)) { // 新規追加
-                        child = creatorForUI.createFromChildren(li, this, data.liStruct, {normal: item, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
+                        child = jTag.createFromChildren(li, this, data.liStruct, {normal: item, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
                         tags.set(item, child);
                     } else {
                         JTag.tagAppendChildren(li, tags.get(item));
@@ -150,7 +150,7 @@ export class ListTag extends CustomTag {
             });
             lastItems = [...items];
         }
-        this.dataBlocks = [useEffect.set({o: items, g: creatorForUI.groupID}, listUpdate)];
+        this.dataBlocks = [useEffect.set({o: items, g: jTag.groupID}, listUpdate)];
         listUpdate();
     }
 }

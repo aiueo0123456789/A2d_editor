@@ -14,7 +14,7 @@ export class SpacesStructure {
 
     init() {
         const app = this.workSpaces.app;
-        const workSpacesDiv = app.ui.creatorForUI.getDOMFromID("workSpaces");
+        const workSpacesDiv = app.ui.jTag.getDOMFromID("workSpaces");
         const looper = (data, t) => {
             if (data.type == "grid") {
                 const grid = createGrid(t, data.axis, data.ratio);
@@ -25,7 +25,7 @@ export class SpacesStructure {
                 this.areas.push(app.ui.setAreaType(t,data.areaType));
             }
         }
-        this.spaceContainer = looper(this.struct, app.ui.creatorForUI.getDOMFromID("main"));
+        this.spaceContainer = looper(this.struct, app.ui.jTag.getDOMFromID("main"));
         this.spaceContainer.container.classList.add("hidden");
         const header = createTag(workSpacesDiv, "div", {textContent: this.spaceName});
         header.addEventListener("click", () => {

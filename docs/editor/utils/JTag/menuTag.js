@@ -15,7 +15,7 @@ export class MenuTag extends CustomTag {
         this.element.classList.add("custom-menu");
         this.element.addEventListener("click", (e) => {
             const rect = this.element.getBoundingClientRect();
-            const menuItemsContainer = app.ui.creatorForUI.getDOMFromID("custom-menu-items");
+            const menuItemsContainer = app.ui.jTag.getDOMFromID("custom-menu-items");
             function removeFn() {
                 menuItemsContainer.replaceChildren();
                 menuItemsContainer.classList.add("hidden");

@@ -130,14 +130,14 @@ export class Area_Timeline2 {
             }
         };
 
-        this.creatorForUI = area.creatorForUI;
-        this.creatorForUI.create(area.main, this.struct, {padding: false});
+        this.jTag = area.jTag;
+        this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.toolPanelOperator = new ToolPanelOperator(this.creatorForUI.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInTimeline, "s": KeyframeResize, "x": KeyDelete});
+        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInTimeline, "s": KeyframeResize, "x": KeyDelete});
 
         /** @type {OutlinerTag} */
-        this.overview = this.creatorForUI.getDOMFromID("overview");
-        this.canvas = this.creatorForUI.getDOMFromID("timelineCanvasForGrid");
+        this.overview = this.jTag.getDOMFromID("overview");
+        this.canvas = this.jTag.getDOMFromID("timelineCanvasForGrid");
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.context = this.canvas.getContext("2d");//2次元描画
 
@@ -258,7 +258,7 @@ export class Area_Timeline2 {
     // キーフレームブロックの表示高さ
     getKeyFrameBlockDisplayTop(keyframeBlockPathID) {
         const overviewBoundingbox = this.overview.scrollableContainer.getBoundingClientRect();
-        const tag = this.creatorForUI.getDOMFromID(keyframeBlockPathID);
+        const tag = this.jTag.getDOMFromID(keyframeBlockPathID);
         const boundingbox = tag.element.getBoundingClientRect();
         return (boundingbox.top + boundingbox.height - overviewBoundingbox.top + 7.5) * this.pixelDensity;
     }

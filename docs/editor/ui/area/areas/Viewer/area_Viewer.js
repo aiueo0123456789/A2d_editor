@@ -122,7 +122,7 @@ class SpaceData {
 export class Area_Viewer {
     constructor(area) {
         this.pixelDensity = 4;
-        this.creatorForUI = area.creatorForUI;
+        this.jTag = area.jTag;
 
         this.spaceData = new SpaceData();
         /** @type {ViewerSpaceData} */
@@ -227,12 +227,12 @@ export class Area_Viewer {
             ]
         }
 
-        this.creatorForUI.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.sideBarOperator = new ToolsBarOperator(this.creatorForUI.getDOMFromID("canvasContainer").element, {});
-        this.toolPanelOperator = new ToolPanelOperator(this.creatorForUI.getDOMFromID("canvasContainer").element, {});
+        this.sideBarOperator = new ToolsBarOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
+        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
 
-        this.canvas = this.creatorForUI.getDOMFromID("renderingCanvas");
+        this.canvas = this.jTag.getDOMFromID("renderingCanvas");
         this.canvasRect = this.canvas.getBoundingClientRect();
 
         this.camera = new Camera();
@@ -281,18 +281,13 @@ export class Area_Viewer {
                     if (context.currentMode == "オブジェクト") {
                         if (inputManager.consumeKeys(["a"])) {
                             context.setModeForSelected("メッシュシェイプキー編集");
-                            // this.modalOperator.changeModals({"g": TranslateModal, "r": RotateModal, "s": ResizeModal});
                         } else if (inputManager.consumeKeys(["w"])) {
                             context.setModeForSelected("メッシュウェイト編集");
-                            // this.modalOperator.changeModals({"e": ExtrudeMove,"x": DeleteTool});
                         } else {
                             context.setModeForSelected("メッシュ編集");
-                            // this.modalOperator.changeModals({"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "p": ParentPickModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateEdgeTool});
-                            // this.modalOperator.changeModals({"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "p": ParentPickModal, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateEdgeTool});
                         }
                     } else {
                         context.setModeForSelected("オブジェクト");
-                        // this.modalOperator.changeModals({"p": ParentPickModal});
                     }
                 } else if (inputManager.consumeKeys(["f"])) {
                     for (const object of app.context.selectedObjects) {
@@ -322,7 +317,6 @@ export class Area_Viewer {
                             this.toolPanelOperator.changePanels({});
                         } else {
                             context.setModeForSelected("ベジェ編集");
-                            // this.modalOperator.changeModals({"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "v": AppendPoint});
                         }
                     } else {
                         context.setModeForSelected("オブジェクト");
@@ -405,6 +399,57 @@ export class Area_Viewer {
         return result;
     }
 
+    getEdgesRayCast(point) {
+        const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey);
+        let minDis = Infinity;
+        let selectIndexs = [];
+        let selectBoneIncludesObjectIDs = [];
+        editObjects.forEach(editObject => {
+            const objectID = editObject.id;
+            let verticesCoordinates;
+            if (editObject instanceof BMeshShapeKey) verticesCoordinates = editObject.activeShapeKey.data.map(vertex => vertex.co);
+            else verticesCoordinates = editObject.vertices.map(vertex => vertex.co);
+            if (editObject instanceof BArmature) {
+                for (const boneVertices of chunk(verticesCoordinates, 2)) {
+                    const lenght = MathVec2.distanceR(boneVertices[0], boneVertices[1]);
+                    for (const vertex of boneVertices) {
+                        const dist = MathVec2.distanceR(vertex, point);
+                        if (dist < lenght * 0.05) {
+                            if (dist <= minDis) {
+                                if (dist < minDis) { // ==じゃないなら配列の長さをリセット
+                                    selectIndexs.length = 0;
+                                    selectBoneIncludesObjectIDs.length = 0;
+                                }
+                                minDis = dist;
+                                selectIndexs.push(verticesCoordinates.indexOf(vertex));
+                                selectBoneIncludesObjectIDs.push(objectID);
+                            }
+                        }
+                    }
+                }
+            } else {
+                for (const vertex of verticesCoordinates) {
+                    const dist = MathVec2.distanceR(vertex, point);
+                    if (dist <= minDis) {
+                        if (dist < minDis) { // ==じゃないなら配列の長さをリセット
+                            selectIndexs.length = 0;
+                            selectBoneIncludesObjectIDs.length = 0;
+                        }
+                        minDis = dist;
+                        selectIndexs.push(verticesCoordinates.indexOf(vertex));
+                        selectBoneIncludesObjectIDs.push(objectID);
+                    }
+                }
+            }
+        })
+        const result = {};
+        if (selectBoneIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
+            let index = Math.floor(Math.random() * selectBoneIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
+            result[selectBoneIncludesObjectIDs[index]] = [selectIndexs[index]];
+        }
+        return result;
+    }
+
     async mousedown(/** @type {InputManager} */ inputManager) {
         const local = this.convertCoordinate.screenPosFromGPUPos(MathVec2.flipY(calculateLocalMousePosition(this.canvas, inputManager.position), this.canvas.offsetHeight)); // canvasないのlocal座標へ
         this.inputs.click = true;
@@ -421,14 +466,18 @@ export class Area_Viewer {
             context.setSelectedObject(frontObject, inputManager.keysDown["Shift"]);
             context.setActiveObject(frontObject);
         } else if (context.currentMode == "メッシュ編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            if (isEmpty(this.getVerticesRayCast(this.inputs.position))) {
+                app.operator.appendCommand(new SelectOnlyEdgeCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            } else {
+                app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            }
             app.operator.execute();
         } else if (context.currentMode == "ボーン編集") {
             // 頂点選択
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
-            console.log(this.getVerticesRayCast(this.inputs.position));
             if (isEmpty(this.getVerticesRayCast(this.inputs.position))) {
                 app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            } else {
+                app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             }
             app.operator.execute();
         } else if (context.currentMode == "ベジェ編集") {

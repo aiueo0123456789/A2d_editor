@@ -3,7 +3,7 @@ import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
 
 export class DblClickInput extends CustomTag {
-    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,child,flag) {
         super();
         this.element = createTag(t, "input");
         this.element.type = "text";
@@ -17,6 +17,6 @@ export class DblClickInput extends CustomTag {
         this.element.addEventListener('blur', () => {
             this.element.setAttribute('readonly', true);
         });
-        this.dataBlocks = [creatorForUI.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
+        this.dataBlocks = [jTag.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
     }
 }

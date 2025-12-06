@@ -9,8 +9,8 @@ export class UI {
     constructor(/** @type {Application} */ app) {
         this.app = app;
 
-        this.creatorForUI = new JTag();
-        this.creatorForUI.create(
+        this.jTag = new JTag();
+        this.jTag.create(
             app.dom,
             {
                 inputObject: {"app": app},
@@ -56,8 +56,8 @@ export class UI {
                 class: "all",
             }
         );
-        this.header = this.creatorForUI.getDOMFromID("headMenubar");
-        console.log(this.creatorForUI.getDOMFromID("custom-select-items"));
+        this.header = this.jTag.getDOMFromID("headMenubar");
+        console.log(this.jTag.getDOMFromID("custom-select-items"));
 
         this.loadingModals = {};
 
@@ -162,12 +162,12 @@ export class UI {
         // });
 
         // .anmまたは.jsonから読み込む
-        // this.creatorForUI.getDOMFromID("open-btn").addEventListener("change", (event) => {
+        // this.jTag.getDOMFromID("open-btn").addEventListener("change", (event) => {
         //     app.fileIO.loadFile(event.target.files[0], "open-btn");
         // });
 
         // wwから読み込む
-        // this.creatorForUI.getDOMFromID('ww-open-btn').addEventListener('change', (event) => {
+        // this.jTag.getDOMFromID('ww-open-btn').addEventListener('change', (event) => {
         //     const files = event.target.files;
         //     // 画像とJSONファイルを格納する配列
         //     const images = {};
@@ -236,7 +236,7 @@ export class UI {
 
     createLodingModal(processName) {
         /** @type {HTMLElement} */
-        const loadingModalsContainer = this.creatorForUI.getDOMFromID("loadingModalsContainer");
+        const loadingModalsContainer = this.jTag.getDOMFromID("loadingModalsContainer");
         loadingModalsContainer.classList.remove("hidden");
         const id = createID();
         const container = createTag(loadingModalsContainer, "div", {class: "loadingModalContainer"});
@@ -262,12 +262,12 @@ export class UI {
         delete this.loadingModals[id];
         if (Object.keys(this.loadingModals).length == 0) {
             /** @type {HTMLElement} */
-            const loadingModalsContainer = this.creatorForUI.getDOMFromID("loadingModalsContainer");
+            const loadingModalsContainer = this.jTag.getDOMFromID("loadingModalsContainer");
             loadingModalsContainer.classList.add("hidden");
         }
     }
 
-    createArea(axis, target = this.creatorForUI.getDOMFromID("main")) { // エリアの作成
+    createArea(axis, target = this.jTag.getDOMFromID("main")) { // エリアの作成
         const area = new AutoGrid(createID(), target, axis, 50);
         return area;
     }

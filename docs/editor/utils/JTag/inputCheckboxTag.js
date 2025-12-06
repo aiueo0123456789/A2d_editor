@@ -4,7 +4,7 @@ import { CustomTag } from "./customTag.js";
 const hadClass = {};
 
 export class InputCheckboxTag extends CustomTag {
-    constructor(creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,searchTarget,child,flag) {
         super();
         this.checkbox = document.createElement("input");
         this.checkbox.type = "checkbox";
@@ -30,7 +30,7 @@ export class InputCheckboxTag extends CustomTag {
         const icon = document.createElement("span");
         icon.classList.add(className)
         if (child.checked) {
-            this.dataBlocks = [creatorForUI.setWith(this.checkbox, child.checked, searchTarget, flag, child.useCommand, child.onChange)];
+            this.dataBlocks = [jTag.setWith(this.checkbox, child.checked, searchTarget, flag, child.useCommand, child.onChange)];
         }
         this.element.append(this.checkbox,icon);
         t.append(this.element);

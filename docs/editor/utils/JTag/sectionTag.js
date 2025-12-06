@@ -4,7 +4,7 @@ import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
 
 export class SectionTag extends CustomTag {
-    constructor(/** @type {JTag} */  creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */  jTag,t,parent,searchTarget,child,flag) {
         super();
         this.element = createTag(t, "div", {class: child?.options?.min ? "minSection" : "sectionOrPanel"});
         this.header = createTag(this.element, "div", {class: "sectionOrPanel-header"});
@@ -14,7 +14,7 @@ export class SectionTag extends CustomTag {
         if (IsString(child.name)) {
             this.sectionName.textContent = child.name;
         } else {
-            this.sectionName.textContent = creatorForUI.getParameter(searchTarget, child.name.path);
+            this.sectionName.textContent = jTag.getParameter(searchTarget, child.name.path);
         }
 
         this.mainContainer = createTag(this.element, "div", {class: "sectionOrPanel-mainContainer"});
@@ -44,7 +44,7 @@ export class SectionTag extends CustomTag {
         });
         this.children = [];
         if (child.children) {
-            this.children = creatorForUI.createFromChildren(this.main, this, child.children, searchTarget, flag);
+            this.children = jTag.createFromChildren(this.main, this, child.children, searchTarget, flag);
         }
     }
 }

@@ -3,7 +3,7 @@ import { CustomTag } from "./customTag.js";
 import { createRange, createTag } from "../ui/util.js";
 
 export class InputNumberTag extends CustomTag {
-    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,child,flag) {
         super();
         this.element;
         if (child?.custom?.visual == "range") {
@@ -21,16 +21,16 @@ export class InputNumberTag extends CustomTag {
             number.style.gridColumn = "2/3";
             number.style.borderTopLeftRadius = "0px";
             number.style.borderBottomLeftRadius = "0px";
-            this.dataBlocks = [creatorForUI.setWith(range, child.value, searchTarget, flag, child.useCommand, child.onChange), creatorForUI.setWith(number, child.value, searchTarget, flag, child.useCommand, child.onChange)];
+            this.dataBlocks = [jTag.setWith(range, child.value, searchTarget, flag, child.useCommand, child.onChange), jTag.setWith(number, child.value, searchTarget, flag, child.useCommand, child.onChange)];
         } else if (child?.custom?.visual == "rangeOnly") {
             /** @type {HTMLElement} */
             this.element = createRange(t, child);
-            this.dataBlocks = [creatorForUI.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
+            this.dataBlocks = [jTag.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
             console.log(child,this)
         } else {
             /** @type {HTMLElement} */
             this.element = createTag(t, "input", {type: "number"});
-            this.dataBlocks = [creatorForUI.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
+            this.dataBlocks = [jTag.setWith(this.element, child.value, searchTarget, flag, child.useCommand, child.onChange)];
             if (child.onChange) {
                 this.element.addEventListener("input", () => {
                     child.onChange();

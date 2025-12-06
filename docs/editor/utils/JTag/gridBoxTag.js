@@ -3,7 +3,7 @@ import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
 
 export class GridBoxTag extends CustomTag {
-    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,child,flag) {
         super();
         this.element = createTag(t, "div");
         this.element.style.display = "grid";
@@ -13,7 +13,7 @@ export class GridBoxTag extends CustomTag {
             this.element.style.gridTemplateColumns = child.allocation;
         }
         if (child.children) {
-            this.children = creatorForUI.createFromChildren(this.element, this, child.children, searchTarget, flag);
+            this.children = jTag.createFromChildren(this.element, this, child.children, searchTarget, flag);
         }
     }
 }

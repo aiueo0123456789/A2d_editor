@@ -36,220 +36,220 @@ function isFocus(t) {
 
 const tagCreater = {
     // 要素の作成
-    "box": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new BoxTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "box": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new BoxTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
     },
-    "codeEditor": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new CodeEditorTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "codeEditor": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new CodeEditorTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
     },
-    "text": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "text": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "p");
         setClass(element, "text");
         const update = () => {
-            element.textContent = creatorForUI.getParameter(searchTarget, child.withObject);
+            element.textContent = jTag.getParameter(searchTarget, child.withObject);
         }
         update();
-        creatorForUI.setUpdateEventByPath(searchTarget, child.withObject, update, flag);
+        jTag.setUpdateEventByPath(searchTarget, child.withObject, update, flag);
         return element;
     },
-    "heightCenter": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "heightCenter": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div");
         setClass(element, "heightCenter");
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "title": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "title": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", {textContent: child.text});
         return element;
     },
-    "div": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "div": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", child?.options);
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "input": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => { // 入力
+    "input": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => { // 入力
         let element;
         if (child.type == "text") {
-            element = new InputTextTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputTextTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
         } else if (child.type == "file") {
-            element = new InputFileTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputFileTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
         } else if (child.type == "color") {
-            element = new InputColorTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputColorTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
         } else if (child.type == "checkbox") {
-            element = new InputCheckboxTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputCheckboxTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
         } else { // 数字型
-            element = new InputNumberTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputNumberTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
         }
         if (child.custom && "collision" in child.custom && !child.custom.collision) {
             element.element.style.pointerEvents = "none";
         }
         return element;
     },
-    "button": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new ButtonTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "button": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new ButtonTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
     },
-    "buttons": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "buttons": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         createGroupButton(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
     },
-    "radios": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "radios": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         createRadios(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
     },
-    "checks": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "checks": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         const a = (child.withObjects).map((data, index) => {
             return {icon: "グループ", label: data.text};
         });
         let element = new ChecksTag(t, a);
         child.withObjects.forEach((data, index) => {
-            creatorForUI.setWith(element.checks[index], data.path, searchTarget);
+            jTag.setWith(element.checks[index], data.path, searchTarget);
         })
         return element;
     },
-    "select": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new SelectTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "select": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new SelectTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
     },
-    "menu": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "menu": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = new MenuTag(t, child.title, child.struct, child?.options);
         return element;
     },
-    "dblClickInput": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => { // ダブルクッリク入力
-        return new DblClickInput(creatorForUI,t,parent,searchTarget,child,flag);
+    "dblClickInput": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => { // ダブルクッリク入力
+        return new DblClickInput(jTag,t,parent,searchTarget,child,flag);
     },
-    "list": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new ListTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "list": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new ListTag(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag);
     },
-    "container": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "container": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "ul");
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "section": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new SectionTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "section": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new SectionTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "panel": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new PanelTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "panel": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new PanelTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "option": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "option": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", {class: "ui_options"});
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "icon": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "icon": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         const container = createTag(t, "div");
         container.classList.add("icon");
         const img = createTag(container, "img");
         let src = child.src;
         if (src.path) {
-            src = creatorForUI.getParameter(searchTarget, src.path);
+            src = jTag.getParameter(searchTarget, src.path);
         }
         img.src = app.ui.getImgURLFromImgName(src);
         return container;
     },
-    "flexBox": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "flexBox": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div");
         element.style.display = "flex";
         element.style.gap = child.interval;
         element.style.width = "fit-content";
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "grid": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "grid": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createGrid(t, child.axis);
-        creatorForUI.createFromChildren(element.child1, null, child.child1, searchTarget, flag);
-        creatorForUI.createFromChildren(element.child2, null, child.child2, searchTarget, flag);
+        jTag.createFromChildren(element.child1, null, child.child1, searchTarget, flag);
+        jTag.createFromChildren(element.child2, null, child.child2, searchTarget, flag);
         return element;
     },
-    "gridBox": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new GridBoxTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "gridBox": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new GridBoxTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "padding": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "padding": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div");
         element.style.width = child.size;
         return element;
     },
-    "separator": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "separator": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "span");
         element.classList.add("separator");
         element.style.width = child.size;
         return element;
     },
-    "outliner": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new OutlinerTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "outliner": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new OutlinerTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "scrollable": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "scrollable": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", {class: "scrollable"});
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "canvas": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new CanvasTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "canvas": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new CanvasTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "path": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new PathTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "path": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new PathTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "if": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        // console.log(searchTarget, child, creatorForUI.getParameter(searchTarget,child.formula.source))
+    "if": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        // console.log(searchTarget, child, jTag.getParameter(searchTarget,child.formula.source))
         let bool = false;
         if (child.formula.conditions == "==") {
-            bool = creatorForUI.getParameter(searchTarget,child.formula.source) == child.formula.value;
+            bool = jTag.getParameter(searchTarget,child.formula.source) == child.formula.value;
         } else if (child.formula.conditions == ">") {
-            bool = creatorForUI.getParameter(searchTarget,child.formula.source) > child.formula.value;
+            bool = jTag.getParameter(searchTarget,child.formula.source) > child.formula.value;
         } else if (child.formula.conditions == "<") {
-            bool = creatorForUI.getParameter(searchTarget,child.formula.source) < child.formula.value;
+            bool = jTag.getParameter(searchTarget,child.formula.source) < child.formula.value;
         } else if (child.formula.conditions == "in") {
-            bool = child.formula.value in creatorForUI.getParameter(searchTarget,child.formula.source);
+            bool = child.formula.value in jTag.getParameter(searchTarget,child.formula.source);
         }
         if (bool) {
             if (child.true) {
-                return creatorForUI.createFromChildren(t, null, child.true, searchTarget, flag);
+                return jTag.createFromChildren(t, null, child.true, searchTarget, flag);
             }
         } else {
             if (child.false) {
-                return creatorForUI.createFromChildren(t, null, child.false, searchTarget, flag);
+                return jTag.createFromChildren(t, null, child.false, searchTarget, flag);
             }
         }
     },
-    "hasKeyframeCheck": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new HasKeyframeCheck(creatorForUI,t,parent,searchTarget,child,flag);
+    "hasKeyframeCheck": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new HasKeyframeCheck(jTag,t,parent,searchTarget,child,flag);
     },
-    "nodeFromFunction": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        const functionResult = creatorForUI.getParameter(searchTarget, child.source)();
-        return creatorForUI.createFromChildren(t, null, functionResult, searchTarget, flag);
+    "nodeFromFunction": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        const functionResult = jTag.getParameter(searchTarget, child.source)();
+        return jTag.createFromChildren(t, null, functionResult, searchTarget, flag);
     },
-    "html": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "html": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
         const element = createTag(t, child.tag);
         if (child.children) {
-            creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
+            jTag.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "meter": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new MeterTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "meter": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new MeterTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "texture": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new TextureTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "texture": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new TextureTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "dualListbox": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new DualListboxTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "dualListbox": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new DualListboxTag(jTag,t,parent,searchTarget,child,flag);
     },
-    "color": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        if (t instanceof HTMLElement) t.style.backgroundColor = creatorForUI.getParameter(searchTarget, child.src);
-        else t.element.style.backgroundColor = creatorForUI.getParameter(searchTarget, child.src);
+    "color": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        if (t instanceof HTMLElement) t.style.backgroundColor = jTag.getParameter(searchTarget, child.src);
+        else t.element.style.backgroundColor = jTag.getParameter(searchTarget, child.src);
         return null;
     },
-    "parameterManager": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new ParameterManagerTag(creatorForUI,t,parent,searchTarget,child,flag);
+    "parameterManager": (/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) => {
+        return new ParameterManagerTag(jTag,t,parent,searchTarget,child,flag);
     },
 }
 

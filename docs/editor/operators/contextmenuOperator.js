@@ -8,7 +8,7 @@ export class ContextmenuOperator {
         this.app = app;
         this.creator = new JTag();
         /** @type {HTMLElement} */
-        this.dom = app.ui.creatorForUI.getDOMFromID("contextmenu");
+        this.dom = app.ui.jTag.getDOMFromID("contextmenu");
     }
 
     showContextmenu(position) {

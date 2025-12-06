@@ -42,10 +42,10 @@ function createUtil(t, name) {
 }
 
 export class CodeEditorTag extends CustomTag {
-    constructor (creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor (jTag,t,parent,searchTarget,child,flag) {
         super();
         const builtInFunction = [{name: "noise", return: "f32"}, {name: "arrayLength", return: "u32"}, {name: "vec2f", return: "f32"}, {name: "vec3f", return: "f32"}, {name: "vec4f", return: "f32"}, {name: "fract", return: "f32"}, {name: "floor", return: "f32"}, {name: "mix", return: "f32"}, {name: "abs", return: "f32"}, {name: "dot", return: "f32"}];
-        this.sourceCode = creatorForUI.getParameter(searchTarget, child.source, 1);
+        this.sourceCode = jTag.getParameter(searchTarget, child.source, 1);
         /** @type {HTMLElement} */
         this.container = createGrid(t, "c");
         // setStyle(this.container, "width: 100%; height: 100%; display: grid; gridTemplateColumns: auto 1fr; overflow: hidden; backgroundColor: rgb(52, 52, 52); fontSize: 100%;");
@@ -56,7 +56,7 @@ export class CodeEditorTag extends CustomTag {
         /** @type {HTMLElement} */
         this.valuesGroup = createGroup(this.utilBar, "values");
         /** @type {HTMLElement} */
-        const rightContainerGrid = new AutoGrid("codeTagRightContainer" + creatorForUI.groupID, this.container.child2, "r", "1fr");
+        const rightContainerGrid = new AutoGrid("codeTagRightContainer" + jTag.groupID, this.container.child2, "r", "1fr");
         // setStyle(this.rightContainer, "width: 100%; height: 100%; overflow: hidden;");
         /** @type {HTMLElement} */
         this.mainContainer = createTag(rightContainerGrid.child1, "div");
@@ -697,7 +697,7 @@ export class CodeEditorTag extends CustomTag {
         }
         viewUpdate();
         debuglogUpdate();
-        useEffect.set({o: this.sourceCode.object, i: this.sourceCode.parameter, g: creatorForUI.groupID, f: flag}, viewUpdate);
-        useEffect.set({o: this.sourceCode.object, i: "result", g: creatorForUI.groupID, f: flag}, debuglogUpdate);
+        useEffect.set({o: this.sourceCode.object, i: this.sourceCode.parameter, g: jTag.groupID, f: flag}, viewUpdate);
+        useEffect.set({o: this.sourceCode.object, i: "result", g: jTag.groupID, f: flag}, debuglogUpdate);
     }
 }

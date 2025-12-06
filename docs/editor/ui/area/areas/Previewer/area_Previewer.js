@@ -27,7 +27,7 @@ class SpaceData {
 export class Area_Previewer {
     constructor(area) {
         this.pixelDensity = 4;
-        this.creatorForUI = area.creatorForUI;
+        this.jTag = area.jTag;
 
         this.spaceData = new SpaceData();
         /** @type {PreviewerSpaceData} */
@@ -42,10 +42,10 @@ export class Area_Previewer {
             ]
         }
 
-        this.creatorForUI.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.box = this.creatorForUI.getDOMFromID("canvasContainer").element;
-        this.canvas = this.creatorForUI.getDOMFromID("renderingCanvas");
+        this.box = this.jTag.getDOMFromID("canvasContainer").element;
+        this.canvas = this.jTag.getDOMFromID("renderingCanvas");
         this.canvasRect = this.canvas.getBoundingClientRect();
 
         this.camera = app.scene.objects.renderingCamera;

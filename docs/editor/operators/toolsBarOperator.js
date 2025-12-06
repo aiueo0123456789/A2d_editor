@@ -5,7 +5,7 @@ export class ToolsBarOperator {
     constructor(/** @type {HTMLElement} */dom, shelfes) {
         this.shelfes = shelfes;
         this.id = createID();
-        this.creatorForUI = new JTag();
+        this.jTag = new JTag();
         /** @type {HTMLElement} */
         this.dom = createTag(dom, "div", {style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: grid; gridTemplateColumns: 1fr auto;"});
         /** @type {HTMLElement} */
@@ -25,20 +25,20 @@ export class ToolsBarOperator {
     update() {
         this.domForMain.replaceChildren();
         this.domForSideBar.replaceChildren();
-        this.creatorForUI.remove();
+        this.jTag.remove();
         for (const shelfeName in this.shelfes) {
             // 横
-            this.creatorForUI.createFromChildren(this.domForSideBar,null,[
+            this.jTag.createFromChildren(this.domForSideBar,null,[
                 {tagType: "div", children: [
                     {tagType: "div", options: {textContent: shelfeName}, style: "writingMode: vertical-rl;"},
                 ], class: "sideBar-toolTitle"}
             ], {});
             // パネル
             const panel = new this.shelfes[shelfeName];
-            if (!panel.creatorForUI) {
-                panel.creatorForUI = new JTag();
+            if (!panel.jTag) {
+                panel.jTag = new JTag();
             }
-            panel.creatorForUI.shelfeCreate(this.domForMain, panel.struct);
+            panel.jTag.shelfeCreate(this.domForMain, panel.struct);
         }
     }
 }

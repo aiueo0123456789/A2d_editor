@@ -111,6 +111,14 @@ export function hexToRgba(hex, alpha = 1) {
     return [ r, g, b, alpha ];
 }
 
+// rgbとaからrgba
+export function rgbToRgba(rgb, alpha) {
+    return rgb.replace(
+        /^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/,
+        `rgba($1, $2, $3, ${alpha})`
+    );
+}
+
 // rgbからカラーコード
 export function rgbToHex(r, g, b) {
     const clamp = (val) => Math.max(0, Math.min(255, val)); // 範囲制限
@@ -349,4 +357,8 @@ export function chunk(array, size) {
 
 export function isEmpty(obj) {
     return Object.keys(obj).length === 0;
+}
+
+export function deepCopy(object) {
+    return JSON.parse(JSON.stringify(object));
 }

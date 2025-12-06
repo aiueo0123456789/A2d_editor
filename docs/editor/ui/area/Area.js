@@ -12,7 +12,7 @@ export class Area {
         this.header = document.createElement("div");
         this.header.classList.add("header");
 
-        this.creatorForUI = new JTag();
+        this.jTag = new JTag();
         /** @type {HTMLElement} */
         const deleteButton = createTag(this.header, "span", {className: "square_btn"}); // バツボタン
         deleteButton.addEventListener("click", () => {
@@ -38,7 +38,7 @@ export class Area {
     }
 
     setType(type) {
-        this.creatorForUI.remove();
+        this.jTag.remove();
         // this.select.input.value = type; // タイトル
         this.type = type;
         this.title.textContent = type;

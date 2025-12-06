@@ -10,7 +10,7 @@ export class ToolPanelOperator {
         this.state = 0;
         this.panels = panels;
         this.nowPanel = null;
-        this.creatorForUI = new JTag();
+        this.jTag = new JTag();
     }
 
     changePanels(newPanels) {
@@ -22,7 +22,7 @@ export class ToolPanelOperator {
         this.nowPanel = null;
         if (this.dom) {
             console.log("削除")
-            this.creatorForUI.remove();
+            this.jTag.remove();
         }
     }
 
@@ -33,9 +33,9 @@ export class ToolPanelOperator {
         }
         this.nowPanel = new model(inputManager);
         if (this.dom) {
-            this.creatorForUI.remove();
+            this.jTag.remove();
             if (this.nowPanel.modal) {
-                this.creatorForUI.shelfeCreate(this.dom, this.nowPanel.modal);
+                this.jTag.shelfeCreate(this.dom, this.nowPanel.modal);
             }
         }
         if (isFunction(this.nowPanel.init)) {

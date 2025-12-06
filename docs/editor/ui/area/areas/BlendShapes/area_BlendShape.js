@@ -48,16 +48,16 @@ export class Area_BlendShape {
             ],
         };
 
-        this.creatorForUI = area.creatorForUI;
-        this.creatorForUI.create(area.main, this.struct);
+        this.jTag = area.jTag;
+        this.jTag.create(area.main, this.struct);
 
-        this.sideBarOperator = new ToolsBarOperator(this.creatorForUI.getDOMFromID("main").element, {});
+        this.sideBarOperator = new ToolsBarOperator(this.jTag.getDOMFromID("main").element, {});
         this.sideBarOperator.changeShelfes({"BlendShap": BlendShapePanel, "BlendShapePointPanel": BlendShapePointPanel});
-        this.toolPanelOperator = new ToolPanelOperator(this.creatorForUI.getDOMFromID("main").element, {});
+        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("main").element, {});
 
-        this.box = this.creatorForUI.getDOMFromID("canvasContainer").element;
+        this.box = this.jTag.getDOMFromID("canvasContainer").element;
         /** @type {HTMLCanvasElement} */
-        this.canvas = this.creatorForUI.getDOMFromID("renderingCanvas");
+        this.canvas = this.jTag.getDOMFromID("renderingCanvas");
         this.context = this.canvas.getContext("2d");
 
         this.isMouseContentAndMouseDown = false;

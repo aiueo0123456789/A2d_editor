@@ -8,7 +8,7 @@ function update(o,g,others) {
 }
 
 export class HasKeyframeCheck extends CustomTag {
-    constructor(creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,searchTarget,child,flag) {
         super();
         this.checkbox = document.createElement("input");
         this.checkbox.type = "checkbox";
@@ -19,18 +19,18 @@ export class HasKeyframeCheck extends CustomTag {
         this.span.classList.add("hasKeyframeCheck");
         this.element.append(this.checkbox,this.span);
 
-        this.targetKeyframeBlock = creatorForUI.getParameter(searchTarget, child.src);
+        this.targetKeyframeBlock = jTag.getParameter(searchTarget, child.src);
         this.checkbox.addEventListener("click", () => {
             if (this.targetKeyframeBlock.hasKeyFromFrame(app.scene.frame_current, 0.2)) {
             } else {
-                app.operator.appendCommand(new KeyframeInsertInKeyframeCommand(this.targetKeyframeBlock, app.scene.frame_current, creatorForUI.getParameter(searchTarget, child.value)));
+                app.operator.appendCommand(new KeyframeInsertInKeyframeCommand(this.targetKeyframeBlock, app.scene.frame_current, jTag.getParameter(searchTarget, child.value)));
                 app.operator.execute();
             }
         });
         update(null,null,{targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox});
         this.dataBlocks = [
-            useEffect.set({o: app.scene, i: "frame_current", f: flag, g: creatorForUI.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox}),
-            useEffect.set({o: this.targetKeyframeBlock, i: "keys", f: flag, g: creatorForUI.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox})
+            useEffect.set({o: app.scene, i: "frame_current", f: flag, g: jTag.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox}),
+            useEffect.set({o: this.targetKeyframeBlock, i: "keys", f: flag, g: jTag.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox})
         ];
         t.append(this.element);
     }

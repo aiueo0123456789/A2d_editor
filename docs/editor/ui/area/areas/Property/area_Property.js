@@ -79,7 +79,7 @@ export class Area_Property {
             ],
         };
 
-        this.creatorForUI = area.creatorForUI;
-        this.creatorForUI.create(area.main, this.struct);
+        this.jTag = area.jTag;
+        this.jTag.create(area.main, this.struct);
     }
 }

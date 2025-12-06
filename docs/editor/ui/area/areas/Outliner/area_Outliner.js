@@ -63,7 +63,7 @@ export class Area_Outliner {
             }
         };
 
-        this.creatorForUI = area.creatorForUI;
-        this.creatorForUI.create(area.main, this.struct);
+        this.jTag = area.jTag;
+        this.jTag.create(area.main, this.struct);
     }
 }

@@ -131,14 +131,14 @@ export class Area_Timeline {
             }
         };
 
-        this.creatorForUI = area.creatorForUI;
-        this.creatorForUI.create(area.main, this.struct, {padding: false});
+        this.jTag = area.jTag;
+        this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.toolPanelOperator = new ToolPanelOperator(this.creatorForUI.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
+        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
 
         /** @type {OutlinerTag} */
-        this.overview = this.creatorForUI.getDOMFromID("overview");
-        this.canvas = this.creatorForUI.getDOMFromID("timelineCanvasForGrid");
+        this.overview = this.jTag.getDOMFromID("overview");
+        this.canvas = this.jTag.getDOMFromID("timelineCanvasForGrid");
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.context = this.canvas.getContext("2d");//2次元描画
 

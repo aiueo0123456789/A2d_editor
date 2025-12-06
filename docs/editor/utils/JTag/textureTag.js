@@ -2,10 +2,10 @@ import { GPU } from "../webGPU.js";
 import { CustomTag } from "./customTag.js";
 
 export class TextureTag extends CustomTag {
-    constructor(creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,searchTarget,child,flag) {
         super();
         this.canvas = document.createElement("canvas");
-        this.texture = creatorForUI.getParameter(searchTarget, child.sourceTexture);
+        this.texture = jTag.getParameter(searchTarget, child.sourceTexture);
         this.canvas.style.width = "100%";
         this.canvas.style.height = "100%";
         this.canvas.style.objectFit = "contain";
