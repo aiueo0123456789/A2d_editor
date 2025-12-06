@@ -1,7 +1,7 @@
 import { KeyframeResizeCommand } from "../../commands/animation/keyframeTransform.js";
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/inputManager/inputManager.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 
 export class KeyframeResize {
     constructor(/** @type {InputManager} */inputManager) {
@@ -28,10 +28,10 @@ export class KeyframeResize {
         const update = () => {
             this.command.update([this.values[0],this.values[1]], "ローカル", this.values[2], this.values[3]);
         }
-        managerForDOMs.set({o: this.values, g: "_", i: "0"}, update, null);
-        managerForDOMs.set({o: this.values, g: "_", i: "1"}, update, null);
-        managerForDOMs.set({o: this.values, g: "_", i: "2"}, update, null);
-        managerForDOMs.set({o: this.values, g: "_", i: "3"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "0"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "1"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "2"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "3"}, update, null);
     }
 
     async init() {
@@ -49,6 +49,6 @@ export class KeyframeResize {
     mousemove(/** @type {InputManager} */inputManager) {
         this.values[0] += inputManager.movement[0];
         this.values[1] += inputManager.movement[1];
-        managerForDOMs.update({o: this.values});
+        useEffect.update({o: this.values});
     }
 }

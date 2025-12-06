@@ -21,7 +21,7 @@ import { CreateMeshTool } from '../../../tools/CreateMesh.js';
 import { Particle } from '../../../../core/objects/particle.js';
 import { app } from '../../../../../main.js';
 import { SelectOnlyVertexCommand } from '../../../../commands/utile/selectVertices.js';
-import { managerForDOMs } from '../../../../utils/ui/util.js';
+import { useEffect } from '../../../../utils/ui/util.js';
 import { BBezier } from '../../../../core/edit/objects/BBezier.js';
 import { SelectOnlyBoneCommand } from '../../../../commands/utile/selectBones.js';
 import { KeyframeInsertModal } from '../../../tools/keyframeInsert.js';
@@ -258,7 +258,7 @@ export class Area_Viewer {
             this.toolPanelOperator.changePanels(useingToolPanelInMode[app.context.currentMode]);
             this.sideBarOperator.changeShelfes(useingSideBarPanelInMode[app.context.currentMode]);
         }
-        managerForDOMs.set({o: app.context, i: "currentMode"}, modeChangeEvent)
+        useEffect.set({o: app.context, i: "currentMode"}, modeChangeEvent)
         modeChangeEvent();
     }
 

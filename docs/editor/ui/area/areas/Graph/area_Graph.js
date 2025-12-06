@@ -4,7 +4,7 @@ import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyfram
 import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
-import { createID, managerForDOMs } from "../../../../utils/ui/util.js";
+import { createID, useEffect } from "../../../../utils/ui/util.js";
 import { calculateLocalMousePosition, changeParameter, errorCut, isPointInEllipse } from "../../../../utils/utility.js";
 import { KeyDelete } from "../../../tools/KeyDelete.js";
 import { KeyframeResize } from "../../../tools/KeyframeResize.js";
@@ -386,13 +386,13 @@ export class Area_Timeline {
 
         if (this.frameBarDrag) {
             app.scene.frame_current += this.inputs.movement[0];
-            managerForDOMs.update({o: "タイムライン-canvas", g: this.groupID});
+            useEffect.update({o: "タイムライン-canvas", g: this.groupID});
             document.body.style.cursor = "col-resize";
             return ;
         }
 
         let consumed = await this.toolPanelOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        managerForDOMs.update({o: "タイムライン-canvas", g: this.groupID});
+        useEffect.update({o: "タイムライン-canvas", g: this.groupID});
         if (consumed) return ;
     }
     mouseup(inputManager) {
@@ -412,6 +412,6 @@ export class Area_Timeline {
             this.camera[0] += inputManager.wheelDelta[0] / this.zoom[0];
             this.camera[1] -= inputManager.wheelDelta[1] / this.zoom[1];
         }
-        managerForDOMs.update({o: "タイムライン-canvas", g: this.groupID});
+        useEffect.update({o: "タイムライン-canvas", g: this.groupID});
     }
 }

@@ -1,9 +1,9 @@
-import { CreatorForUI } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createRange, createTag } from "../util.js";
+import { JTag } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createRange, createTag } from "../ui/util.js";
 
 export class InputNumberTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         this.element;
         if (child?.custom?.visual == "range") {

@@ -1,12 +1,12 @@
-import { app } from "../../../../main.js";
-import { isFunction } from "../../utility.js";
-import { CreatorForUI } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { ResizerForDOM } from "../resizer.js";
-import { createButton, createMinButton, createTag, deepCopy, managerForDOMs } from "../util.js";
+import { app } from "../../../main.js";
+import { isFunction } from "../utility.js";
+import { JTag } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { ResizerForDOM } from "../ui/resizer.js";
+import { createButton, createMinButton, createTag, deepCopy, useEffect } from "../ui/util.js";
 
 export class ListTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */creatorForUI,t,parent,searchTarget,data,flag) {
+    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,data,flag) {
         super(false);
         this.element;
         this.selected = [];
@@ -83,7 +83,7 @@ export class ListTag extends CustomTag {
                     }
                     tags.delete(lastItem);
                 } else {
-                    // CreatorForUI.tagAppendChildren(dummy, [tags.get(lastItem)]);
+                    // JTag.tagAppendChildren(dummy, [tags.get(lastItem)]);
                 }
             }
             items.forEach((item, index) => {
@@ -136,21 +136,21 @@ export class ListTag extends CustomTag {
                         child = creatorForUI.createFromChildren(li, this, data.liStruct, {normal: items, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
                         tags.set(index, child);
                     } else {
-                        CreatorForUI.tagAppendChildren(li, tags.get(index));
+                        JTag.tagAppendChildren(li, tags.get(index));
                     }
                 } else {
                     if (!lastItems.includes(item)) { // 新規追加
                         child = creatorForUI.createFromChildren(li, this, data.liStruct, {normal: item, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
                         tags.set(item, child);
                     } else {
-                        CreatorForUI.tagAppendChildren(li, tags.get(item));
+                        JTag.tagAppendChildren(li, tags.get(item));
                     }
                 }
                 this.children.push(...child);
             });
             lastItems = [...items];
         }
-        this.dataBlocks = [managerForDOMs.set({o: items, g: creatorForUI.groupID}, listUpdate)];
+        this.dataBlocks = [useEffect.set({o: items, g: creatorForUI.groupID}, listUpdate)];
         listUpdate();
     }
 }

@@ -1,11 +1,11 @@
-import { createID, createTag, managerForDOMs, setClass } from "../utils/ui/util.js";
-import { CreatorForUI } from "../utils/ui/creatorForUI.js";
+import { createID, createTag, useEffect, setClass } from "../utils/ui/util.js";
+import { JTag } from "../utils/JTag/JTag.js";
 
 export class ToolsBarOperator {
     constructor(/** @type {HTMLElement} */dom, shelfes) {
         this.shelfes = shelfes;
         this.id = createID();
-        this.creatorForUI = new CreatorForUI();
+        this.creatorForUI = new JTag();
         /** @type {HTMLElement} */
         this.dom = createTag(dom, "div", {style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: grid; gridTemplateColumns: 1fr auto;"});
         /** @type {HTMLElement} */
@@ -36,7 +36,7 @@ export class ToolsBarOperator {
             // パネル
             const panel = new this.shelfes[shelfeName];
             if (!panel.creatorForUI) {
-                panel.creatorForUI = new CreatorForUI();
+                panel.creatorForUI = new JTag();
             }
             panel.creatorForUI.shelfeCreate(this.domForMain, panel.struct);
         }

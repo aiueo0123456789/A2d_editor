@@ -1,4 +1,4 @@
-import { CustomTag } from "../customTag.js";
+import { CustomTag } from "./customTag.js";
 
 export class CanvasTag extends CustomTag {
     constructor(creatorForUI,t,parent,searchTarget,child,flag) {

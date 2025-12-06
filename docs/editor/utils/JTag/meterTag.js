@@ -1,5 +1,5 @@
-import { CustomTag } from "../customTag.js";
-import { createTag, managerForDOMs, removeHTMLElementInObject } from "../util.js";
+import { CustomTag } from "./customTag.js";
+import { createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
 
 export class MeterTag extends CustomTag {
     constructor(creatorForUI,t,parent,searchTarget,child,flag) {

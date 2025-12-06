@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { createID, managerForDOMs } from "../../utils/ui/util.js";
+import { createID, useEffect } from "../../utils/ui/util.js";
 import { changeParameter } from "../../utils/utility.js";
 import { device, GPU } from "../../utils/webGPU.js";
 
@@ -33,7 +33,7 @@ export class MaskTexture {
                 changeParameter(this, "texture", GPU.createTexture2D(app.scene.objects.renderingCamera.displayRange,"r8unorm"));
                 changeParameter(this, "view", this.texture.createView());
             }
-            managerForDOMs.set({o: app.scene.objects.renderingCamera, i: "displayRange"}, updateTextureSize);
+            useEffect.set({o: app.scene.objects.renderingCamera, i: "displayRange"}, updateTextureSize);
             updateTextureSize();
         }
     }

@@ -1,6 +1,3 @@
-import { indexOfSplice, isNumber, isPlainObject } from "../utility.js";
-import { managerForDOMs } from "./util.js";
-
 export class UpdateManager_DataBlock {
     constructor(object, groupID, id, flag, fn, others) {
         this.object = object;
@@ -67,7 +64,7 @@ function getFn(map, key) {
     }
 }
 
-export class updateManager {
+export class UseEffect {
     constructor() {
         this.objects = new Map();
         this.groups = new Map();

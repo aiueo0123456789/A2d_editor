@@ -1,6 +1,6 @@
 import { app } from "../../../../main.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
-import { createID, managerForDOMs } from "../../../utils/ui/util.js";
+import { createID, useEffect } from "../../../utils/ui/util.js";
 import { pushToArray, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { GraphicMesh } from "../../objects/graphicMesh.js";
@@ -159,6 +159,6 @@ export class BMeshShapeKey {
         })
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         graphicMeshData.update(this.object);
-        managerForDOMs.update({o: this.object.shapeKeyMetaDatas})
+        useEffect.update({o: this.object.shapeKeyMetaDatas})
     }
 }

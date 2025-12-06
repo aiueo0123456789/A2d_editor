@@ -1,9 +1,9 @@
-import { CreatorForUI } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createTag } from "../util.js";
+import { JTag } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createTag } from "../ui/util.js";
 
 export class GridBoxTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         this.element = createTag(t, "div");
         this.element.style.display = "grid";

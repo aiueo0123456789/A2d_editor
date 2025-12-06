@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { MathVec2 } from "../mathVec.js";
-import { createID, managerForDOMs } from "../ui/util.js";
+import { createID, useEffect } from "../ui/util.js";
 import { isFunction } from "../utility.js";
 
 export class UnfixedReference {
@@ -39,7 +39,7 @@ export class ObjectBase extends NameAndTypeAndID{
     }
 
     changeParent(parent) {
-        managerForDOMs.update({o: "親変更"});
+        useEffect.update({o: "親変更"});
         this.parent = parent;
         if (!(parent instanceof UnfixedReference)) {
             if (this.autoWeight) {
@@ -60,7 +60,7 @@ export class ObjectEditorBase {
 }
 
 export function sharedDestroy(object) {
-    managerForDOMs.delete({o: object});
+    useEffect.delete({o: object});
 }
 
 export class BoundingBox {

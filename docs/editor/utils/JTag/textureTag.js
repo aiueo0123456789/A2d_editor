@@ -1,6 +1,5 @@
-import { GPU } from "../../webGPU.js";
-import { CustomTag } from "../customTag.js";
-import { removeHTMLElementInObject } from "../util.js";
+import { GPU } from "../webGPU.js";
+import { CustomTag } from "./customTag.js";
 
 export class TextureTag extends CustomTag {
     constructor(creatorForUI,t,parent,searchTarget,child,flag) {

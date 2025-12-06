@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/inputManager/inputManager.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { BoneExtrudeMoveCommand } from "../../commands/bone/bone.js";
 
 export class ExtrudeMove {
@@ -24,7 +24,7 @@ export class ExtrudeMove {
             this.command.extrudeMove(this.values);
         }
 
-        managerForDOMs.set({o: this.values}, update)
+        useEffect.set({o: this.values}, update)
     }
 
     execute() {
@@ -49,7 +49,7 @@ export class ExtrudeMove {
             this.values[0] = this.sumMovement[0];
             this.values[1] = this.sumMovement[1];
         }
-        managerForDOMs.update({o: this.values});
+        useEffect.update({o: this.values});
         return true;
     }
 

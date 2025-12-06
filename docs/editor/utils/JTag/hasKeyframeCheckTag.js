@@ -1,7 +1,7 @@
-import { app } from "../../../../main.js";
-import { KeyframeInsertInKeyframeCommand } from "../../../commands/animation/keyframeInsert.js";
-import { CustomTag } from "../customTag.js";
-import { managerForDOMs } from "../util.js";
+import { app } from "../../../main.js";
+import { KeyframeInsertInKeyframeCommand } from "../../commands/animation/keyframeInsert.js";
+import { CustomTag } from "./customTag.js";
+import { useEffect } from "../ui/util.js";
 
 function update(o,g,others) {
     others.checkbox.checked = others.targetKeyframeBlock.hasKeyFromFrame(app.scene.frame_current, 0.2);
@@ -29,8 +29,8 @@ export class HasKeyframeCheck extends CustomTag {
         });
         update(null,null,{targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox});
         this.dataBlocks = [
-            managerForDOMs.set({o: app.scene, i: "frame_current", f: flag, g: creatorForUI.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox}),
-            managerForDOMs.set({o: this.targetKeyframeBlock, i: "keys", f: flag, g: creatorForUI.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox})
+            useEffect.set({o: app.scene, i: "frame_current", f: flag, g: creatorForUI.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox}),
+            useEffect.set({o: this.targetKeyframeBlock, i: "keys", f: flag, g: creatorForUI.groupID}, update, {targetKeyframeBlock: this.targetKeyframeBlock, checkbox: this.checkbox})
         ];
         t.append(this.element);
     }

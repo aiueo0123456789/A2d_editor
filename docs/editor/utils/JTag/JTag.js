@@ -1,84 +1,48 @@
-import { ChecksTag, CustomTag } from "./customTag.js";
-import { createGroupButton, createID, createRadios, createTag, managerForDOMs, setClass, setLabel, setStyle, updateRangeStyle } from "./util.js";
-import { changeParameter, hexToRgba, isFunction, isNumber, isPassByReference, isPlainObject, rgbToHex } from "../utility.js";
+import { CustomTag } from "./customTag.js";
+import { createGroupButton, createID, createRadios, createTag, useEffect, setClass, setStyle, updateRangeStyle } from "../ui/util.js";
+import { changeParameter, hexToRgba, isFunction, isNumber, isPassByReference, rgbToHex } from "../utility.js";
 import { app } from "../../../main.js";
-import { MenuTag } from "./customTags/menuTag.js";
-import { CodeEditorTag } from "./customTags/codeEditorTag.js";
-import { SelectTag } from "./customTags/selectTag.js";
+import { MenuTag } from "./menuTag.js";
+import { CodeEditorTag } from "./codeEditorTag.js";
+import { SelectTag } from "./selectTag.js";
 import { ChangeParameterCommand } from "../../commands/utile/utile.js";
-import { createGrid } from "./grid.js";
-import { OutlinerTag } from "./customTags/outlinerTag.js";
-import { InputCheckboxTag } from "./customTags/inputCheckboxTag.js";
-import { MeterTag } from "./customTags/meterTag.js";
-import { HasKeyframeCheck } from "./customTags/hasKeyframeCheckTag.js";
-import { TextureTag } from "./customTags/textureTag.js";
-import { PathTag } from "./customTags/pathTag.js";
-import { BoxTag } from "./customTags/boxTag.js";
-import { InputTextTag } from "./customTags/inputTextTag.js";
-import { InputColorTag } from "./customTags/inputColorTag.js";
-import { InputFileTag } from "./customTags/inputFileTag.js";
-import { InputNumberTag } from "./customTags/inputNumberTag.js";
-import { ButtonTag } from "./customTags/buttonTag.js";
-import { SectionTag } from "./customTags/sectionTag.js";
-import { LabelTag } from "./customTags/labelTag.js";
-import { GridBoxTag } from "./customTags/gridBoxTag.js";
-import { DblClickInput } from "./customTags/dblclickInput.js";
-import { PanelTag } from "./customTags/panelTag.js";
-import { ListTag } from "./customTags/listTag.js";
-import { CanvasTag } from "./customTags/canvasTag.js";
-import { DualListboxTag } from "./customTags/dualListbox.js";
-import { ParameterManagerTag } from "./customTags/parameterManagerTag.js";
+import { createGrid } from "../ui/grid.js";
+import { OutlinerTag } from "./outlinerTag.js";
+import { InputCheckboxTag } from "./inputCheckboxTag.js";
+import { MeterTag } from "./meterTag.js";
+import { HasKeyframeCheck } from "./hasKeyframeCheckTag.js";
+import { TextureTag } from "./textureTag.js";
+import { PathTag } from "./pathTag.js";
+import { BoxTag } from "./boxTag.js";
+import { InputTextTag } from "./inputTextTag.js";
+import { InputColorTag } from "./inputColorTag.js";
+import { InputFileTag } from "./inputFileTag.js";
+import { InputNumberTag } from "./inputNumberTag.js";
+import { ButtonTag } from "./buttonTag.js";
+import { SectionTag } from "./sectionTag.js";
+import { LabelTag } from "./labelTag.js";
+import { GridBoxTag } from "./gridBoxTag.js";
+import { DblClickInput } from "./dblclickInput.js";
+import { PanelTag } from "./panelTag.js";
+import { ListTag } from "./listTag.js";
+import { CanvasTag } from "./canvasTag.js";
+import { DualListboxTag } from "./dualListbox.js";
+import { ParameterManagerTag } from "./parameterManagerTag.js";
+import { ChecksTag } from "./checksTag.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
 }
 
-export function createSelect(t, list = []) {
-    console.log("セレクトの生成", t, list);
-    const container = createTag(t, "div");
-    const select = createTag(container, "input", {style: "display: none;"});
-    // const listContainer = createTag(container,"ul");
-    container.classList.add("custom-select");
-    const value = createTag(container, "p", {textContent: app.appConfig.language["noSelected"]});
-    const isOpen = createTag(container, "span", {class: "downArrow"});
-    container.addEventListener("click", (e) => {
-        const rect = container.getBoundingClientRect();
-        const listContainer = app.ui.creatorForUI.getDOMFromID("custom-select-items");
-        listContainer.style.left = `${rect.left}px`;
-        listContainer.style.top = `${rect.top + 15}px`;
-        listContainer.replaceChildren();
-        listContainer.classList.remove("hidden");
-        function removeFn() {
-            listContainer.replaceChildren();
-            listContainer.classList.add("hidden");
-            document.removeEventListener("click", removeFn); // ドキュメントからイベントリスナーを削除
-        }
-        for (const item of list) {
-            const option = createTag(listContainer, "li");
-            const inner = createTag(option, "p", {textContent: item});
-            option.addEventListener("click", () => {
-                select.value = item;
-                // change イベントを手動で発火させる
-                select.dispatchEvent(new Event("change", { bubbles: true }));
-                value.textContent = item;
-                removeFn();
-            })
-        }
-        document.addEventListener("click", removeFn); // セレクト以外がクリックされたら(ドキュメント)非表示
-        e.stopPropagation();
-    })
-    return select;
-}
-
-export const tagCreater = {
+const tagCreater = {
     // 要素の作成
-    "box": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new BoxTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "box": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+        return new BoxTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "codeEditor": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new CodeEditorTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "codeEditor": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+        return new CodeEditorTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "text": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "text": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "p");
         setClass(element, "text");
         const update = () => {
@@ -88,7 +52,7 @@ export const tagCreater = {
         creatorForUI.setUpdateEventByPath(searchTarget, child.withObject, update, flag);
         return element;
     },
-    "heightCenter": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "heightCenter": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div");
         setClass(element, "heightCenter");
         if (child.children) {
@@ -96,45 +60,45 @@ export const tagCreater = {
         }
         return element;
     },
-    "title": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "title": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", {textContent: child.text});
         return element;
     },
-    "div": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "div": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", child?.options);
         if (child.children) {
             creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "input": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => { // 入力
+    "input": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => { // 入力
         let element;
         if (child.type == "text") {
-            element = new InputTextTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputTextTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
         } else if (child.type == "file") {
-            element = new InputFileTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputFileTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
         } else if (child.type == "color") {
-            element = new InputColorTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputColorTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
         } else if (child.type == "checkbox") {
-            element = new InputCheckboxTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputCheckboxTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
         } else { // 数字型
-            element = new InputNumberTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+            element = new InputNumberTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
         }
         if (child.custom && "collision" in child.custom && !child.custom.collision) {
             element.element.style.pointerEvents = "none";
         }
         return element;
     },
-    "button": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new ButtonTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "button": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+        return new ButtonTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "buttons": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "buttons": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         createGroupButton(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
     },
-    "radios": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "radios": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         createRadios(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
     },
-    "checks": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "checks": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         const a = (child.withObjects).map((data, index) => {
             return {icon: "グループ", label: data.text};
         });
@@ -144,40 +108,40 @@ export const tagCreater = {
         })
         return element;
     },
-    "select": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new SelectTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "select": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+        return new SelectTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "menu": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "menu": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = new MenuTag(t, child.title, child.struct, child?.options);
         return element;
     },
-    "dblClickInput": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => { // ダブルクッリク入力
+    "dblClickInput": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => { // ダブルクッリク入力
         return new DblClickInput(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "list": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
-        return new ListTag(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag);
+    "list": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+        return new ListTag(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "container": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "container": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "ul");
         if (child.children) {
             creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "section": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "section": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new SectionTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "panel": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "panel": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new PanelTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "option": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "option": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", {class: "ui_options"});
         if (child.children) {
             creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "icon": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "icon": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         const container = createTag(t, "div");
         container.classList.add("icon");
         const img = createTag(container, "img");
@@ -188,7 +152,7 @@ export const tagCreater = {
         img.src = app.ui.getImgURLFromImgName(src);
         return container;
     },
-    "flexBox": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "flexBox": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div");
         element.style.display = "flex";
         element.style.gap = child.interval;
@@ -198,43 +162,43 @@ export const tagCreater = {
         }
         return element;
     },
-    "grid": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "grid": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createGrid(t, child.axis);
         creatorForUI.createFromChildren(element.child1, null, child.child1, searchTarget, flag);
         creatorForUI.createFromChildren(element.child2, null, child.child2, searchTarget, flag);
         return element;
     },
-    "gridBox": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "gridBox": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new GridBoxTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "padding": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "padding": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div");
         element.style.width = child.size;
         return element;
     },
-    "separator": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "separator": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "span");
         element.classList.add("separator");
         element.style.width = child.size;
         return element;
     },
-    "outliner": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "outliner": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new OutlinerTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "scrollable": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "scrollable": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         let element = createTag(t, "div", {class: "scrollable"});
         if (child.children) {
             creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "canvas": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "canvas": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new CanvasTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "path": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "path": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new PathTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "if": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "if": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         // console.log(searchTarget, child, creatorForUI.getParameter(searchTarget,child.formula.source))
         let bool = false;
         if (child.formula.conditions == "==") {
@@ -256,35 +220,35 @@ export const tagCreater = {
             }
         }
     },
-    "hasKeyframeCheck": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "hasKeyframeCheck": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new HasKeyframeCheck(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "nodeFromFunction": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "nodeFromFunction": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         const functionResult = creatorForUI.getParameter(searchTarget, child.source)();
         return creatorForUI.createFromChildren(t, null, functionResult, searchTarget, flag);
     },
-    "html": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "html": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         const element = createTag(t, child.tag);
         if (child.children) {
             creatorForUI.createFromChildren(element, null, child.children, searchTarget, flag);
         }
         return element;
     },
-    "meter": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "meter": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new MeterTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "texture": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "texture": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new TextureTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "dualListbox": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "dualListbox": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new DualListboxTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
-    "color": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "color": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         if (t instanceof HTMLElement) t.style.backgroundColor = creatorForUI.getParameter(searchTarget, child.src);
         else t.element.style.backgroundColor = creatorForUI.getParameter(searchTarget, child.src);
         return null;
     },
-    "parameterManager": (/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) => {
+    "parameterManager": (/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) => {
         return new ParameterManagerTag(creatorForUI,t,parent,searchTarget,child,flag);
     },
 }
@@ -301,7 +265,7 @@ export class ParameterReference {
 }
 
 // UIを作るクラス
-export class CreatorForUI {
+export class JTag {
     static tagAppendChildren(t, children) {
         let appendTarget = t instanceof HTMLElement ? t : t.element;
         for (const child of children) {
@@ -313,9 +277,7 @@ export class CreatorForUI {
         this.groupID = createID();
         this.dom = null;
         this.lists = new Map();
-
         this.globalInputObject = {};
-
         this.domKeeper = new Map();
     }
 
@@ -335,7 +297,7 @@ export class CreatorForUI {
                 useSearchTarget = this.globalInputObject;
             }
             if (path == "") {
-                managerForDOMs.set(Object.assign(template,{o: useSearchTarget}), event);
+                useEffect.set(Object.assign(template,{o: useSearchTarget}), event);
             }
             let roots = [];
             if (path.includes("{") && path.includes("}")) {
@@ -379,13 +341,13 @@ export class CreatorForUI {
                 }
             }
             if (lastIsParameter) {
-                return managerForDOMs.set(Object.assign(template,{o: object, i: lastRoot}), event);
+                return useEffect.set(Object.assign(template,{o: object, i: lastRoot}), event);
             } else {
                 const final = object[lastRoot];
                 if (isPassByReference(final)) {
-                    return managerForDOMs.set(Object.assign(template,{o: final}), event);
+                    return useEffect.set(Object.assign(template,{o: final}), event);
                 } else {
-                    return managerForDOMs.set(Object.assign(template,{o: object, i: lastRoot}), event);
+                    return useEffect.set(Object.assign(template,{o: object, i: lastRoot}), event);
                 }
             }
         } catch {
@@ -701,12 +663,6 @@ export class CreatorForUI {
         this.globalInputObject = {};
         this.lists.clear();
         this.domKeeper.clear();
-        managerForDOMs.delete({g: this.groupID});
-    }
-}
-
-export class Shelfe {
-    constructor() {
-        this.submitData = {};
+        useEffect.delete({g: this.groupID});
     }
 }

@@ -1,9 +1,9 @@
-import { CreatorForUI } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createTag, managerForDOMs, removeHTMLElementInObject } from "../util.js";
+import { JTag } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
 
 export class InputFileTag extends CustomTag{
-    constructor(/** @type {CreatorForUI} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         /** @type {HTMLElement} */
         this.element = createTag(t, "input", {type: "file"});

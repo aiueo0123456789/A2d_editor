@@ -1,6 +1,6 @@
 import { app } from "../../../../main.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
-import { createID, managerForDOMs } from "../../../utils/ui/util.js";
+import { createID, useEffect } from "../../../utils/ui/util.js";
 import { pushToArray, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { BezierModifier } from "../../objects/bezierModifier.js";
@@ -141,6 +141,6 @@ export class BBezierShapeKey {
         })
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;
         bezierModifierData.update(this.object);
-        managerForDOMs.update({o: this.object.shapeKeyMetaDatas});
+        useEffect.update({o: this.object.shapeKeyMetaDatas});
     }
 }

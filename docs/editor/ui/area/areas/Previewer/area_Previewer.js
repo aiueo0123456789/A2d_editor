@@ -5,7 +5,7 @@ import { loadFile } from '../../../../utils/utility.js';
 import { Particle } from '../../../../core/objects/particle.js';
 import { PreviewerSpaceData } from './area_PreviewerSpaceData.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
-import { managerForDOMs } from '../../../../utils/ui/util.js';
+import { useEffect } from '../../../../utils/ui/util.js';
 import { app } from '../../../../../main.js';
 
 const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft_Fu"), GPU.getGroupLayout("Fu")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
@@ -97,8 +97,8 @@ export class Area_Previewer {
             this.renderer.resizeCVS();
         }
 
-        managerForDOMs.set({o: app.scene.objects.renderingCamera, i: "displayRange"}, updateDisplayRange);
-        managerForDOMs.set({o: app.scene.objects.renderingCamera.displayRange, i: "&all"}, updateDisplayRange);
+        useEffect.set({o: app.scene.objects.renderingCamera, i: "displayRange"}, updateDisplayRange);
+        useEffect.set({o: app.scene.objects.renderingCamera.displayRange, i: "&all"}, updateDisplayRange);
         resizeObserver.push(area.main, updateDisplayRange);
     }
 

@@ -3,7 +3,7 @@ import { InputManager } from "../../../../app/inputManager/inputManager.js";
 import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
 import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
-import { OutlinerTag } from "../../../../utils/ui/customTags/outlinerTag.js";
+import { OutlinerTag } from "../../../../utils/JTag/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
 import { createID } from "../../../../utils/ui/util.js";
 import { calculateLocalMousePosition, changeParameter, errorCut } from "../../../../utils/utility.js";

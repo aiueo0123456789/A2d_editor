@@ -1,7 +1,7 @@
 import { ObjectBase, sharedDestroy, UnfixedReference } from "../../utils/objects/util.js";
 import { changeParameter, copyToArray, range } from "../../utils/utility.js";
 import { GPU } from "../../utils/webGPU.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { app } from "../../../main.js";
 import { Texture } from "./texture.js";
 import { MaskTexture } from "./maskTexture.js";
@@ -75,7 +75,7 @@ export class GraphicMesh extends ObjectBase {
         }
         this.setGroup();
 
-        managerForDOMs.set({o: this, i: "zIndex"}, () => {
+        useEffect.set({o: this, i: "zIndex"}, () => {
             GPU.writeBuffer(this.zIndexBuffer, new Float32Array([1 / (this.zIndex + 1)]));
         })
     }
@@ -145,14 +145,14 @@ export class GraphicMesh extends ObjectBase {
     changeClippingMask(target) {
         if (this.clippingMask) {
             // managerForDOMs.deleteData(this.clippingMask, "view", this.managerForDOMs_clippingMask_view_dataBlock);
-            managerForDOMs.deleteDataBlock(this.managerForDOMs_clippingMask_view_dataBlock);
+            useEffect.deleteDataBlock(this.managerForDOMs_clippingMask_view_dataBlock);
         }
         this.clippingMask = target;
         const updateGroup = () => {
             this.setGroup();
         }
         updateGroup();
-        this.managerForDOMs_clippingMask_view_dataBlock = managerForDOMs.set({o: this.clippingMask, i: "view"}, updateGroup);
+        this.managerForDOMs_clippingMask_view_dataBlock = useEffect.set({o: this.clippingMask, i: "view"}, updateGroup);
     }
 
     changeRenderingTarget(target) {

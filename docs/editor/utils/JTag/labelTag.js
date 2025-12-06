@@ -1,5 +1,5 @@
-import { CustomTag } from "../customTag.js";
-import { createTag } from "../util.js";
+import { CustomTag } from "./customTag.js";
+import { createTag } from "../ui/util.js";
 
 export class LabelTag extends CustomTag {
     constructor(/** @type {HTMLElement} */ inner, labelText) {

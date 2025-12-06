@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/inputManager/inputManager.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { RotateCommand } from "../../commands/transform/transform.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 
@@ -33,7 +33,7 @@ export class RotateModal {
             if (!this.command) return ;
             this.command.transform([this.values[0],this.values[1]], this.values[2], this.values[3], this.values[4]);
         }
-        managerForDOMs.set({o: this.values, g: "_", i: "&all"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "&all"}, update, null);
     }
 
     async init() {
@@ -50,7 +50,7 @@ export class RotateModal {
     async mousemove(/** @type {InputManager} */inputManager) {
         // console.log(inputManager)
         this.values[0] += MathVec2.getAngularVelocity(this.command.pivotPoint, inputManager.lastPosition, inputManager.movement);
-        managerForDOMs.update({o: this.values});
+        useEffect.update({o: this.values});
         return true;
     }
 

@@ -1,5 +1,5 @@
 import { device, GPU } from '../../utils/webGPU.js';
-import { managerForDOMs } from '../../utils/ui/util.js';
+import { useEffect } from '../../utils/ui/util.js';
 import { GraphicMesh } from '../../core/objects/graphicMesh.js';
 import { BezierModifier } from '../../core/objects/bezierModifier.js';
 import { Armature } from '../../core/objects/armature.js';
@@ -307,7 +307,7 @@ export class Scene {
             this.updateAnimation(this.frame_current);
         }
 
-        managerForDOMs.set({o: this, g: "_", i: "frame_current"}, updateKeyframe);
+        useEffect.set({o: this, g: "_", i: "frame_current"}, updateKeyframe);
     }
 
     get allRenderingOrder() {
@@ -423,10 +423,10 @@ export class Scene {
     frameUpdate(dt) {
         if (this.isPlaying) {
             this.frame_current += dt * this.frame_speed;
-            managerForDOMs.update({o: "タイムライン-canvas"});
+            useEffect.update({o: "タイムライン-canvas"});
         } else if (this.isReversePlaying) {
             this.frame_current -= dt * this.frame_speed;
-            managerForDOMs.update({o: "タイムライン-canvas"});
+            useEffect.update({o: "タイムライン-canvas"});
         }
         if (this.beforeFrame != this.frame_current) {
             if (this.frame_end < this.frame_current) {
@@ -436,7 +436,7 @@ export class Scene {
                 this.frame_current = this.frame_end;
             }
             this.beforeFrame = this.frame_current;
-            managerForDOMs.update({o: this, i: "frame_current"});
+            useEffect.update({o: this, i: "frame_current"});
         }
     }
 
@@ -628,7 +628,7 @@ export class Scene {
     // 表示順番の再計算
     updateRenderingOrder() {
         this.renderingOrder = [...this.objects.graphicMeshs].sort((a, b) => a.zIndex - b.zIndex);
-        managerForDOMs.update({o: "表示順番"});
+        useEffect.update({o: "表示順番"});
     }
 }
 

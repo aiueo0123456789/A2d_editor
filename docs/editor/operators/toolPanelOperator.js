@@ -1,6 +1,6 @@
 import { app } from "../../main.js";
 import { InputManager } from "../app/inputManager/inputManager.js";
-import { CreatorForUI } from "../utils/ui/creatorForUI.js";
+import { JTag } from "../utils/JTag/JTag.js";
 import { createTag } from "../utils/ui/util.js";
 import { isFunction } from "../utils/utility.js";
 
@@ -10,7 +10,7 @@ export class ToolPanelOperator {
         this.state = 0;
         this.panels = panels;
         this.nowPanel = null;
-        this.creatorForUI = new CreatorForUI();
+        this.creatorForUI = new JTag();
     }
 
     changePanels(newPanels) {

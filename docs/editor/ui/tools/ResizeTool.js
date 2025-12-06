@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/inputManager/inputManager.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { ResizeCommand } from "../../commands/transform/transform.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 
@@ -31,7 +31,7 @@ export class ResizeModal {
         const update = () => {
             this.command.update([this.values[0],this.values[1]], "ローカル", this.values[2], this.values[3]);
         }
-        managerForDOMs.set({o: this.values, g: "_", i: "&all"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "&all"}, update, null);
     }
 
     async init(/** @type {InputManager} */inputManager) {
@@ -69,7 +69,7 @@ export class ResizeModal {
         // this.values[0] += inputManager.position[0];
         // this.values[1] += inputManager.position[1];
         MathVec2.div(this.values, MathVec2.subR(inputManager.position, this.center), MathVec2.subR(this.startPosition, this.center));
-        managerForDOMs.update({o: this.values});
+        useEffect.update({o: this.values});
         return true;
     }
 

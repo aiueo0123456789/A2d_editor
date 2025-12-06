@@ -1,9 +1,9 @@
-import { CreatorForUI } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createTag, managerForDOMs } from "../util.js";
+import { JTag } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createTag, useEffect } from "../ui/util.js";
 
 export class DualListboxTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         /** @type {Array} */
         const availableItems = Array.isArray(child.available) ? child.available : creatorForUI.getParameter(searchTarget, child.available);
@@ -30,7 +30,7 @@ export class DualListboxTag extends CustomTag {
                     update();
                 })
                 if (tags.has(item)) { // すでにあるか
-                    CreatorForUI.tagAppendChildren(li, tags.get(item));
+                    JTag.tagAppendChildren(li, tags.get(item));
                 } else {
                     tags.set(item, creatorForUI.createFromChildren(li, this, child.liStruct, {normal: item, special: {}}, flag));
                 }
@@ -44,7 +44,7 @@ export class DualListboxTag extends CustomTag {
                         update();
                     })
                     if (tags.has(item)) { // すでにあるか
-                        CreatorForUI.tagAppendChildren(li, tags.get(item));
+                        JTag.tagAppendChildren(li, tags.get(item));
                     } else {
                         tags.set(item, creatorForUI.createFromChildren(li, this, child.liStruct,  {normal: item, special: {}}, flag));
                     }
@@ -53,8 +53,8 @@ export class DualListboxTag extends CustomTag {
         }
         update();
         this.dataBlocks = [
-            managerForDOMs.set({o: availableItems}, update),
-            managerForDOMs.set({o: selectedItems}, update)
+            useEffect.set({o: availableItems}, update),
+            useEffect.set({o: selectedItems}, update)
         ];
     }
 }

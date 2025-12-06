@@ -1,9 +1,9 @@
 import { ResizerForDOM } from "./resizer.js";
 import { TranslaterForDOM } from "./tranlater.js";
-import { updateManager } from "./updateManager.js";
 import { isPlainObject } from "../utility.js";
+import { UseEffect } from "../useEffect.js";
 
-export const managerForDOMs = new updateManager();
+export const useEffect = new UseEffect();
 
 export function createID() {
     var S="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";

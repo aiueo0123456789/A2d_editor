@@ -1,10 +1,10 @@
-import { isFunction } from "../../utility.js";
-import { CreatorForUI, ParameterReference } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createID, createTag, managerForDOMs, removeHTMLElementInObject } from "../util.js";
+import { JTag, ParameterReference } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createID, createTag, useEffect } from "../ui/util.js";
+import { isFunction } from "../utility.js";
 
 export class PathTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */creatorForUI,/** @type {HTMLElement}} */t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */creatorForUI,/** @type {HTMLElement}} */t,parent,searchTarget,child,flag) {
         super();
         if (parent instanceof PathTag) { // 親がpathTagの場合特殊
             this.element = parent.element;
@@ -50,7 +50,7 @@ export class PathTag extends CustomTag {
             if (updateEventTarget.path) {
                 this.dataBlocks = [creatorForUI.setUpdateEventByPath(searchTarget, updateEventTarget.path, childrenReset, flag)];
             } else { // 文字列に対応
-                this.dataBlocks = [managerForDOMs.set({o: updateEventTarget, g: creatorForUI.groupID, f: flag},childrenReset)];
+                this.dataBlocks = [useEffect.set({o: updateEventTarget, g: creatorForUI.groupID, f: flag},childrenReset)];
             }
         }
         if (Array.isArray(child.updateEventTarget)) {

@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { changeParameter } from "../../utils/utility.js";
 
 export class SetActiveObjectsCommand {
@@ -13,7 +13,7 @@ export class SetActiveObjectsCommand {
         if (this.object) {
             this.object.selected = true;
         }
-        managerForDOMs.update({o: "アクティブオブジェクト"});
+        useEffect.update({o: "アクティブオブジェクト"});
         return {consumed: true};
     }
 
@@ -22,7 +22,7 @@ export class SetActiveObjectsCommand {
         if (this.object) {
             this.object.selected = false;
         }
-        managerForDOMs.update({o: "アクティブオブジェクト"});
+        useEffect.update({o: "アクティブオブジェクト"});
     }
 }
 
@@ -42,7 +42,7 @@ export class SelectObjectsCommand {
         if (this.targetObject) {
             this.targetObject.selected = true;
         }
-        managerForDOMs.update({o: "オブジェクト選択"});
+        useEffect.update({o: "オブジェクト選択"});
         return {consumed: true};
     }
 
@@ -53,6 +53,6 @@ export class SelectObjectsCommand {
         this.originalSelectData.forEach((object) => {
             object.selected = true;
         })
-        managerForDOMs.update({o: "オブジェクト選択"});
+        useEffect.update({o: "オブジェクト選択"});
     }
 }

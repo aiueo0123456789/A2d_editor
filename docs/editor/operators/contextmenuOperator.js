@@ -1,12 +1,12 @@
 import { Application } from "../app/app.js";
-import { CreatorForUI } from "../utils/ui/creatorForUI.js";
+import { JTag } from "../utils/JTag/JTag.js";
 import { createTag } from "../utils/ui/util.js";
 import { looper } from "../utils/utility.js";
 
 export class ContextmenuOperator {
     constructor(/** @type {Application} */app) {
         this.app = app;
-        this.creator = new CreatorForUI();
+        this.creator = new JTag();
         /** @type {HTMLElement} */
         this.dom = app.ui.creatorForUI.getDOMFromID("contextmenu");
     }

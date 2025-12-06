@@ -1,5 +1,3 @@
-import { managerForDOMs } from "./ui/util.js";
-
 export class MathVec2 {
     constructor() {
     }

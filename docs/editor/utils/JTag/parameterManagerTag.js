@@ -1,11 +1,11 @@
-import { app } from "../../../../main.js";
-import { changeParameter } from "../../utility.js";
-import { CreatorForUI, ParameterReference } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createTag } from "../util.js";
+import { app } from "../../../main.js";
+import { changeParameter } from "../utility.js";
+import { JTag, ParameterReference } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createTag } from "../ui/util.js";
 
 export class ParameterManagerTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */ creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */ creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         /** @type {HTMLElement} */
         this.element = createTag(t, "div");

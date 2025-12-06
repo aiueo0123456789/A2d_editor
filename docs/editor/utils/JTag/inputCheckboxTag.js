@@ -1,6 +1,5 @@
-import { app } from "../../../../main.js";
-import { CustomTag } from "../customTag.js";
-import { managerForDOMs, removeHTMLElementInObject } from "../util.js";
+import { app } from "../../../main.js";
+import { CustomTag } from "./customTag.js";
 
 const hadClass = {};
 

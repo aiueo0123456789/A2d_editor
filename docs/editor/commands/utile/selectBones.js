@@ -1,7 +1,7 @@
 import { app } from "../../../main.js";
 import { BArmature } from "../../core/edit/objects/BArmature.js";
 import { BArmatureAnimation } from "../../core/edit/objects/BArmatureAnimation.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 
 // export class SelectOnlyBoneCommand {
 //     constructor(point,multiple) {
@@ -76,7 +76,7 @@ export class SelectOnlyBoneCommand {
                 editObject.selectBones(this.selectData[objectID]);
             }
         })
-        managerForDOMs.update({o: "ボーン選択"});
+        useEffect.update({o: "ボーン選択"});
         return {consumed: true};
     }
 
@@ -91,7 +91,7 @@ export class SelectOnlyBoneCommand {
                 }
             })
             editObject.selectBones(originalIndexs);
-            managerForDOMs.update({o: "ボーン選択"});
+            useEffect.update({o: "ボーン選択"});
         })
     }
 }

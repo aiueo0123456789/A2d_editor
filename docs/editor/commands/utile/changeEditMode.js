@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { changeParameter } from "../../utils/utility.js";
 
 export class ChangeEditModeCommand {
@@ -29,7 +29,7 @@ export class ChangeEditModeCommand {
                 app.scene.editData.appendEditObject(object, this.editObjects[index]);
             }
         })
-        managerForDOMs.update({o: "changeEditMode"});
+        useEffect.update({o: "changeEditMode"});
         return {consumed: true};
     }
 
@@ -47,7 +47,7 @@ export class ChangeEditModeCommand {
                 app.scene.editData.appendEditObject(object, this.editObjects[index]);
             }
         })
-        managerForDOMs.update({o: "changeEditMode"});
+        useEffect.update({o: "changeEditMode"});
         console.log(app);
     }
 }

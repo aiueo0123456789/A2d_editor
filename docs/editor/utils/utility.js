@@ -1,32 +1,38 @@
-import { managerForDOMs } from "./ui/util.js";
+import { useEffect } from "./ui/util.js";
 import { MathVec2 } from "./mathVec.js";
 
+// 連想配列を空に
 export function clearPlainObject(plainObject) {
     for (const key in plainObject) {
         delete plainObject[key];
     }
 }
 
+// 連想配列か
 export function isPlainObject(obj) {
     return obj instanceof Object && Object.getPrototypeOf(obj) === Object.prototype;
 }
 
+// 数字か
 export function isNumber(value) {
     return value !== null && value !== "" && isFinite(value);
 }
 
+// 文字か
 export function IsString(value) {
     return typeof value === "string" || value instanceof String;
 }
 
+// 配列から特定のアイテムを削除
 export function indexOfSplice(array, deleteValue) {
     if (!array.includes(deleteValue)) return;
     const index = array.indexOf(deleteValue);
     array.splice(index, 1);
-    managerForDOMs.update({o: array});
+    useEffect.update({o: array});
     return index;
 }
 
+// 三角形と点の内外判定
 export function hitTestPointTriangle(a, b, c, p) {
     let ab = MathVec2.subR(b, a);
     let bp = MathVec2.subR(p, b);
@@ -43,6 +49,7 @@ export function hitTestPointTriangle(a, b, c, p) {
     return (c1 > 0.0 && c2 > 0.0 && c3 > 0.0) || (c1 < 0.0 && c2 < 0.0 && c3 < 0.0);
 }
 
+// 三角形内の線形補間
 export function lerpTriangle(p0, p1, p2, v0, v1, v2, p) {
     const eux = p1[0] - p0[0];
     const euy = p1[1] - p0[1];
@@ -60,6 +67,7 @@ export function lerpTriangle(p0, p1, p2, v0, v1, v2, p) {
     }
 }
 
+// 任意の長さの行列を作成
 export function createArrayN(N, data = undefined) {
     if (data === undefined) {
         return [...Array(N)].map((_, i) => i);
@@ -85,19 +93,10 @@ export function createStructArrayN(N, data) {
     }
     return array;
 }
+
 // -xのmod(%)を+に収める
 export function modClamp(value, max) {
     return (value % max + max) % max;
-}
-
-export function getFuntion(resource) {
-    if (typeof resource === 'function') {
-        return resource;
-    } else if (resource.object && resource.targetFn) {
-        return resource.object[resource.targetFn];
-    } else {
-        console.warn("関数が見つかりません", resource);
-    }
 }
 
 // カラーコードとaからrgba
@@ -189,10 +188,12 @@ export function isFunction(t) {
     return typeof t === 'function';
 }
 
+// true : false -> 0 : 1
 export function boolTo0or1(bool) {
     return bool ? 1 : 0;
 }
 
+// タグないのマウスの座標
 export function calculateLocalMousePosition(/** @type {HTMLElement} */dom, position, pixelDensity = 1) {
     const rect = dom.getBoundingClientRect();
     return MathVec2.scaleR(MathVec2.subR(position, [rect.left, rect.top]), pixelDensity);
@@ -206,33 +207,38 @@ export function createArrayFromHashKeys(hash) {
     return result;
 }
 
+// オブジェクト内の値の書き換え
 export function changeParameter(object, parameter, newValue) {
     // if (Array.isArray(object)) console.log({o: object, i: parameter}, newValue);
     object[parameter] = newValue;
-    managerForDOMs.update({o: object, i: parameter});
+    useEffect.update({o: object, i: parameter});
 }
 
+// 配列からindexを指定して削除
 export function indexRemoveToArray(array, index) {
     array.splice(index, 1);
-    managerForDOMs.update({o: array});
+    useEffect.update({o: array});
 }
 
+// 配列に値を挿入
 export function insertToArray(array, index, value) {
     array.splice(index, 0, value);
-    managerForDOMs.update({o: array});
+    useEffect.update({o: array});
 }
 
+// 配列の最後に追加
 export function pushToArray(array, value) {
     array.push(value);
-    managerForDOMs.update({o: array});
+    useEffect.update({o: array});
 }
 
+// 配列Aに配列Bの内容をコピー
 export function copyToArray(target, source) {
     target.length = 0;
     for (const value of source) {
         target.push(value);
     }
-    managerForDOMs.update({o: target});
+    useEffect.update({o: target});
 }
 
 export function setToArray(array, data, index, structSize = 0) {
@@ -240,20 +246,20 @@ export function setToArray(array, data, index, structSize = 0) {
     for (let i = 0; i < data.length; i ++) {
         array[offset + i] = data[i];
     }
-    managerForDOMs.update({o: array});
+    useEffect.update({o: array});
 }
 
 export function looper(object, loopTarget, fn, firstParent) {
-    const a = (children, parent, depth = 0) => {
+    const loopFn = (children, parent, depth = 0) => {
         for (const child of children) {
             const nextParent = fn(child, parent, depth);
             if (child[loopTarget]) {
-                a(child[loopTarget], nextParent, depth + 1);
+                loopFn(child[loopTarget], nextParent, depth + 1);
             }
         }
     }
     if (Array.isArray(object)) {
-        a(object, firstParent);
+        loopFn(object, firstParent);
     } else {
         console.trace("このオブジェクトはlooperが使用できません",object);
     }
@@ -267,6 +273,7 @@ export function range(start, end) {
     return result;
 }
 
+// 指定した時間止める
 export function timeSleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }

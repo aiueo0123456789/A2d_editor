@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { CreateMeshCommand } from "../../commands/mesh/mesh.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 
 // 制作途中
 export class CreateMeshTool {
@@ -24,7 +24,7 @@ export class CreateMeshTool {
             this.command.update(this.values[0],this.values[1]);
         }
 
-        managerForDOMs.set({o: this.values, i: "&all"}, update);
+        useEffect.set({o: this.values, i: "&all"}, update);
     }
 
     init() {

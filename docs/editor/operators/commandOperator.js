@@ -1,4 +1,4 @@
-import { createID, managerForDOMs } from "../utils/ui/util.js";
+import { createID, useEffect } from "../utils/ui/util.js";
 import { isFunction } from "../utils/utility.js";
 
 // undoとredoを実行
@@ -21,7 +21,7 @@ class CommandStack {
                 command.undo();
             }
             this.redoStack.push(commands);
-            managerForDOMs.update({o: this.history});
+            useEffect.update({o: this.history});
         }
     }
 
@@ -37,7 +37,7 @@ class CommandStack {
                 }
             }
             this.history.push(commands);
-            managerForDOMs.update({o: this.history});
+            useEffect.update({o: this.history});
         }
     }
 }
@@ -65,7 +65,7 @@ export class Operator {
 
     appendErrorLog(log) {
         this.errorLog.push({text: log});
-        managerForDOMs.update({o: this.errorLog});
+        useEffect.update({o: this.errorLog});
     }
 
     async execute() {

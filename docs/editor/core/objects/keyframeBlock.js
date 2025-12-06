@@ -1,5 +1,5 @@
 import { changeParameter } from "../../utils/utility.js";
-import { createID, managerForDOMs } from "../../utils/ui/util.js";
+import { createID, useEffect } from "../../utils/ui/util.js";
 import { app } from "../../../main.js";
 
 
@@ -105,13 +105,13 @@ export class KeyframeBlock {
             }
         }
         this.keys.splice(insertIndex,0, key);
-        managerForDOMs.update({o: this});
-        managerForDOMs.update({o: this, i: "keys"});
+        useEffect.update({o: this});
+        useEffect.update({o: this, i: "keys"});
     }
 
     removeKeyframe(/** @type {Keyframe} */ key) {
         this.keys.splice(this.keys.indexOf(key),1);
-        managerForDOMs.update({o: this});
+        useEffect.update({o: this});
     }
 
     setKeyframe(data) {
@@ -119,7 +119,7 @@ export class KeyframeBlock {
             const keyframe =  new Keyframe(this, key);
             this.keys.push(keyframe);
         }
-        managerForDOMs.update({o: "タイムライン-canvas"});
+        useEffect.update({o: "タイムライン-canvas"});
     }
 
     getKeyFromFrame(frame, threshold = 0.5) {

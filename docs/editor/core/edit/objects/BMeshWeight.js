@@ -1,7 +1,7 @@
 import { app } from "../../../../main.js";
 import { MathMat3x3 } from "../../../utils/mathMat.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
-import { managerForDOMs } from "../../../utils/ui/util.js";
+import { useEffect } from "../../../utils/ui/util.js";
 import { createArrayNAndFill, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { GraphicMesh } from "../../objects/graphicMesh.js";

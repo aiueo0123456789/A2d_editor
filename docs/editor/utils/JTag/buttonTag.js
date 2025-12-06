@@ -1,11 +1,11 @@
-import { app } from "../../../../main.js";
-import { isFunction } from "../../utility.js";
-import { CreatorForUI } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { createTag, removeHTMLElementInObject } from "../util.js";
+import { app } from "../../../main.js";
+import { isFunction } from "../utility.js";
+import { JTag } from "./JTag.js";
+import { CustomTag } from "./customTag.js";
+import { createTag, removeHTMLElementInObject } from "../ui/util.js";
 
 export class ButtonTag extends CustomTag {
-    constructor(/** @type {CreatorForUI} */creatorForUI,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */creatorForUI,t,parent,searchTarget,child,flag) {
         super();
         /** @type {HTMLElement} */
         this.element = createTag(t, "div");

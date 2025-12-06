@@ -1,7 +1,7 @@
-import { app } from "../../../../main.js";
-import { isFunction, looper } from "../../utility.js";
-import { CustomTag } from "../customTag.js";
-import { createTag, removeHTMLElementInObject, setClass } from "../util.js";
+import { app } from "../../../main.js";
+import { isFunction, looper } from "../utility.js";
+import { CustomTag } from "./customTag.js";
+import { createTag, removeHTMLElementInObject, setClass } from "../ui/util.js";
 
 export class MenuTag extends CustomTag {
     constructor(t, title, struct, options = {}) {

@@ -8,7 +8,7 @@ import { BMeshShapeKey } from "../../core/edit/objects/BMeshShapeKey.js";
 import { Armature } from "../../core/objects/armature.js";
 import { MathMat3x3 } from "../../utils/mathMat.js";
 import { MathVec2 } from "../../utils/mathVec.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { roundUp } from "../../utils/utility.js";
 
 class TransformCommand {
@@ -121,7 +121,7 @@ class TransformCommand {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
                     MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
-                    managerForDOMs.update({o: vertex.co});
+                    useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             } else if (this.processType == "bone") {
@@ -136,7 +136,7 @@ class TransformCommand {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
                     MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
-                    managerForDOMs.update({o: vertex.co});
+                    useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             } else if (this.processType == "bone") {
@@ -149,7 +149,7 @@ class TransformCommand {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
                     MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
-                    managerForDOMs.update({o: vertex.co});
+                    useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             } else if (this.processType == "bone") {
@@ -168,7 +168,7 @@ class TransformCommand {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
                     MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
-                    managerForDOMs.update({o: vertex.co});
+                    useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             } else if (this.processType == "bone") {
@@ -184,7 +184,7 @@ class TransformCommand {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
                     MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
-                    managerForDOMs.update({o: vertex.co});
+                    useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             } else if (this.processType == "bone") {
@@ -201,7 +201,7 @@ class TransformCommand {
         if (this.processType == "vertex") {
             this.targetVertices.forEach((vertex, index) => {
                 MathVec2.set(vertex.co, this.originalVerticesCoordinates[index]);
-                managerForDOMs.update({o: vertex.co});
+                useEffect.update({o: vertex.co});
             });
             this.editObjects.forEach(editObject => editObject.updateGPUData());
         } else if (this.processType == "bone") {

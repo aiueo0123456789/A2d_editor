@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { useClassFromAreaType } from "../../app/app.js";
-import { CreatorForUI } from "../../utils/ui/creatorForUI.js";
+import { JTag } from "../../utils/JTag/JTag.js";
 import { createIcon, createTag } from "../../utils/ui/util.js";
 import { isFunction } from "../../utils/utility.js";
 // UIのエリア管理
@@ -12,7 +12,7 @@ export class Area {
         this.header = document.createElement("div");
         this.header.classList.add("header");
 
-        this.creatorForUI = new CreatorForUI();
+        this.creatorForUI = new JTag();
         /** @type {HTMLElement} */
         const deleteButton = createTag(this.header, "span", {className: "square_btn"}); // バツボタン
         deleteButton.addEventListener("click", () => {

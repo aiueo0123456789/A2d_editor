@@ -1,10 +1,9 @@
-import { app } from "../../../../main.js";
-import { TextEditor_textSplice } from "../../../commands/textEditor/textEditorCommand.js";
-import { isNumber } from "../../utility.js";
-import { tagCreater } from "../creatorForUI.js";
-import { CustomTag } from "../customTag.js";
-import { AutoGrid, createGrid } from "../grid.js";
-import { createIcon, createTag, managerForDOMs, removeHTMLElementInObject, setClass, setLabel, setStyle } from "../util.js";
+import { app } from "../../../main.js";
+import { TextEditor_textSplice } from "../../commands/textEditor/textEditorCommand.js";
+import { isNumber } from "../utility.js";
+import { CustomTag } from "./customTag.js";
+import { AutoGrid, createGrid } from "../ui/grid.js";
+import { createIcon, createTag, useEffect, removeHTMLElementInObject, setClass, setLabel, setStyle } from "../ui/util.js";
 
 function createGroup(t, name) {
     const container = createTag(t, "div");
@@ -698,7 +697,7 @@ export class CodeEditorTag extends CustomTag {
         }
         viewUpdate();
         debuglogUpdate();
-        managerForDOMs.set({o: this.sourceCode.object, i: this.sourceCode.parameter, g: creatorForUI.groupID, f: flag}, viewUpdate);
-        managerForDOMs.set({o: this.sourceCode.object, i: "result", g: creatorForUI.groupID, f: flag}, debuglogUpdate);
+        useEffect.set({o: this.sourceCode.object, i: this.sourceCode.parameter, g: creatorForUI.groupID, f: flag}, viewUpdate);
+        useEffect.set({o: this.sourceCode.object, i: "result", g: creatorForUI.groupID, f: flag}, debuglogUpdate);
     }
 }

@@ -1,5 +1,5 @@
 import { Area } from "../../ui/area/Area.js";
-import { CreatorForUI } from "../../utils/ui/creatorForUI.js";
+import { JTag } from "../../utils/JTag/JTag.js";
 import { AutoGrid } from "../../utils/ui/grid.js";
 import { createID, createTag } from "../../utils/ui/util.js";
 import { indexOfSplice } from "../../utils/utility.js";
@@ -9,7 +9,7 @@ export class UI {
     constructor(/** @type {Application} */ app) {
         this.app = app;
 
-        this.creatorForUI = new CreatorForUI();
+        this.creatorForUI = new JTag();
         this.creatorForUI.create(
             app.dom,
             {

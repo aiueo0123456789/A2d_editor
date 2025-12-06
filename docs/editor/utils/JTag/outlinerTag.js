@@ -1,7 +1,7 @@
-import { app } from "../../../../main.js";
-import { isFunction } from "../../utility.js";
-import { CustomTag } from "../customTag.js";
-import { createID, createTag, managerForDOMs, removeHTMLElementInObject } from "../util.js";
+import { app } from "../../../main.js";
+import { isFunction } from "../utility.js";
+import { CustomTag } from "./customTag.js";
+import { createID, createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";
 
 function isFilterIncluded(object, filter = "all") {
@@ -242,14 +242,14 @@ export class OutlinerTag extends CustomTag {
             //     }
             // })
         }
-        managerForDOMs.set({o: activeSource.object, g: creatorForUI.groupID, i: activeSource.parameter, f: flag}, listActive);
-        managerForDOMs.set({o: result.selects, g: creatorForUI.groupID, f: flag}, listActive);
+        useEffect.set({o: activeSource.object, g: creatorForUI.groupID, i: activeSource.parameter, f: flag}, listActive);
+        useEffect.set({o: result.selects, g: creatorForUI.groupID, f: flag}, listActive);
         console.log("ヒエラルキー更新対象", child.updateEventTarget)
         const setUpdateEventTarget = (updateEventTarget) => {
             if (updateEventTarget.path) {
                 creatorForUI.setUpdateEventByPath(searchTarget, updateEventTarget.path, outlinerUpdate, flag);
             } else { // 文字列に対応
-                managerForDOMs.set({o: updateEventTarget, g: creatorForUI.groupID, f: flag}, outlinerUpdate);
+                useEffect.set({o: updateEventTarget, g: creatorForUI.groupID, f: flag}, outlinerUpdate);
             }
         }
         if (child.updateEventTarget) {
@@ -262,7 +262,7 @@ export class OutlinerTag extends CustomTag {
             }
         } else {
             if (!isSourceFunction) {
-                managerForDOMs.set({o: creatorForUI.getParameter(searchTarget, source), g: creatorForUI.groupID, f: flag}, outlinerUpdate);
+                useEffect.set({o: creatorForUI.getParameter(searchTarget, source), g: creatorForUI.groupID, f: flag}, outlinerUpdate);
             }
         }
         outlinerUpdate();

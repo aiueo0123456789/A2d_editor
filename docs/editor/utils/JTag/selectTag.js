@@ -1,7 +1,7 @@
-import { app } from "../../../../main.js";
-import { isFunction, isPlainObject, IsString } from "../../utility.js";
-import { CustomTag } from "../customTag.js";
-import { createIcon, createTag, managerForDOMs, removeHTMLElementInObject, setClass } from "../util.js";
+import { app } from "../../../main.js";
+import { isFunction, isPlainObject, IsString } from "../utility.js";
+import { CustomTag } from "./customTag.js";
+import { createTag } from "../ui/util.js";
 
 export class SelectTag extends CustomTag {
     constructor(creatorForUI,t,parent,searchTarget,child,flag) {

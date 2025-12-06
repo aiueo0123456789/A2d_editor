@@ -1,4 +1,4 @@
-import { createID, managerForDOMs } from "../../utils/ui/util.js";
+import { createID, useEffect } from "../../utils/ui/util.js";
 import { changeParameter } from "../../utils/utility.js";
 import { GPU } from "../../utils/webGPU.js";
 
@@ -21,7 +21,7 @@ export class Script {
             }
         };
         pipelineForUpdate();
-        managerForDOMs.set({o: this, i: "text"}, pipelineForUpdate);
+        useEffect.set({o: this, i: "text"}, pipelineForUpdate);
     }
 
     getSaveData() {

@@ -4,7 +4,7 @@ import { BBezier } from "../../core/edit/objects/BBezier.js";
 import { BBezierShapeKey } from "../../core/edit/objects/BBezierShapeKey.js";
 import { BMesh } from "../../core/edit/objects/BMesh.js";
 import { BMeshShapeKey } from "../../core/edit/objects/BMeshShapeKey.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 
 export class SelectOnlyVertexCommand {
     constructor(selectData,multiple) {
@@ -35,7 +35,7 @@ export class SelectOnlyVertexCommand {
                 hasDiff = true;
             }
         })
-        managerForDOMs.update({o: "頂点選択"});
+        useEffect.update({o: "頂点選択"});
         return {consumed: hasDiff};
     }
 
@@ -50,7 +50,7 @@ export class SelectOnlyVertexCommand {
                 }
             })
             editObject.selectVertices(originalIndexs);
-            managerForDOMs.update({o: "頂点選択"});
+            useEffect.update({o: "頂点選択"});
         })
     }
 }

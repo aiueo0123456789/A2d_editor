@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/inputManager/inputManager.js";
-import { managerForDOMs } from "../../utils/ui/util.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { WeightPaintCommand } from "../../commands/mesh/weightPaint.js";
 
 export class WeightPaintModal {
@@ -25,8 +25,8 @@ export class WeightPaintModal {
         const update = () => {
             this.command.update([this.values[0],this.values[1]]);
         }
-        managerForDOMs.set({o: this.values, g: "_", i: "0"}, update, null);
-        managerForDOMs.set({o: this.values, g: "_", i: "1"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "0"}, update, null);
+        useEffect.set({o: this.values, g: "_", i: "1"}, update, null);
     }
 
     async init(type) {
@@ -35,7 +35,7 @@ export class WeightPaintModal {
     mousemove(/** @type {InputManager} */inputManager) {
         this.values[0] = inputManager.position[0];
         this.values[1] = inputManager.position[1];
-        managerForDOMs.update({o: this.values});
+        useEffect.update({o: this.values});
         return true;
     }
 
