@@ -3,6 +3,7 @@ import { app } from "../../../main.js";
 import { BMesh } from "../../core/edit/objects/BMesh.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { createEdgeFromTexture, createMeshByCBT, cutSilhouetteOutTriangle } from "../../utils/objects/graphicMesh/createMesh/createMesh.js";
+import { indexOfSplice, insertToArray, pushToArray } from "../../utils/utility.js";
 
 export class DeleteVerticesCommand {
     constructor() {
@@ -84,8 +85,8 @@ export class CreateMeshCommand {
         this.imageBoundingBoxs = {};
         for (const bmesh of this.bmeshs) {
             this.originalMeshs[bmesh.id] = {
-                meshes: bmesh.meshes.map(vertex => bmesh.getVertexIndexByVertex(vertex)),
-                edges: bmesh.edges.map(vertex => bmesh.getVertexIndexByVertex(vertex)),
+                meshes: bmesh.meshes.map(mesh => [bmesh.getVertexIndexByVertex(mesh.vertices[0]), bmesh.getVertexIndexByVertex(mesh.vertices[1]), bmesh.getVertexIndexByVertex(mesh.vertices[2])]),
+                edges: bmesh.edges.map(edge => [bmesh.getVertexIndexByVertex(edge.vertices[0]), bmesh.getVertexIndexByVertex(edge.vertices[1])]),
                 silhouetteEdges: bmesh.silhouetteEdges.map(vertex => bmesh.getVertexIndexByVertex(vertex)),
                 vertices: bmesh.vertices.map(vertex => {return {co: [...vertex.co], uv: [...vertex.uv]}}),
             };
@@ -93,14 +94,13 @@ export class CreateMeshCommand {
         }
         this.pixelDensity = 1;
         this.scale = 10;
-        console.log(this)
     }
 
     async execute() {
         for (const bmesh of this.bmeshs) {
             const result = await createEdgeFromTexture(bmesh.texture.texture, this.pixelDensity, this.scale, 5, "bottomLeft");
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
-            bmesh.setMeshData({meshes: meshData, vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), edges: [], silhouetteEdges: result.edges});
+            bmesh.setMeshData({meshes: meshData, edges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), edges: [], silhouetteEdges: result.edges});
         }
         return {consumed: true};
     }
@@ -111,7 +111,7 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             const result = await createEdgeFromTexture(bmesh.texture.texture, this.pixelDensity, this.scale, 5, "bottomLeft");
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
-            bmesh.setMeshData({meshes: meshData, vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), edges: [], silhouetteEdges: result.edges});
+            bmesh.setMeshData({meshes: meshData, edges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), edges: [], silhouetteEdges: result.edges});
         }
     }
 
@@ -119,5 +119,95 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             bmesh.setMeshData(this.originalMeshs[bmesh.id]);
         }
+    }
+}
+
+export class AppendVertexCommand {
+    constructor(possition) {
+        this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
+        this.createDatasInEditObject = {};
+        for (const bmesh of this.bmeshs) {
+            this.createDatasInEditObject[bmesh.id] = BMesh.createVertex(possition, MathVec2.divR(MathVec2.subR(possition, bmesh.imageBoundingBox.min), MathVec2.subR(bmesh.imageBoundingBox.max, bmesh.imageBoundingBox.min)));
+        }
+    }
+
+    execute() {
+        this.bmeshs.forEach(bmesh => {
+            pushToArray(bmesh.vertices, this.createDatasInEditObject[bmesh.id])
+            bmesh.updateGPUData();
+        });
+        return {consumed: true};
+    }
+
+    undo() {
+        this.bmeshs.forEach(bmesh => {
+            indexOfSplice(bmesh.vertices, this.createDatasInEditObject[bmesh.id])
+            bmesh.updateGPUData();
+        });
+    }
+}
+
+export class AppendEdgeCommand {
+    constructor() {
+        this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
+        this.createDatasInEditObject = {};
+        for (const bmesh of this.bmeshs) {
+            if (bmesh.selectedVertices.length == 2) { // 頂点二つで辺一つ
+                this.createDatasInEditObject[bmesh.id] = BMesh.createEdge(...bmesh.selectedVertices); // 選択している頂点をつなぐ
+            }
+        }
+    }
+
+    execute() {
+        this.bmeshs.forEach(bmesh => {
+            pushToArray(bmesh.edges, this.createDatasInEditObject[bmesh.id]);
+            const verticesCoordinates = bmesh.vertices.map(vertex => vertex.co);
+            const meshData = cutSilhouetteOutTriangle(verticesCoordinates, createMeshByCBT(verticesCoordinates, bmesh.edges.concat(bmesh.silhouetteEdges).map(edge => bmesh.geVerticesIndexInEdge(edge))), bmesh.silhouetteEdges.map(edge => bmesh.geVerticesIndexInEdge(edge))); // メッシュの作成とシルエットの外の三角形を削除
+            bmesh.setMeshData({meshes: meshData});
+            bmesh.updateGPUData();
+        });
+        return {consumed: true};
+    }
+
+    undo() {
+        this.bmeshs.forEach(bmesh => {
+            indexOfSplice(bmesh.edges, this.createDatasInEditObject[bmesh.id])
+            bmesh.updateGPUData();
+        });
+    }
+}
+
+export class DeleteEdgeCommand {
+    constructor() {
+        this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
+        this.deleteDatasInEditObject = {};
+        this.deleteDatasInEditObjectMeta = {};
+        for (const bmesh of this.bmeshs) {
+            this.deleteDatasInEditObject[bmesh.id] = bmesh.selectedEdges; // 選択している辺を取得
+        }
+    }
+
+    execute() {
+        this.bmeshs.forEach(bmesh => {
+            this.deleteDatasInEditObjectMeta[bmesh.id] = [];
+            // indexの正確さのため逆順にして削除
+            [...this.deleteDatasInEditObject[bmesh.id]].reverse().forEach((edge) => {
+                this.deleteDatasInEditObjectMeta[bmesh.id].push(indexOfSplice(bmesh.edges, edge));
+            })
+            const verticesCoordinates = bmesh.vertices.map(vertex => vertex.co);
+            const meshData = cutSilhouetteOutTriangle(verticesCoordinates, createMeshByCBT(verticesCoordinates, bmesh.edges.concat(bmesh.silhouetteEdges).map(edge => bmesh.geVerticesIndexInEdge(edge))), bmesh.silhouetteEdges.map(edge => bmesh.geVerticesIndexInEdge(edge))); // メッシュの作成とシルエットの外の三角形を削除
+            bmesh.setMeshData({meshes: meshData});
+            bmesh.updateGPUData();
+        });
+        return {consumed: true};
+    }
+
+    undo() {
+        this.bmeshs.forEach(bmesh => {
+            this.deleteDatasInEditObject[bmesh.id].reverse().forEach((edge, index) => {
+                insertToArray(bmesh.edges, this.deleteDatasInEditObjectMeta[bmesh.id][index], edge);
+            })
+            bmesh.updateGPUData();
+        });
     }
 }

@@ -9,7 +9,7 @@ import { DeleteTool } from '../../../tools/Delete.js';
 import { WeightPaintModal } from '../../../tools/WeightPaintTool.js';
 import { ToolsBarOperator } from '../../../../operators/toolsBarOperator.js';
 import { EdgeJoinTool } from '../../../tools/EdgeJoin.js';
-import { AppendVertex } from '../../../tools/AppendVertex.js';
+import { AppendVertexTool } from '../../../tools/AppendVertex.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
 import { calculateLocalMousePosition, chunk, hitTestPointTriangle, isEmpty, loadFile } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
@@ -82,8 +82,8 @@ const alphaBuffers = {
 };
 
 const useingToolPanelInMode = {
-    "メッシュ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateMeshTool},
-    "ベジェ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertex, "m": CreateMeshTool},
+    "メッシュ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertexTool, "m": CreateMeshTool},
+    "ベジェ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertexTool, "m": CreateMeshTool},
     "ボーン編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "e": ExtrudeMove, "x": DeleteTool},
     "ボーンアニメーション編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},
     "メッシュシェイプキー編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},

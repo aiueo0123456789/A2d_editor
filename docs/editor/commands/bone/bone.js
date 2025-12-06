@@ -1,7 +1,7 @@
 import { app } from "../../../main.js";
 import { BArmature } from "../../core/edit/objects/BArmature.js";
 import { MathVec2 } from "../../utils/mathVec.js";
-import { indexOfSplice, insertToArray, removeDuplicates } from "../../utils/utility.js";
+import { indexOfSplice, insertToArray, pushToArray, removeDuplicates } from "../../utils/utility.js";
 
 export class BoneExtrudeMoveCommand {
     constructor() {
@@ -43,7 +43,7 @@ export class BoneExtrudeMoveCommand {
 
     redo() {
         this.editObjects.forEach(editObject => {
-            this.createDatasInEditObject[editObject.id].forEach(data => editObject.bones.push(data.bone));
+            this.createDatasInEditObject[editObject.id].forEach(data => pushToArray(editObject.bones, data.bone));
             editObject.updateGPUData();
         });
     }

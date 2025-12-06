@@ -1685,9 +1685,7 @@ class WebGPU {
         const result = [];
 
         let offset = 0;
-        if (!("end" in indexs)) {
-            indexs.end = indexs.start + indexs.num;
-        }
+        if (!("end" in indexs)) indexs.end = indexs.start + indexs.num;
         offset = indexs.start * (this.getStructByteSize(struct)); // フィールドのサイズを加算
         for (let i = indexs.start; i < indexs.end; i ++) {
             const keep = [];
@@ -1714,7 +1712,8 @@ class WebGPU {
         let minAtlasSize = Math.ceil(Math.sqrt(totalPixcelNum));
         let width = Math.pow(2, Math.ceil(Math.log2(minAtlasSize)));
         let height = width;
-        const sortedTextures = textures.sort((a, b) =>
+        // sortは破壊的
+        const sortedTextures = [...textures].sort((a, b) =>
             (b.width * b.height) - (a.width * a.height)
         );
         let isAllIncluded = false;

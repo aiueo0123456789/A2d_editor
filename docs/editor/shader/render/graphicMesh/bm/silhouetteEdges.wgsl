@@ -72,7 +72,7 @@ fn vmain(
 
     var output: VertexOutput;
     output.position = vec4f((offset - camera.position) * camera.zoom * camera.cvsSize, 0, 1.0);
-    output.color = select(vec4f(0,1,0,1),vec4f(1,0,0,1),b);
+    output.color = select(vec4f(0,0,1,1),vec4f(1,0,0,1),b);
     return output;
 }
 

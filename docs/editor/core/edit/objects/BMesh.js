@@ -26,18 +26,26 @@ class Mesh {
 
 class Edge {
     constructor(data) {
+        /** @type { Vert[] } */
         this.vertices = data.vertices;
-        this.selected = false;
+        // this.selected = false;
+    }
+
+    get selected() {
+        return this.vertices[0].selected && this.vertices[1].selected;
     }
 
     get hasSelectedVertexInEdge() {
-        return this.vertices.filter(vert => vert.selected).length ? true : false;
+        return this.vertices[0].selected || this.vertices[1].selected;
     }
 }
 
 export class BMesh {
     static createVertex(co, uv, weightBlock = [0,0,0,0,1,0,0,0]) {
         return new Vert({co: co, uv: uv, weightBlock: weightBlock});
+    }
+    static createEdge(v0, v1) {
+        return new Edge({vertices: [v0, v1]});
     }
     constructor() {
         /** @type {GraphicMesh} */
@@ -138,6 +146,10 @@ export class BMesh {
         return this.vertices.filter(vert => vert.selected);
     }
 
+    get selectedEdges() {
+        return this.edges.filter(edge => edge.selected);
+    }
+
     get silhouetteEdgesNum() {
         return this.silhouetteEdges.length;
     }
@@ -170,13 +182,29 @@ export class BMesh {
 
     setMeshData(data) {
         console.log(data)
-        this.vertices.length = 0;
-        this.meshes.length = 0;
-        for (let i = 0; i < data.vertices.length; i ++) {
-            this.vertices.push(new Vert({co: data.vertices[i].co, uv: data.vertices[i].uv, weightBlock: [0,0,0,0, 1,0,0,0]}));
+        if ("vertices" in data) {
+            this.vertices.length = 0;
+            for (let i = 0; i < data.vertices.length; i ++) {
+                this.vertices.push(new Vert({co: data.vertices[i].co, uv: data.vertices[i].uv, weightBlock: [0,0,0,0, 1,0,0,0]}));
+            }
         }
-        for (let i = 0; i < data.meshes.length; i ++) {
-            this.meshes.push(new Mesh({vertices: data.meshes[i].map(vertexIndex => this.vertices[vertexIndex])}));
+        if ("meshes" in data) {
+            this.meshes.length = 0;
+            for (let i = 0; i < data.meshes.length; i ++) {
+                this.meshes.push(new Mesh({vertices: data.meshes[i].map(vertexIndex => this.vertices[vertexIndex])}));
+            }
+        }
+        if ("edges" in data) {
+            this.edges.length = 0;
+            for (let i = 0; i < data.edges.length; i ++) {
+                this.edges.push(new Edge({vertices: data.edges[i].map(vertexIndex => this.vertices[vertexIndex])}));
+            }
+        }
+        if ("silhouetteEdges" in data) {
+            this.silhouetteEdges.length = 0;
+            for (let i = 0; i < data.silhouetteEdges.length; i ++) {
+                this.silhouetteEdges.push(new Edge({vertices: data.silhouetteEdges[i].map(vertexIndex => this.vertices[vertexIndex])}));
+            }
         }
         this.updateGPUData();
     }
