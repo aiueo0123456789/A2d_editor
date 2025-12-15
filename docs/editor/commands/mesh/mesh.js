@@ -14,8 +14,8 @@ export class DeleteVerticesCommand {
         this.deleteMeshes = {};
         this.deleteEdgeIndexs = {};
         this.deleteEdges = {};
-        this.deletesilhouetteEdgeIndexs = {};
-        this.deletesilhouetteEdges = {};
+        this.deleteautoEdgeIndexs = {};
+        this.deleteautoEdges = {};
     }
 
     execute() {
@@ -25,13 +25,13 @@ export class DeleteVerticesCommand {
             this.deleteMeshIndexs[editObject.id] = this.deleteMeshes[editObject.id].map(mesh => editObject.meshes.indexOf(mesh));
             editObject.meshes = editObject.meshes.filter(mesh => !this.deleteMeshes[editObject.id].includes(mesh));
             // 辺の削除対象
-            this.deleteEdges[editObject.id] = editObject.edges.filter(edge => edge.hasSelectedVertexInEdge);
-            this.deleteEdgeIndexs[editObject.id] = this.deleteEdges[editObject.id].map(edge => editObject.edges.indexOf(edge));
-            editObject.edges = editObject.edges.filter(edge => !this.deleteEdges[editObject.id].includes(edge));
+            this.deleteEdges[editObject.id] = editObject.manualEdges.filter(edge => edge.hasSelectedVertexInEdge);
+            this.deleteEdgeIndexs[editObject.id] = this.deleteEdges[editObject.id].map(edge => editObject.manualEdges.indexOf(edge));
+            editObject.manualEdges = editObject.manualEdges.filter(edge => !this.deleteEdges[editObject.id].includes(edge));
             // シルエット辺の削除対象
-            this.deletesilhouetteEdges[editObject.id] = editObject.silhouetteEdges.filter(silhouetteEdge => silhouetteEdge.hasSelectedVertexInEdge);
-            this.deletesilhouetteEdgeIndexs[editObject.id] = this.deletesilhouetteEdges[editObject.id].map(silhouetteEdge => editObject.silhouetteEdges.indexOf(silhouetteEdge));
-            editObject.silhouetteEdges = editObject.silhouetteEdges.filter(silhouetteEdge => !this.deletesilhouetteEdges[editObject.id].includes(silhouetteEdge));
+            this.deleteautoEdges[editObject.id] = editObject.autoEdges.filter(autoEdge => autoEdge.hasSelectedVertexInEdge);
+            this.deleteautoEdgeIndexs[editObject.id] = this.deleteautoEdges[editObject.id].map(autoEdge => editObject.autoEdges.indexOf(autoEdge));
+            editObject.autoEdges = editObject.autoEdges.filter(autoEdge => !this.deleteautoEdges[editObject.id].includes(autoEdge));
             // 頂点の削除
             this.deleteVertices[editObject.id] = editObject.vertices.filter(vert => vert.selected);
             this.deleteVertexIndexs[editObject.id] = this.deleteVertices[editObject.id].map(vert => editObject.vertices.indexOf(vert));
@@ -46,9 +46,9 @@ export class DeleteVerticesCommand {
             // 面の削除対象
             editObject.meshes = editObject.meshes.filter(mesh => !this.deleteMeshes[editObject.id].includes(mesh));
             // 辺の削除対象
-            editObject.edges = editObject.edges.filter(edge => !this.deleteEdges[editObject.id].includes(edge));
+            editObject.manualEdges = editObject.manualEdges.filter(edge => !this.deleteEdges[editObject.id].includes(edge));
             // シルエット辺の削除対象
-            editObject.silhouetteEdges = editObject.silhouetteEdges.filter(silhouetteEdge => !this.deletesilhouetteEdges[editObject.id].includes(silhouetteEdge));
+            editObject.autoEdges = editObject.autoEdges.filter(autoEdge => !this.deleteautoEdges[editObject.id].includes(autoEdge));
             // 頂点の削除
             editObject.vertices = editObject.vertices.filter(vert => !this.deleteVertices[editObject.id].includes(vert));
             editObject.updateGPUData();
@@ -62,12 +62,12 @@ export class DeleteVerticesCommand {
                 editObject.vertices.splice(this.deleteVertexIndexs[editObject.id][i], 0, this.deleteVertices[editObject.id][i]);
             }
             // シルエット辺を戻す
-            for (let i = 0; i < this.deletesilhouetteEdgeIndexs[editObject.id].length; i ++) {
-                editObject.silhouetteEdges.splice(this.deletesilhouetteEdgeIndexs[editObject.id][i], 0, this.deletesilhouetteEdges[editObject.id][i]);
+            for (let i = 0; i < this.deleteautoEdgeIndexs[editObject.id].length; i ++) {
+                editObject.autoEdges.splice(this.deleteautoEdgeIndexs[editObject.id][i], 0, this.deleteautoEdges[editObject.id][i]);
             }
             // 辺を戻す
             for (let i = 0; i < this.deleteEdgeIndexs[editObject.id].length; i ++) {
-                editObject.edges.splice(this.deleteEdgeIndexs[editObject.id][i], 0, this.deleteEdges[editObject.id][i]);
+                editObject.manualEdges.splice(this.deleteEdgeIndexs[editObject.id][i], 0, this.deleteEdges[editObject.id][i]);
             }
             // 面を戻す
             for (let i = 0; i < this.deleteMeshIndexs[editObject.id].length; i ++) {
@@ -86,8 +86,8 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             this.originalMeshs[bmesh.id] = {
                 meshes: bmesh.meshes.map(mesh => [bmesh.getVertexIndexByVertex(mesh.vertices[0]), bmesh.getVertexIndexByVertex(mesh.vertices[1]), bmesh.getVertexIndexByVertex(mesh.vertices[2])]),
-                edges: bmesh.edges.map(edge => [bmesh.getVertexIndexByVertex(edge.vertices[0]), bmesh.getVertexIndexByVertex(edge.vertices[1])]),
-                silhouetteEdges: bmesh.silhouetteEdges.map(vertex => bmesh.getVertexIndexByVertex(vertex)),
+                manualEdges: bmesh.manualEdges.map(edge => [bmesh.getVertexIndexByVertex(edge.vertices[0]), bmesh.getVertexIndexByVertex(edge.vertices[1])]),
+                autoEdges: bmesh.autoEdges.map(vertex => bmesh.getVertexIndexByVertex(vertex)),
                 vertices: bmesh.vertices.map(vertex => {return {co: [...vertex.co], uv: [...vertex.uv]}}),
             };
             this.imageBoundingBoxs[bmesh.id] = bmesh.imageBoundingBox;
@@ -100,7 +100,7 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             const result = await createEdgeFromTexture(bmesh.texture.texture, this.pixelDensity, this.scale, 5, "bottomLeft");
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
-            bmesh.setMeshData({meshes: meshData, edges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), edges: [], silhouetteEdges: result.edges});
+            bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), manualEdges: [], autoEdges: result.edges});
         }
         return {consumed: true};
     }
@@ -111,7 +111,7 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             const result = await createEdgeFromTexture(bmesh.texture.texture, this.pixelDensity, this.scale, 5, "bottomLeft");
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
-            bmesh.setMeshData({meshes: meshData, edges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), edges: [], silhouetteEdges: result.edges});
+            bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), manualEdges: [], autoEdges: result.edges});
         }
     }
 
@@ -160,9 +160,9 @@ export class AppendEdgeCommand {
 
     execute() {
         this.bmeshs.forEach(bmesh => {
-            pushToArray(bmesh.edges, this.createDatasInEditObject[bmesh.id]);
+            pushToArray(bmesh.manualEdges, this.createDatasInEditObject[bmesh.id]);
             const verticesCoordinates = bmesh.vertices.map(vertex => vertex.co);
-            const meshData = cutSilhouetteOutTriangle(verticesCoordinates, createMeshByCBT(verticesCoordinates, bmesh.edges.concat(bmesh.silhouetteEdges).map(edge => bmesh.geVerticesIndexInEdge(edge))), bmesh.silhouetteEdges.map(edge => bmesh.geVerticesIndexInEdge(edge))); // メッシュの作成とシルエットの外の三角形を削除
+            const meshData = cutSilhouetteOutTriangle(verticesCoordinates, createMeshByCBT(verticesCoordinates, bmesh.manualEdges.concat(bmesh.autoEdges).map(edge => bmesh.getVerticesIndexInEdge(edge))), bmesh.autoEdges.map(edge => bmesh.getVerticesIndexInEdge(edge))); // メッシュの作成とシルエットの外の三角形を削除
             bmesh.setMeshData({meshes: meshData});
             bmesh.updateGPUData();
         });
@@ -171,7 +171,7 @@ export class AppendEdgeCommand {
 
     undo() {
         this.bmeshs.forEach(bmesh => {
-            indexOfSplice(bmesh.edges, this.createDatasInEditObject[bmesh.id])
+            indexOfSplice(bmesh.manualEdges, this.createDatasInEditObject[bmesh.id])
             bmesh.updateGPUData();
         });
     }
@@ -192,10 +192,10 @@ export class DeleteEdgeCommand {
             this.deleteDatasInEditObjectMeta[bmesh.id] = [];
             // indexの正確さのため逆順にして削除
             [...this.deleteDatasInEditObject[bmesh.id]].reverse().forEach((edge) => {
-                this.deleteDatasInEditObjectMeta[bmesh.id].push(indexOfSplice(bmesh.edges, edge));
+                this.deleteDatasInEditObjectMeta[bmesh.id].push(indexOfSplice(bmesh.manualEdges, edge));
             })
             const verticesCoordinates = bmesh.vertices.map(vertex => vertex.co);
-            const meshData = cutSilhouetteOutTriangle(verticesCoordinates, createMeshByCBT(verticesCoordinates, bmesh.edges.concat(bmesh.silhouetteEdges).map(edge => bmesh.geVerticesIndexInEdge(edge))), bmesh.silhouetteEdges.map(edge => bmesh.geVerticesIndexInEdge(edge))); // メッシュの作成とシルエットの外の三角形を削除
+            const meshData = cutSilhouetteOutTriangle(verticesCoordinates, createMeshByCBT(verticesCoordinates, bmesh.manualEdges.concat(bmesh.autoEdges).map(edge => bmesh.getVerticesIndexInEdge(edge))), bmesh.autoEdges.map(edge => bmesh.getVerticesIndexInEdge(edge))); // メッシュの作成とシルエットの外の三角形を削除
             bmesh.setMeshData({meshes: meshData});
             bmesh.updateGPUData();
         });
@@ -205,7 +205,7 @@ export class DeleteEdgeCommand {
     undo() {
         this.bmeshs.forEach(bmesh => {
             this.deleteDatasInEditObject[bmesh.id].reverse().forEach((edge, index) => {
-                insertToArray(bmesh.edges, this.deleteDatasInEditObjectMeta[bmesh.id][index], edge);
+                insertToArray(bmesh.manualEdges, this.deleteDatasInEditObjectMeta[bmesh.id][index], edge);
             })
             bmesh.updateGPUData();
         });

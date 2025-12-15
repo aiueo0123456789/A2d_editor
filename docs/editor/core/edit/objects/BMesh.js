@@ -55,9 +55,9 @@ export class BMesh {
         /** @type {Mesh[]} */
         this.meshes = [];
         /** @type {Edge[]} */
-        this.edges = [];
+        this.manualEdges = [];
         /** @type {Edge[]} */
-        this.silhouetteEdges = [];
+        this.autoEdges = [];
         this.texture = null;
         this.zIndex = 0;
 
@@ -70,7 +70,25 @@ export class BMesh {
     }
 
     get boundingBox() {
-        
+        let min = [Infinity,Infinity];
+        let max = [-Infinity,-Infinity];
+        for (const vertex of this.vertices) {
+            if (min[0] > vertex.co[0]) {
+                min[0] = vertex.co[0];
+            }
+            if (min[1] > vertex.co[1]) {
+                min[1] = vertex.co[1];
+            }
+            if (max[0] < vertex.co[0]) {
+                max[0] = vertex.co[0];
+            }
+            if (max[1] < vertex.co[1]) {
+                max[1] = vertex.co[1];
+            }
+        }
+        const result = {min: min, max: max};
+        result.size = MathVec2.subR(result.max, result.min);
+        return result;
     }
 
     get imageBoundingBox() {
@@ -104,9 +122,18 @@ export class BMesh {
         return result;
     }
 
-    // 頂点の表示状況をbool[]でかえす
+    get edges() {
+        return this.autoEdges.concat(this.manualEdges);
+    }
+
+    // 頂点の選択状況をbool[]でかえす
     get verticesSelectData() {
         return this.vertices.map(vertex => vertex.selected);
+    }
+
+    // 辺の選択状況をbool[]でかえす
+    get edgesSelectData() {
+        return this.edges.map(edge => edge.selected);
     }
 
     // 頂点(object)から頂点indexを返す
@@ -120,7 +147,7 @@ export class BMesh {
     }
 
     // 辺の頂点indexを返す
-    geVerticesIndexInEdge(edge) {
+    getVerticesIndexInEdge(edge) {
         return edge.vertices.map(vertex => this.getVertexIndexByVertex(vertex));
     }
 
@@ -142,6 +169,13 @@ export class BMesh {
         });
     }
 
+    // 辺選択
+    selectEdges(/** @type {Array} */ indexs) {
+        indexs.forEach(index => {
+            this.selectVertices(this.getVerticesIndexInEdge(this.edges[index])); // 頂点を選択
+        });
+    }
+
     get selectedVertices() {
         return this.vertices.filter(vert => vert.selected);
     }
@@ -150,12 +184,16 @@ export class BMesh {
         return this.edges.filter(edge => edge.selected);
     }
 
-    get silhouetteEdgesNum() {
-        return this.silhouetteEdges.length;
+    get autoEdgesNum() {
+        return this.autoEdges.length;
+    }
+
+    get manualEdgesNum() {
+        return this.manualEdges.length;
     }
 
     get edgesNum() {
-        return this.edges.length;
+        return this.autoEdges + this.manualEdgesNum;
     }
 
     get verticesNum() {
@@ -169,15 +207,15 @@ export class BMesh {
     updateGPUData() {
         this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
         this.uvsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.uv).flat(), ["f32", "f32"]);
-        this.silhouetteEdgesBuffer = GPU.createStorageBuffer(roundUp(this.silhouetteEdges.length * 2 * 4, 2 * 4), this.silhouetteEdges.map(edge => this.geVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
-        this.edgesBuffer = GPU.createStorageBuffer(roundUp(this.edges.length * 2 * 4, 2 * 4), this.edges.map(edge => this.geVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
+        this.autoEdgesBuffer = GPU.createStorageBuffer(roundUp(this.autoEdges.length * 2 * 4, 2 * 4), this.autoEdges.map(edge => this.getVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
+        this.manualEdgesBuffer = GPU.createStorageBuffer(roundUp(this.manualEdges.length * 2 * 4, 2 * 4), this.manualEdges.map(edge => this.getVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
         this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => this.getMeshLoop(mesh)).flat(), ["u32", "u32", "u32"]);
         this.vertexSelectedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.vertices.map(vertex => vertex.selected ? 1 : 0), ["u32"]);
-        this.silhouetteEdgeSelectedBuffer = GPU.createStorageBuffer(roundUp(this.silhouetteEdges.length * 4, 4), this.silhouetteEdges.map(edge => edge.selected ? 1 : 0), ["u32"]);
-        this.edgeSelectedBuffer = GPU.createStorageBuffer(roundUp(this.edges.length * 4, 4), this.edges.map(edge => edge.selected ? 1 : 0), ["u32"]);
+        this.autoEdgeselectedBuffer = GPU.createStorageBuffer(roundUp(this.autoEdges.length * 4, 4), this.autoEdges.map(edge => edge.selected ? 1 : 0), ["u32"]);
+        this.manualEdgeselectedBuffer = GPU.createStorageBuffer(roundUp(this.manualEdges.length * 4, 4), this.manualEdges.map(edge => edge.selected ? 1 : 0), ["u32"]);
         this.meshSelectedBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 4, 4), this.meshes.map(mesh => mesh.selected ? 1 : 0), ["u32"]);
         this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.uvsBuffer, this.silhouetteEdgesBuffer, this.edgesBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.silhouetteEdgeSelectedBuffer, this.edgeSelectedBuffer, this.meshSelectedBuffer, this.zIndexBuffer, this.texture.view]);
+        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.uvsBuffer, this.autoEdgesBuffer, this.manualEdgesBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.autoEdgeselectedBuffer, this.manualEdgeselectedBuffer, this.meshSelectedBuffer, this.zIndexBuffer, this.texture.view]);
     }
 
     setMeshData(data) {
@@ -194,16 +232,16 @@ export class BMesh {
                 this.meshes.push(new Mesh({vertices: data.meshes[i].map(vertexIndex => this.vertices[vertexIndex])}));
             }
         }
-        if ("edges" in data) {
-            this.edges.length = 0;
-            for (let i = 0; i < data.edges.length; i ++) {
-                this.edges.push(new Edge({vertices: data.edges[i].map(vertexIndex => this.vertices[vertexIndex])}));
+        if ("manualEdges" in data) {
+            this.manualEdges.length = 0;
+            for (let i = 0; i < data.manualEdges.length; i ++) {
+                this.manualEdges.push(new Edge({vertices: data.manualEdges[i].map(vertexIndex => this.vertices[vertexIndex])}));
             }
         }
-        if ("silhouetteEdges" in data) {
-            this.silhouetteEdges.length = 0;
-            for (let i = 0; i < data.silhouetteEdges.length; i ++) {
-                this.silhouetteEdges.push(new Edge({vertices: data.silhouetteEdges[i].map(vertexIndex => this.vertices[vertexIndex])}));
+        if ("autoEdges" in data) {
+            this.autoEdges.length = 0;
+            for (let i = 0; i < data.autoEdges.length; i ++) {
+                this.autoEdges.push(new Edge({vertices: data.autoEdges[i].map(vertexIndex => this.vertices[vertexIndex])}));
             }
         }
         this.updateGPUData();

@@ -14,12 +14,12 @@ struct VisualSettings {
 @group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
 @group(2) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
 @group(2) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
-@group(2) @binding(2) var<storage, read> silhouetteEdges: array<vec2<u32>>; // シルエットの辺
-@group(2) @binding(3) var<storage, read> edges: array<vec2<u32>>; // 辺
+@group(2) @binding(2) var<storage, read> autoEdges: array<vec2<u32>>; // シルエットの辺
+@group(2) @binding(3) var<storage, read> manualEdges: array<vec2<u32>>; // 辺
 @group(2) @binding(4) var<storage, read> meshLoops: array<u32>;
 @group(2) @binding(5) var<storage, read> vertexSelected: array<u32>;
-@group(2) @binding(6) var<storage, read> silhouetteEdgeSelectedBuffer: array<u32>;
-@group(2) @binding(7) var<storage, read> edgeSelected: array<u32>;
+@group(2) @binding(6) var<storage, read> autoEdgeSelectedBuffer: array<u32>;
+@group(2) @binding(7) var<storage, read> manualEdgeSelected: array<u32>;
 @group(2) @binding(8) var<storage, read> meshSelected: array<u32>;
 @group(2) @binding(9) var<uniform> zIndex: f32;
 

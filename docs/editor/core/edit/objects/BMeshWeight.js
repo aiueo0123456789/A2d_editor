@@ -43,9 +43,9 @@ export class BMeshWeight {
         /** @type {Mesh[]} */
         this.meshes = [];
         /** @type {Edge[]} */
-        this.edges = [];
+        this.manualEdges = [];
         /** @type {Edge[]} */
-        this.silhouetteEdges = [];
+        this.autoEdges = [];
         this.texture = null;
         this.zIndex = 0;
 

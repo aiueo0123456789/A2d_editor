@@ -18,7 +18,7 @@ export class CustomTag {
             // console.trace("削除されました", this);
         }
         for (const key in this) {
-            if (!this.notRemoveList.includes(key)) {
+            if (!this.notRemoveList.includes(key)) { // 削除してはいけないタグ
                 if (this[key] instanceof HTMLElement) {
                     this[key].remove();
                     this[key] = null;

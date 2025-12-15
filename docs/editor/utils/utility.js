@@ -49,6 +49,27 @@ export function hitTestPointTriangle(a, b, c, p) {
     return (c1 > 0.0 && c2 > 0.0 && c3 > 0.0) || (c1 < 0.0 && c2 < 0.0 && c3 < 0.0);
 }
 
+export function distancePointToSegment(a, b, p) {
+    const abx = b[0] - a[0];
+    const aby = b[1] - a[1];
+    const apx = p[0] - a[0];
+    const apy = p[1] - a[1];
+    const abLenSq = abx * abx + aby * aby;
+    // A と B が同一点の場合
+    if (abLenSq === 0) {
+        return Math.hypot(p[0] - a[0], p[1] - a[1]);
+    }
+    // 射影の比率 t
+    let t = (apx * abx + apy * aby) / abLenSq;
+    // 線分内にクランプ
+    t = Math.max(0, Math.min(1, t));
+    // 最近点
+    const closestX = a[0] + abx * t;
+    const closestY = a[1] + aby * t;
+    // 距離
+    return Math.hypot(p[0] - closestX, p[1] - closestY);
+}
+
 // 三角形内の線形補間
 export function lerpTriangle(p0, p1, p2, v0, v1, v2, p) {
     const eux = p1[0] - p0[0];

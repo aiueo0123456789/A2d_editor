@@ -11,7 +11,7 @@ import { ToolsBarOperator } from '../../../../operators/toolsBarOperator.js';
 import { EdgeJoinTool } from '../../../tools/EdgeJoin.js';
 import { AppendVertexTool } from '../../../tools/AppendVertex.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
-import { calculateLocalMousePosition, chunk, hitTestPointTriangle, isEmpty, loadFile } from '../../../../utils/utility.js';
+import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, loadFile } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/objects/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
@@ -36,6 +36,7 @@ import { BArmature } from '../../../../core/edit/objects/BArmature.js';
 import { BBezierShapeKey } from '../../../../core/edit/objects/BBezierShapeKey.js';
 import { BMeshShapeKey } from '../../../../core/edit/objects/BMeshShapeKey.js';
 import { BMesh } from '../../../../core/edit/objects/BMesh.js';
+import { SelectOnlyEdgeCommand } from '../../../../commands/utile/selectEdge.js';
 
 const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
 const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/mix.wgsl"), [], "2d", "s");
@@ -57,8 +58,8 @@ const BMWWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGro
 const BMeshMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/main.wgsl"), [], "2d", "t", "wl");
 const BMeshVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/vertices.wgsl"), [], "2d", "s");
 const BMeshMeshRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/meshes.wgsl"), [], "2d", "s");
-const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/edges.wgsl"), [], "2d", "s");
-const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/silhouetteEdges.wgsl"), [], "2d", "s");
+const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/manualEdges.wgsl"), [], "2d", "s");
+const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/autoEdges.wgsl"), [], "2d", "s");
 
 const BAABoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr")], await loadFile("./editor/shader/render/bone/baa/bones.wgsl"), [], "2d", "s");
 const BArmatureVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/vertices.wgsl"), [], "2d", "t");
@@ -352,7 +353,7 @@ export class Area_Viewer {
         const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey || editData instanceof BBezier || editData instanceof BBezierShapeKey || editData instanceof BArmature);
         let minDis = Infinity;
         let selectIndexs = [];
-        let selectBoneIncludesObjectIDs = [];
+        let selectVertexIncludesObjectIDs = [];
         editObjects.forEach(editObject => {
             const objectID = editObject.id;
             let verticesCoordinates;
@@ -367,11 +368,11 @@ export class Area_Viewer {
                             if (dist <= minDis) {
                                 if (dist < minDis) { // ==じゃないなら配列の長さをリセット
                                     selectIndexs.length = 0;
-                                    selectBoneIncludesObjectIDs.length = 0;
+                                    selectVertexIncludesObjectIDs.length = 0;
                                 }
                                 minDis = dist;
                                 selectIndexs.push(verticesCoordinates.indexOf(vertex));
-                                selectBoneIncludesObjectIDs.push(objectID);
+                                selectVertexIncludesObjectIDs.push(objectID);
                             }
                         }
                     }
@@ -382,70 +383,49 @@ export class Area_Viewer {
                     if (dist <= minDis) {
                         if (dist < minDis) { // ==じゃないなら配列の長さをリセット
                             selectIndexs.length = 0;
-                            selectBoneIncludesObjectIDs.length = 0;
+                            selectVertexIncludesObjectIDs.length = 0;
                         }
                         minDis = dist;
                         selectIndexs.push(verticesCoordinates.indexOf(vertex));
-                        selectBoneIncludesObjectIDs.push(objectID);
+                        selectVertexIncludesObjectIDs.push(objectID);
                     }
                 }
             }
         })
         const result = {};
-        if (selectBoneIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
-            let index = Math.floor(Math.random() * selectBoneIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
-            result[selectBoneIncludesObjectIDs[index]] = [selectIndexs[index]];
+        if (selectVertexIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
+            let index = Math.floor(Math.random() * selectVertexIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
+            result[selectVertexIncludesObjectIDs[index]] = [selectIndexs[index]];
         }
         return result;
     }
 
     getEdgesRayCast(point) {
-        const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey);
+        const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh);
+        // let minDis = this.areasConfig.visualSettings.mesh.manualEdgesize;
         let minDis = Infinity;
         let selectIndexs = [];
-        let selectBoneIncludesObjectIDs = [];
+        let selectEdgeIncludesObjectIDs = [];
         editObjects.forEach(editObject => {
             const objectID = editObject.id;
-            let verticesCoordinates;
-            if (editObject instanceof BMeshShapeKey) verticesCoordinates = editObject.activeShapeKey.data.map(vertex => vertex.co);
-            else verticesCoordinates = editObject.vertices.map(vertex => vertex.co);
-            if (editObject instanceof BArmature) {
-                for (const boneVertices of chunk(verticesCoordinates, 2)) {
-                    const lenght = MathVec2.distanceR(boneVertices[0], boneVertices[1]);
-                    for (const vertex of boneVertices) {
-                        const dist = MathVec2.distanceR(vertex, point);
-                        if (dist < lenght * 0.05) {
-                            if (dist <= minDis) {
-                                if (dist < minDis) { // ==じゃないなら配列の長さをリセット
-                                    selectIndexs.length = 0;
-                                    selectBoneIncludesObjectIDs.length = 0;
-                                }
-                                minDis = dist;
-                                selectIndexs.push(verticesCoordinates.indexOf(vertex));
-                                selectBoneIncludesObjectIDs.push(objectID);
-                            }
-                        }
+            const edgesVerticesCoordinates = editObject.edges.map(edge => edge.vertices.map(vertex => vertex.co));
+            for (const vertices of edgesVerticesCoordinates) {
+                const dist = distancePointToSegment(vertices[0], vertices[1], point);
+                if (dist <= minDis) {
+                    if (dist < minDis) { // ==じゃないなら配列の長さをリセット
+                        selectIndexs.length = 0;
+                        selectEdgeIncludesObjectIDs.length = 0;
                     }
-                }
-            } else {
-                for (const vertex of verticesCoordinates) {
-                    const dist = MathVec2.distanceR(vertex, point);
-                    if (dist <= minDis) {
-                        if (dist < minDis) { // ==じゃないなら配列の長さをリセット
-                            selectIndexs.length = 0;
-                            selectBoneIncludesObjectIDs.length = 0;
-                        }
-                        minDis = dist;
-                        selectIndexs.push(verticesCoordinates.indexOf(vertex));
-                        selectBoneIncludesObjectIDs.push(objectID);
-                    }
+                    minDis = dist;
+                    selectIndexs.push(edgesVerticesCoordinates.indexOf(vertices));
+                    selectEdgeIncludesObjectIDs.push(objectID);
                 }
             }
         })
         const result = {};
-        if (selectBoneIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
-            let index = Math.floor(Math.random() * selectBoneIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
-            result[selectBoneIncludesObjectIDs[index]] = [selectIndexs[index]];
+        if (selectEdgeIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
+            let index = Math.floor(Math.random() * selectEdgeIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
+            result[selectEdgeIncludesObjectIDs[index]] = [selectIndexs[index]];
         }
         return result;
     }
@@ -466,8 +446,8 @@ export class Area_Viewer {
             context.setSelectedObject(frontObject, inputManager.keysDown["Shift"]);
             context.setActiveObject(frontObject);
         } else if (context.currentMode == "メッシュ編集") {
-            if (isEmpty(this.getVerticesRayCast(this.inputs.position))) {
-                app.operator.appendCommand(new SelectOnlyEdgeCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            if (inputManager.keysDown["2"]) {
+                app.operator.appendCommand(new SelectOnlyEdgeCommand(this.getEdgesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             } else {
                 app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             }
@@ -732,9 +712,9 @@ export class Renderer {
                             renderPass.setPipeline(BMeshMeshRenderPipeline);
                             renderPass.draw(3 * 4, bm.meshesNum, 0, 0); // 3つの辺を4つの頂点から四角形で表示する
                             renderPass.setPipeline(BMeshEdgeRenderPipeline);
-                            renderPass.draw(4, bm.edgesNum, 0, 0); // 4つの頂点から四角形で表示する
+                            renderPass.draw(4, bm.manualEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
                             renderPass.setPipeline(BMeshSilhouetteEdgeRenderPipeline);
-                            renderPass.draw(4, bm.silhouetteEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
+                            renderPass.draw(4, bm.autoEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
                             renderPass.setPipeline(BMeshVerticesRenderPipeline);
                             renderPass.draw(4, bm.verticesNum, 0, 0); // 4つの頂点から四角形を表示
                         } else if (graphicMesh.mode == "メッシュウェイト編集") {

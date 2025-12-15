@@ -90,28 +90,36 @@ export class UseEffect {
 
     deleteDataBlock(deleteData) {
         this.objects.forEach((list, object) => {
-            list = list.filter(data => deleteData != data);
-            if (list.length == 0) {
-                this.objects.delete(object);
-            }
+            const newList = list.filter(data => data !== deleteData);
+            if (newList.length === 0) this.objects.delete(object);
+            else this.objects.set(object, newList);
         })
         this.groups.forEach((list, group) => {
-            list = list.filter(data => deleteData != data);
-            if (list.length == 0) {
-                this.groups.delete(group);
-            }
+            const newList = list.filter(data => data !== deleteData);
+            if (newList.length === 0) this.groups.delete(group);
+            else this.groups.set(group, newList);
         })
         this.ids.forEach((list, id) => {
-            list = list.filter(data => deleteData != data);
-            if (list.length == 0) {
-                this.ids.delete(id);
-            }
+            const newList = list.filter(data => data !== deleteData);
+            if (newList.length === 0) this.ids.delete(id);
+            else this.ids.set(id, newList);
         })
         this.flags.forEach((list, flag) => {
-            list = list.filter(data => deleteData != data);
-            if (list.length == 0) {
-                this.flags.delete(flag);
-            }
+            const newList = list.filter(data => data !== deleteData);
+            if (newList.length === 0) this.flags.delete(flag);
+            else this.flags.set(flag, newList);
+        })
+        this.objects.forEach((list, object) => {
+            list.forEach(data => {if (deleteData === data) console.log("削除できてないお")});
+        })
+        this.groups.forEach((list, group) => {
+            list.forEach(data => {if (deleteData === data) console.log("削除できてないお")});
+        })
+        this.ids.forEach((list, id) => {
+            list.forEach(data => {if (deleteData === data) console.log("削除できてないお")});
+        })
+        this.flags.forEach((list, flag) => {
+            list.forEach(data => {if (deleteData === data) console.log("削除できてないお")});
         })
     }
 
@@ -137,30 +145,27 @@ export class UseEffect {
         // const i = getFn(this.ids,IDs.i);
         // /** @type {Array} */
         // const f = getFn(this.flags,IDs.f);
-        const deleteObjects = o.filter(item => g.includes(item)).filter(item => i.includes(item)).filter(item => f.includes(item));
+        const deleteDatas = o.filter(item => g.includes(item)).filter(item => i.includes(item)).filter(item => f.includes(item));
+        console.log(this.objects);
         this.objects.forEach((list, object) => {
-            list = list.filter(data => !deleteObjects.includes(data));
-            if (list.length == 0) {
-                this.objects.delete(object);
-            }
+            const newList = list.filter(data => !deleteDatas.includes(data));
+            if (newList.length == 0) this.objects.delete(object);
+            else this.objects.set(object, newList);
         })
         this.groups.forEach((list, group) => {
-            list = list.filter(data => !deleteObjects.includes(data));
-            if (list.length == 0) {
-                this.groups.delete(group);
-            }
+            const newList = list.filter(data => !deleteDatas.includes(data));
+            if (newList.length === 0) this.groups.delete(group);
+            else this.groups.set(group, newList);
         })
         this.ids.forEach((list, id) => {
-            list = list.filter(data => !deleteObjects.includes(data));
-            if (list.length == 0) {
-                this.ids.delete(id);
-            }
+            const newList = list.filter(data => !deleteDatas.includes(data));
+            if (newList.length === 0) this.ids.delete(id);
+            else this.ids.set(id, newList);
         })
         this.flags.forEach((list, flag) => {
-            list = list.filter(data => !deleteObjects.includes(data));
-            if (list.length == 0) {
-                this.flags.delete(flag);
-            }
+            const newList = list.filter(data => !deleteDatas.includes(data));
+            if (newList.length === 0) this.flags.delete(flag);
+            else this.flags.set(flag, newList);
         })
     }
 

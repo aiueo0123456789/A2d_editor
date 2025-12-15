@@ -77,8 +77,7 @@ export class InputManager {
             if (app.activeArea.uiModel.wheel) {
                 app.activeArea.uiModel.wheel(this);
             }
-            e.preventDefault();
-        }, { passive: false });
+        }, { passive: true });
 
         // キーイベント管理
         document.addEventListener("keydown", (e) => {

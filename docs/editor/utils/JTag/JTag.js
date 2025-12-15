@@ -517,49 +517,6 @@ export class JTag {
         return this.setUpdateEventByPath(searchTarget, path, updateDOMsValue, flag);
     }
 
-    // 任意のパラメーターと値を関連付ける
-    setWithParameter(/** @type {HTMLElement} */t, withObject, searchTarget, flag, parameter) {
-        let source = this.getParameter(searchTarget, withObject, 1);
-        if (!source) { // 取得できなかったら切り上げ
-            console.warn("UIとパラメータの連携ができませんでした", withObject, searchTarget);
-            t[parameter] = 0.5;
-            return ;
-        }
-        // 値を関連づけ
-        let updateDOMsValue = () => {
-            t[parameter] = source.value;
-        };
-        updateDOMsValue();
-        this.setUpdateEventByPath(searchTarget, withObject, updateDOMsValue, flag);
-        // let command;
-        // // イベントを作成
-        // t.addEventListener("input", () => {
-        //     let newValue;
-        //     if (t.type == "number" || t.type == "range") { // 数字型
-        //         newValue = Number(t.value);
-        //     } else if (t.type == "checkbox") {
-        //         newValue = t.checked;
-        //     } else if (t.type == "color") {
-        //         const valueColor = hexToRgba(t.value, 1);
-        //         newValue = valueColor;
-        //     } else if (t.tagName === "SELECT") {
-        //         newValue = t.value;
-        //     } else {
-        //         newValue = t.value;
-        //     }
-        //     if (command) {
-        //         command.update(newValue);
-        //     } else {
-        //         command = new ChangeParameterCommand(source.object, source.parameter, newValue);
-        //     }
-        // });
-        // t.addEventListener("change", () => {
-        //     app.operator.appendCommand(command);
-        //     app.operator.execute();
-        //     command = null;
-        // })
-    }
-
     // 構造の配列をもとにDOMの構築
     createFromChildren(/** @type {HTMLElement} */t, parent, struct, searchTarget, flag = "defo") {
         // const myChildrenTag = [...childrenTag];

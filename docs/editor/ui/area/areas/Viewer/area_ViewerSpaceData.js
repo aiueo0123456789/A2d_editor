@@ -44,7 +44,7 @@ export class ViewerSpaceData {
         };
         this.GPUDataForVisualSettings = {
             mesh: {
-                buffer: GPU.createUniformBuffer(4 * 2, [this.visualSettings.mesh.vertexSize, this.visualSettings.mesh.edgeSize], ["f32"]),
+                buffer: GPU.createUniformBuffer(4 * 2, [this.visualSettings.mesh.vertexSize, this.visualSettings.mesh.manualEdgesize], ["f32"]),
                 group: null,
             },
             bone: {
