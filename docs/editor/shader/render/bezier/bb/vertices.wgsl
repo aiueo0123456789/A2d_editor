@@ -1,11 +1,5 @@
 import Camera;
 
-struct Bezier {
-    p: vec2<f32>,
-    c1: vec2<f32>,
-    c2: vec2<f32>,
-}
-
 struct VisualSettings {
     vertexSize: f32,
     curveSize: f32,

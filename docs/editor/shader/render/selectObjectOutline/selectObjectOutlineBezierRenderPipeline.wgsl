@@ -1,16 +1,8 @@
 import Camera;
 import BezierModifierAllocation;
+import Bezier;
 
-struct Bezier {
-    p: vec2<f32>,
-    c1: vec2<f32>,
-    c2: vec2<f32>,
-}
-
-struct WeightBlock {
-    indexs: vec4<u32>,
-    weights: vec4<f32>,
-}
+import WeightBlock;
 
 struct VisualSettings {
     vertexSize: f32,
@@ -35,9 +27,9 @@ const pointData = array<vec4<f32>, 4>(
     vec4<f32>( 1.0,  1.0, 1.0, 0.0), // 右上
 );
 
-fn mathBezier(p1: vec2<f32>, c1: vec2<f32>, c2: vec2<f32>, p2: vec2<f32>, t: f32) -> vec2<f32> {
+fn mathBezier(p1: vec2<f32>, lc: vec2<f32>, rc: vec2<f32>, p2: vec2<f32>, t: f32) -> vec2<f32> {
     let u = 1.0 - t;
-    return p1 * pow(u, 3.0) + c1 * 3.0 * pow(u, 2.0) * t + c2 * 3.0 * u * pow(t, 2.0) + p2 * pow(t, 3.0);
+    return p1 * pow(u, 3.0) + lc * 3.0 * pow(u, 2.0) * t + rc * 3.0 * u * pow(t, 2.0) + p2 * pow(t, 3.0);
 }
 
 // バーテックスシェーダー
@@ -52,8 +44,8 @@ fn vmain(
     let point2 = verticesPosition[index + 1u];
     let deltaT = 1.0 / 50.0;
     let t = f32(vertexIndex / 2u) / 50.0;
-    let position1 = mathBezier(point1.p, point1.c2, point2.c1, point2.p, t);
-    let position2 = mathBezier(point1.p, point1.c2, point2.c1, point2.p, t + deltaT);
+    let position1 = mathBezier(point1.p, point1.rc, point2.lc, point2.p, t);
+    let position2 = mathBezier(point1.p, point1.rc, point2.lc, point2.p, t + deltaT);
     let sub = position2 - position1;
     let normal = normalize(vec2<f32>(-sub.y, sub.x)); // 仮の法線
     var offset = vec2<f32>(0.0);

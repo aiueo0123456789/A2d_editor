@@ -1,32 +1,23 @@
 import BezierModifierAllocation;
 import ArmatureAllocation;
-
-struct WeightBlock {
-    indexs: vec4<u32>,
-    weights: vec4<f32>,
-}
+import Bezier;
+import WeightBlock;
 
 @group(0) @binding(0) var<uniform> bezierModifierAllocations: BezierModifierAllocation; // 配分
 
-// ベジェモディファイ
-struct BezierData {
-    vertices: vec2<f32>,
-    control1: vec2<f32>,
-    control2: vec2<f32>,
-}
 @group(1) @binding(0) var<storage, read_write> renderingBezier: array<vec2<f32>>; // 変形後のベジェ
 @group(1) @binding(1) var<storage, read> baseBezier: array<vec2<f32>>; // 元のベジェ
 @group(1) @binding(2) var<storage, read> bezierModifierAllocations_: array<BezierModifierAllocation>; // ベジェのメモリ配分
 @group(1) @binding(3) var<storage, read> bezierWeightBlocks: array<WeightBlock>; // indexと重みのデータ
-fn getRenderingBezierData(index: u32) -> BezierData {
-    return BezierData(
+fn getRenderingBezierData(index: u32) -> Bezier {
+    return Bezier(
         renderingBezier[index * 3u],
         renderingBezier[index * 3u + 1u],
         renderingBezier[index * 3u + 2u],
     );
 }
-fn getBaseBezierData(index: u32) -> BezierData {
-    return BezierData(
+fn getBaseBezierData(index: u32) -> Bezier {
+    return Bezier(
         baseBezier[index * 3u],
         baseBezier[index * 3u + 1u],
         baseBezier[index * 3u + 2u],
@@ -140,11 +131,11 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
         let b1 = getRenderingBezierData(bezierIndex - 1);
         let b2 = getRenderingBezierData(bezierIndex);
 
-        let position1 = mathBezier(a1.vertices, a1.control2, a2.control1, a2.vertices, t);
-        let position2 = mathBezier(b1.vertices, b1.control2, b2.control1, b2.vertices, t);
+        let position1 = mathBezier(a1.p, a1.rc, a2.lc, a2.p, t);
+        let position2 = mathBezier(b1.p, b1.rc, b2.lc, b2.p, t);
 
-        let normal1 = getBezierNormal(a1.vertices, a1.control2, a2.control1, a2.vertices, t);
-        let normal2 = getBezierNormal(b1.vertices, b1.control2, b2.control1, b2.vertices, t);
+        let normal1 = getBezierNormal(a1.p, a1.rc, a2.lc, a2.p, t);
+        let normal2 = getBezierNormal(b1.p, b1.rc, b2.lc, b2.p, t);
 
         let rotatePosition = rotate2D(targetVertices + (position2 - position1) - position2, calculateRotation(normal1, normal2));
         newPosition = rotatePosition + position2;

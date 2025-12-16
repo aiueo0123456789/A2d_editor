@@ -1,24 +1,16 @@
 import GraphicMeshAllocation;
 import BezierModifierAllocation;
 import ArmatureAllocation;
+import Bezier;
 
-struct WeightBlock {
-    indexs: vec4<u32>,
-    weights: vec4<f32>,
-}
+import WeightBlock;
 
 @group(0) @binding(0) var<storage, read_write> renderingVertices: array<vec2<f32>>; // 出力
 @group(0) @binding(1) var<storage, read> weightBlocks: array<WeightBlock>; // indexと重みのデータ
 @group(0) @binding(2) var<storage, read> graphicMeshAllocations: array<GraphicMeshAllocation>; // メモリ配分
 
-// ベジェモディファイ
-struct BezierData {
-    vertices: vec2<f32>,
-    control1: vec2<f32>,
-    control2: vec2<f32>,
-}
-@group(1) @binding(0) var<storage, read> renderingBezier: array<BezierData>; // 変形後のベジェ
-@group(1) @binding(1) var<storage, read> baseBezier: array<BezierData>; // 元のベジェ
+@group(1) @binding(0) var<storage, read> renderingBezier: array<Bezier>; // 変形後のベジェ
+@group(1) @binding(1) var<storage, read> baseBezier: array<Bezier>; // 元のベジェ
 @group(1) @binding(2) var<storage, read> bezierModifierAllocations: array<BezierModifierAllocation>; // ベジェのメモリ配分
 fn mathBezier(p1: vec2<f32>, c1: vec2<f32>, c2: vec2<f32>, p2: vec2<f32>, t: f32) -> vec2<f32> {
     let u = 1.0 - t;
@@ -130,11 +122,11 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
         let b1 = renderingBezier[bezierIndex - 1];
         let b2 = renderingBezier[bezierIndex];
 
-        let position1 = mathBezier(a1.vertices, a1.control2, a2.control1, a2.vertices, t);
-        let position2 = mathBezier(b1.vertices, b1.control2, b2.control1, b2.vertices, t);
+        let position1 = mathBezier(a1.p, a1.rc, a2.lc, a2.p, t);
+        let position2 = mathBezier(b1.p, b1.rc, b2.lc, b2.p, t);
 
-        let normal1 = getBezierNormal(a1.vertices, a1.control2, a2.control1, a2.vertices, t);
-        let normal2 = getBezierNormal(b1.vertices, b1.control2, b2.control1, b2.vertices, t);
+        let normal1 = getBezierNormal(a1.p, a1.rc, a2.lc, a2.p, t);
+        let normal2 = getBezierNormal(b1.p, b1.rc, b2.lc, b2.p, t);
 
         let rotatePosition = rotate2D(renderingVertices[fixVertexIndex] + (position2 - position1) - position2, calculateRotation(normal1, normal2));
         renderingVertices[fixVertexIndex] = rotatePosition + position2;

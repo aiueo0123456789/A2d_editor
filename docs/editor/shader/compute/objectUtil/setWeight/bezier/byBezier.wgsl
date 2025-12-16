@@ -21,10 +21,7 @@ struct AllocationBezier {
     myIndex: u32,
 }
 
-struct WeightBlock {
-    indexs: vec4<u32>,
-    weights: vec4<f32>,
-}
+import WeightBlock;
 
 struct Bezier {
     p: vec2<f32>,

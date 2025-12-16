@@ -1,16 +1,7 @@
 import GraphicMeshAllocation;
 import BezierModifierAllocation;
-
-struct WeightBlock {
-    indexs: vec4<u32>,
-    weights: vec4<f32>,
-}
-
-struct Bezier {
-    p: vec2<f32>,
-    c1: vec2<f32>,
-    c2: vec2<f32>,
-}
+import Bezier;
+import WeightBlock;
 
 @group(0) @binding(0) var<storage, read_write> weightBlocks: array<WeightBlock>; // indexと重みのデータ
 @group(0) @binding(1) var<storage, read> baseVertices: array<vec2<f32>>;
@@ -139,10 +130,10 @@ fn bezierModifierWeightFromPoint(point: vec2<f32>) -> WeightBlock {
     var minDist = f32(99999999.0);
     let startIndex = bezierModifierAllocation.pointsOffset;
     var lastVertices = modifierVertices[startIndex].p;
-    var lastControlPoint = modifierVertices[startIndex].c2;
+    var lastControlPoint = modifierVertices[startIndex].rc;
     for (var i = startIndex + 1u; i < startIndex + bezierModifierAllocation.pointsOffset; i ++) {
         let vertices = modifierVertices[i].p;
-        let controlPoint = modifierVertices[i].c1;
+        let controlPoint = modifierVertices[i].lc;
         let controlPoints = array<vec2<f32>, 4>(lastVertices, lastControlPoint, controlPoint, vertices); // ベジェ曲線の制御点
         let result = neighbor_bezier(controlPoints, point, 0, 1);
         if (result.y < minDist) {
@@ -151,7 +142,7 @@ fn bezierModifierWeightFromPoint(point: vec2<f32>) -> WeightBlock {
             minDist = result.y;
         }
         lastVertices = vertices;
-        lastControlPoint = modifierVertices[i].c2;
+        lastControlPoint = modifierVertices[i].rc;
     }
     return WeightBlock(vec4<u32>(resultIndex - bezierModifierAllocation.pointsOffset, 0u, 0u, 0u), vec4<f32>(resultT, 0.0, 0.0, 0.0));
 }

@@ -1,10 +1,5 @@
 import BezierModifierAllocation;
-
-struct Bezier {
-    p: vec2<f32>,
-    c1: vec2<f32>,
-    c2: vec2<f32>,
-}
+import Bezier;
 
 struct Option {
     add: u32,
@@ -145,7 +140,7 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
         return;
     }
     let bezierIndex = global_id.x + bezierModifierAllocation.pointsOffset;
-    let controlPoints = array<vec2<f32>, 4>(modifierVertices[bezierIndex].p, modifierVertices[bezierIndex].c2, modifierVertices[bezierIndex + 1].c1, modifierVertices[bezierIndex + 1].p); // ベジェ曲線の制御点
+    let controlPoints = array<vec2<f32>, 4>(modifierVertices[bezierIndex].p, modifierVertices[bezierIndex].rc, modifierVertices[bezierIndex + 1].lc, modifierVertices[bezierIndex + 1].p); // ベジェ曲線の制御点
     if (neighbor_bezier(controlPoints, point, 0, 1).y < size / camera.zoom) {
         atomicStore(&result, 1);
     }

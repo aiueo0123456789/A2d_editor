@@ -1,17 +1,44 @@
 import { app } from "../../../main.js";
-import { isFunction } from "../utility.js";
+import { isFunction, IsString } from "../utility.js";
 import { CustomTag } from "./customTag.js";
-import { createID, createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
+import { createID, createTag, useEffect } from "../ui/util.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";
 
+/**
+ * 検索の仕方
+ * all: すべて
+ * parameter == value: parameterがvalueと等しいとき
+ * parameter in value: parameterにvalueが含まれている
+ * parameter < value: parameterよりvalueが大きい
+ * parameter > value: parameterよりvalueが小さい
+ * 条件 && 条件: and
+ * 条件 || 条件: or
+ * 条件 && 条件 || 条件 && 条件のような場合||で区切られる
+ */
 function isFilterIncluded(object, filter = "all") {
+    console.log(object, filter);
     if (filter == "all" || filter == "") {
         return true;
     } else {
-        const bools = filter.replace(/\s+/g, "").split("||").filter(Boolean).map(block => {
-            const bools_ = block.split(";").map(block_ => {
-                const condition = block_.split(":");
-                return object[condition[0]] == condition[1];
+        const bools = filter.split(" || ").filter(Boolean).map(block => {
+            const bools_ = block.split(" && ").map(block_ => {
+                if (block_.includes(" == ")) {
+                    const condition = block_.split(" == ").map(string => string.replace(/\s+/g, ""));
+                    return object[condition[0]] == condition[1];
+                } else if (block_.includes(" in ")) {
+                    const condition = block_.split(" in ").map(string => string.replace(/\s+/g, ""));
+                    if (IsString(object[condition[0]])) {
+                        return object[condition[0]].includes(condition[1]);
+                    } else {
+                        return condition[1] in object[condition[0]];
+                    }
+                } else if (block_.includes(" < ")) {
+                    const condition = block_.split(" < ").map(string => string.replace(/\s+/g, ""));
+                    return object[condition[0]] < condition[1];
+                } else if (block_.includes(" > ")) {
+                    const condition = block_.split(" > ").map(string => string.replace(/\s+/g, ""));
+                    return object[condition[0]] > condition[1];
+                }
             });
             return !bools_.includes(false);
         });
@@ -35,7 +62,6 @@ export class OutlinerTag extends CustomTag {
         }
         const outlinerID = createID();
         let searchFilter = "";
-        let searchParameter = "type";
 
         this.element = createTag(t, "div", {style: "display: grid; width: 100%; height: 100%; gridTemplateRows: auto auto 1fr; backgroundColor: var(--subColor);"});
         const searchBox = createTag(this.element, "div", {class: "searchBox"});
@@ -66,7 +92,6 @@ export class OutlinerTag extends CustomTag {
         this.scrollable = createTag(this.scrollableContainer, "div", {class: "scrollable"});
         const array = [];
         let rootObject = isSourceFunction ? source() : jTag.getParameter(searchTarget, source);
-        let lastScroll = 0;
         const getAllObject = () => {
             const getLoopChildren = (children, resultObject = []) => {
                 let filterBool_ = false;

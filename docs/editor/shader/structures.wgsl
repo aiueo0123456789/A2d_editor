@@ -38,6 +38,13 @@ struct BezierModifierAllocation {
     shapeKeysNum: u32, // シェイプキー数
 }
 
+// ベジェ
+struct Bezier {
+    p: vec2<f32>,
+    lc: vec2<f32>,
+    rc: vec2<f32>,
+}
+
 // アーマチュア
 struct ArmatureAllocation {
     myIndex: u32, // 自分のindex
@@ -50,4 +57,10 @@ struct ArmatureAllocation {
 struct BoneVertices {
     h: vec2<f32>,
     t: vec2<f32>,
+}
+
+// ウェイトブロック
+struct WeightBlock {
+    indexs: vec4<u32>,
+    weights: vec4<f32>,
 }

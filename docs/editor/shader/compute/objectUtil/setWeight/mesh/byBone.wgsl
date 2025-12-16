@@ -2,10 +2,7 @@ import GraphicMeshAllocation;
 import ArmatureAllocation;
 import BoneVertices;
 
-struct WeightBlock {
-    indexs: vec4<u32>,
-    weights: vec4<f32>,
-}
+import WeightBlock;
 
 @group(0) @binding(0) var<storage, read_write> weightBlocks: array<WeightBlock>; // indexと重みのデータ
 @group(0) @binding(1) var<storage, read> baseVertices: array<vec2<f32>>;

@@ -1,10 +1,5 @@
 import Camera;
-
-struct Bezier {
-    p: vec2<f32>,
-    c1: vec2<f32>,
-    c2: vec2<f32>,
-}
+import Bezier;
 
 struct VisualSettings {
     vertexSize: f32,
@@ -28,9 +23,9 @@ const pointData = array<vec4<f32>, 4>(
     vec4<f32>( 1.0,  1.0, 1.0, 0.0), // 右上
 );
 
-fn mathBezier(p1: vec2<f32>, c1: vec2<f32>, c2: vec2<f32>, p2: vec2<f32>, t: f32) -> vec2<f32> {
+fn mathBezier(p1: vec2<f32>, lc: vec2<f32>, rc: vec2<f32>, p2: vec2<f32>, t: f32) -> vec2<f32> {
     let u = 1.0 - t;
-    return p1 * pow(u, 3.0) + c1 * 3.0 * pow(u, 2.0) * t + c2 * 3.0 * u * pow(t, 2.0) + p2 * pow(t, 3.0);
+    return p1 * pow(u, 3.0) + lc * 3.0 * pow(u, 2.0) * t + rc * 3.0 * u * pow(t, 2.0) + p2 * pow(t, 3.0);
 }
 
 // バーテックスシェーダー
