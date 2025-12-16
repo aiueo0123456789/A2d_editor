@@ -20,7 +20,8 @@
         "allSelect": "全選択",
         "add": "追加",
         "noSelected": "選択されていません",
-        "options": "オプション"
+        "options": "オプション",
+        "untitled": "名称未設定"
     },
     "英語": {
     }

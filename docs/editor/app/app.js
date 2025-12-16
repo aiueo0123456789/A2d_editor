@@ -75,7 +75,7 @@ class AppOptions {
                     name: "名称未設定",
                     autoWeight: true,
                     parent: null,
-                    vertices: [[-150,0, -100, 0, -50,0], [50,0, 100, 0, 150,0]],
+                    vertices: [[-100, 0, -150,0, -50,0], [100, 0, 50,0, 150,0]],
                     weightBcloks: [[0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0], [0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0, 0,0,0,0, 1.0,0.0,0.0,0.0]],
                     shapeKeyMetaDatas: [],
                     shapeKeys: []
@@ -146,6 +146,8 @@ class AppOptions {
         } else if (object.parent.type == "ベジェモディファイア") {
             parentVerticesBuffer = this.app.scene.runtimeData.bezierModifierData.baseVertices.buffer;
             parentAllocationBuffer = object.parent.objectDataBuffer;
+            console.log(await this.app.scene.runtimeData.bezierModifierData.baseVertices.getObjectData(object.parent))
+            console.log(await this.app.scene.runtimeData.bezierModifierData.allocations.getObjectData(object.parent))
         }
         if (object instanceof GraphicMesh) {
             const runtimeObject = this.app.scene.runtimeData.graphicMeshData;
@@ -155,6 +157,7 @@ class AppOptions {
             } else {
                 GPU.runComputeShader(calculateMeshParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));
             }
+            console.log(await runtimeObject.weightBlocks.getObjectData(object))
         } else if (object instanceof BezierModifier) {
             console.log("ベジェウェイト更新", object)
             const runtimeObject = this.app.scene.runtimeData.bezierModifierData;
@@ -187,10 +190,9 @@ class WorkSpaceTool {
 class AppConfig {
     constructor(/** @type {Application} */ app) {
         this.app = app;
-        this.projectName = "名称未設定";
-        this.workSpaceTool = new WorkSpaceTool();
-
         this.language = allLanguageData["日本語"];
+        this.projectName = this.language["untitled"];
+        this.workSpaceTool = new WorkSpaceTool();
 
         this.MASKTEXTURESIZE = [1024,1024];
 
@@ -214,7 +216,7 @@ class AppConfig {
         this.contextmenusItems = {}
     }
 
-    stContextmenuItems() {
+    setContextmenuItems() {
         this.contextmenusItems = {
             "Viewer": {
                 "オブジェクト": [
@@ -330,7 +332,7 @@ export class Application { // 全てをまとめる
         this.ui = new UI(this);
         this.scene = new Scene(this);
         this.context = new Context(this);
-        this.appConfig.stContextmenuItems();
+        this.appConfig.setContextmenuItems();
 
         this.activeArea = null;
         this.workSpaces = new WorkSpaces(this);

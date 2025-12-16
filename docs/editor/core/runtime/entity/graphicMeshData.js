@@ -42,7 +42,6 @@ export class GraphicMeshData extends RuntimeDataBase {
         map.set(this.uvOffsets, null);
         map.set(this.renderingVertices, graphicMesh.allVertices);
         map.set(this.renderingMetaDatas, [1, 0]);
-        console.log(this);
         return map;
     }
 
@@ -54,7 +53,7 @@ export class GraphicMeshData extends RuntimeDataBase {
     updateAllocationData(/** @type {GraphicMesh} */graphicMesh) {
         // 頂点オフセット, アニメーションオフセット, ウェイトオフセット, 頂点数, 最大アニメーション数, 親の型, 親のインデックス, パディング
         const allocationData = this.getAllocationData(graphicMesh);
-        GPU.writeBuffer(this.allocations.buffer, allocationData, (graphicMesh.runtimeOffsetData.start.allocationOffset * 8) * 4);
+        GPU.writeBuffer(this.allocations.buffer, allocationData, graphicMesh.runtimeOffsetData.start.allocationOffset * this.allocations.structByteSize);
         GPU.writeBuffer(graphicMesh.objectDataBuffer, allocationData);
     }
 

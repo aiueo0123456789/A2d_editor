@@ -157,7 +157,7 @@ fn bezierModifierWeightFromPoint(point: vec2<f32>) -> WeightBlock {
     let startIndex = allocationBezier.pointsOffset;
     var lastVertices = modifierVertices[startIndex].p;
     var lastControlPoint = modifierVertices[startIndex].c2;
-    for (var i = startIndex + 1u; i < startIndex + allocationBezier.pointsOffset; i ++) {
+    for (var i = startIndex + 1u; i < startIndex + allocationBezier.pointsNum; i ++) {
         let vertices = modifierVertices[i].p;
         let controlPoint = modifierVertices[i].c1;
         let controlPoints = array<vec2<f32>, 4>(lastVertices, lastControlPoint, controlPoint, vertices); // ベジェ曲線の制御点
