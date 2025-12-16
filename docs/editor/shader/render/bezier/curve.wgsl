@@ -1,25 +1,10 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
+import Camera;
+import BezierModifierAllocation;
 
 struct Bezier {
     p: vec2<f32>,
     c1: vec2<f32>,
     c2: vec2<f32>,
-}
-
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
 }
 
 struct WeightBlock {
@@ -36,7 +21,7 @@ struct VisualSettings {
 @group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
 @group(2) @binding(0) var<storage, read> verticesPosition: array<Bezier>;
 @group(2) @binding(1) var<storage, read> weightBlocks: array<WeightBlock>; // indexと重みのデータ
-@group(3) @binding(0) var<uniform> bezierModifierAllocation: Allocation; // 配分情報
+@group(3) @binding(0) var<uniform> bezierModifierAllocation: BezierModifierAllocation; // 配分情報
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -61,7 +46,7 @@ fn vmain(
     @builtin(vertex_index) vertexIndex: u32
 ) -> VertexOutput {
     // 頂点データを取得
-    let index = instanceIndex + bezierModifierAllocation.vertexBufferOffset;
+    let index = instanceIndex + bezierModifierAllocation.pointsOffset;
     let point1 = verticesPosition[index];
     let point2 = verticesPosition[index + 1u];
     let deltaT = 1.0 / 50.0;

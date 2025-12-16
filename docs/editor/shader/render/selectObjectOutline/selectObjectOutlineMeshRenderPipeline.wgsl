@@ -1,20 +1,5 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
-
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import Camera;
+import GraphicMeshAllocation;
 
 struct UVOffset {
     offset: vec2<f32>,
@@ -31,7 +16,8 @@ struct VisualSettings {
 @group(2) @binding(0) var<storage, read> verticesPosition: array<vec2<f32>>;
 @group(2) @binding(1) var<storage, read> verticesUV: array<vec2<f32>>;
 @group(2) @binding(2) var<storage, read> uvOffsets: array<UVOffset>;
-@group(3) @binding(0) var<uniform> objectData: Allocation;
+@group(2) @binding(3) var<storage, read> alphas: array<f32>;
+@group(3) @binding(0) var<uniform> graphicMeshAllocation: GraphicMeshAllocation;
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -44,13 +30,13 @@ fn vmain(
     @location(0) index: u32,
 ) -> VertexOutput {
     var output: VertexOutput;
-    let fixIndex = objectData.vertexBufferOffset + index;
+    let fixIndex = graphicMeshAllocation.verticesOffset + index;
     output.position = vec4f((verticesPosition[fixIndex] - camera.position) * camera.zoom * camera.cvsSize, 0.0, 1.0);
     return output;
 }
 
 @group(0) @binding(1) var mySampler: sampler;
-@group(2) @binding(3) var textureAtlas: texture_2d<f32>;
+@group(2) @binding(4) var textureAtlas: texture_2d<f32>;
 @group(3) @binding(1) var<uniform> objectColor: f32;
 
 struct FragmentOutput {

@@ -2,7 +2,7 @@ import { app } from "../../../../../main.js";
 import { AppendBlendShapePointCommand, AppendShapeKeyInBlendShapeCommand } from "../../../../commands/mesh/shapeKey.js";
 import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from "../../../../commands/object/object.js";
 import { AppendParameterInParameterManager, DeleteParameterInParameterManager } from "../../../../commands/parameterManager/parameter.js";
-import { BlendShape } from "../../../../core/objects/blendShape.js";
+import { BlendShape } from "../../../../core/entity/blendShape.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { calculateLocalMousePosition, objectInit } from "../../../../utils/utility.js";
 

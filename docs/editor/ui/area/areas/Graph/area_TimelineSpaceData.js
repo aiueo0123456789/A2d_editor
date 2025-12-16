@@ -1,9 +1,9 @@
 import { app } from "../../../../../main.js";
 import { BArmatureAnimation } from "../../../../core/edit/objects/BArmatureAnimation.js";
 import { BKeyframeBlockManager } from "../../../../core/edit/objects/BKeyframeBlockManager.js";
-import { BlendShape } from "../../../../core/objects/blendShape.js";
-import { Keyframe, KeyframeBlock } from "../../../../core/objects/keyframeBlock.js";
-import { KeyframeBlockManager } from "../../../../core/objects/keyframeBlockManager.js";
+import { BlendShape } from "../../../../core/entity/blendShape.js";
+import { Keyframe, KeyframeBlock } from "../../../../core/entity/keyframeBlock.js";
+import { KeyframeBlockManager } from "../../../../core/entity/keyframeBlockManager.js";
 
 export class TimelineSpaceData {
     constructor() {

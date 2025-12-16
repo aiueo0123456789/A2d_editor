@@ -1,9 +1,4 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
+import Camera;
 
 struct AffectedForZoom {
     raidus: f32,

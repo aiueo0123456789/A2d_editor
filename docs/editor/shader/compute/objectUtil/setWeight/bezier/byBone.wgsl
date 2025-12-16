@@ -1,40 +1,17 @@
-struct Allocation {
-    pointsOffset: u32,
-    shapesOffset: u32,
-    shapeKeyWeightsOffset: u32,
-    pointsNum: u32,
-    shapeKeysNum: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
-
-struct BoneAllocation {
-    boneOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_BONES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import BezierModifierAllocation;
+import ArmatureAllocation;
+import BoneVertices;
 
 struct WeightBlock {
     indexs: vec4<u32>,
     weights: vec4<f32>,
 }
 
-struct BoneVertices {
-    h: vec2<f32>,
-    t: vec2<f32>,
-}
-
 @group(0) @binding(0) var<storage, read_write> weightBlocks: array<WeightBlock>; // indexと重みのデータ
 @group(0) @binding(1) var<storage, read> baseVertices: array<vec2<f32>>;
-@group(0) @binding(2) var<uniform> allocation: Allocation; // 配分
+@group(0) @binding(2) var<uniform> bezierModifierAllocation: BezierModifierAllocation; // 配分
 @group(0) @binding(3) var<storage, read> boneVertices: array<BoneVertices>;
-@group(0) @binding(4) var<uniform> allocationBone: BoneAllocation; // 配分
+@group(0) @binding(4) var<uniform> armatureAllocation: ArmatureAllocation; // 配分
 
 fn pointToLineDistance(point: vec2<f32>, lineStart: vec2<f32>, lineEnd: vec2<f32>) -> f32 {
     // 線分が点の場合
@@ -66,7 +43,7 @@ fn calculateWeight(position: vec2<f32>) -> WeightBlock {
     var fWeight = 0.0;
     var tIndex = 0u;
     var tWeight = 0.0;
-    for (var boneIndex = allocationBone.boneOffset; boneIndex < allocationBone.boneOffset + allocationBone.MAX_BONES; boneIndex ++) {
+    for (var boneIndex = armatureAllocation.bonesOffset; boneIndex < armatureAllocation.bonesOffset + armatureAllocation.bonesNum; boneIndex ++) {
         let bone = boneVertices[boneIndex];
         let dist = pointToLineDistance(position, bone.h, bone.t);
         let weight = exp(-falloff * dist);
@@ -76,11 +53,11 @@ fn calculateWeight(position: vec2<f32>) -> WeightBlock {
             tIndex = fIndex;
             tWeight = fWeight;
             // 1位に自分を代入
-            fIndex = boneIndex - allocationBone.boneOffset;
+            fIndex = boneIndex - armatureAllocation.bonesOffset;
             fWeight = weight;
         } else if (tWeight <= weight) {
             // 2位に自分を代入
-            tIndex = boneIndex - allocationBone.boneOffset;
+            tIndex = boneIndex - armatureAllocation.bonesOffset;
             tWeight = weight;
         }
     }
@@ -92,11 +69,11 @@ fn calculateWeight(position: vec2<f32>) -> WeightBlock {
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
-    let verticesNum = allocation.pointsNum * 3u;
+    let verticesNum = bezierModifierAllocation.pointsNum * 3u;
     if (verticesNum <= global_id.x) {
         return;
     }
-    let verticesOffset = allocation.pointsOffset * 3u;
+    let verticesOffset = bezierModifierAllocation.pointsOffset * 3u;
     let verticesIndex = global_id.x + verticesOffset;
 
     weightBlocks[verticesIndex] = calculateWeight(baseVertices[verticesIndex]);

@@ -2,7 +2,7 @@ import { Application } from "../../../app/app.js";
 import { objectToNumber } from "../../../app/scene/scene.js";
 import { UnfixedReference } from "../../../utils/objects/util.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { BezierModifier } from "../../objects/bezierModifier.js";
+import { BezierModifier } from "../../entity/bezierModifier.js";
 import { BufferManager } from "../bufferManager.js";
 import { RuntimeDataBase } from "../runtimeDataBase.js";
 
@@ -34,9 +34,9 @@ export class BezierModifierData extends RuntimeDataBase {
 
     getAllocationData(/** @type {BezierModifier} */bezierModifier) {
         if (!bezierModifier.parent || bezierModifier.parent instanceof UnfixedReference) {
-            return new Uint32Array([bezierModifier.runtimeOffsetData.start.pointsOffset, bezierModifier.runtimeOffsetData.start.shapeKeysOffset, bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset, bezierModifier.pointsNum, bezierModifier.shapeKeysNum, 0, 0, this.myType]);
+            return new Uint32Array([bezierModifier.runtimeOffsetData.start.allocationOffset, 0, 0, bezierModifier.runtimeOffsetData.start.pointsOffset, bezierModifier.runtimeOffsetData.start.shapeKeysOffset, bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset, bezierModifier.pointsNum, bezierModifier.shapeKeysNum]);
         } else {
-            return new Uint32Array([bezierModifier.runtimeOffsetData.start.pointsOffset, bezierModifier.runtimeOffsetData.start.shapeKeysOffset, bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset, bezierModifier.pointsNum, bezierModifier.shapeKeysNum, objectToNumber[bezierModifier.parent.type], bezierModifier.parent.runtimeOffsetData.start.allocationOffset, this.myType]);
+            return new Uint32Array([bezierModifier.runtimeOffsetData.start.allocationOffset, objectToNumber[bezierModifier.parent.type], bezierModifier.parent.runtimeOffsetData.start.allocationOffset, bezierModifier.runtimeOffsetData.start.pointsOffset, bezierModifier.runtimeOffsetData.start.shapeKeysOffset, bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset, bezierModifier.pointsNum, bezierModifier.shapeKeysNum]);
         }
     }
 

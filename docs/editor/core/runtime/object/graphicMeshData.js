@@ -3,7 +3,7 @@ import { objectToNumber } from "../../../app/scene/scene.js";
 import { UnfixedReference } from "../../../utils/objects/util.js";
 import { changeParameter } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { GraphicMesh } from "../../objects/graphicMesh.js";
+import { GraphicMesh } from "../../entity/graphicMesh.js";
 import { BufferManager } from "../bufferManager.js";
 import { RuntimeDataBase } from "../runtimeDataBase.js";
 
@@ -17,8 +17,9 @@ export class GraphicMeshData extends RuntimeDataBase {
         this.shapeKeys = new BufferManager(this, "shapeKeys", ["f32","f32"], "shapeKeysNum * verticesNum");
         this.shapeKeyWights = new BufferManager(this, "shapeKeyWights", ["f32"], "shapeKeysNum");
         this.weightBlocks = new BufferManager(this, "weightBlocks", ["u32","u32","u32","u32","f32","f32","f32","f32"], "verticesNum");
-        this.allocations = new BufferManager(this, "allocations", ["u32","u32","u32","u32","u32","u32","u32","u32"], "1");
+        this.allocations = new BufferManager(this, "allocations", ["u32","u32","u32","u32","u32","u32","u32","u32","u32","u32"], "1");
         this.uvOffsets = new BufferManager(this, "uvOffset", ["f32","f32","f32","f32"], "1");
+        this.renderingMetaDatas = new BufferManager(this, "renderingMetaDatas", ["f32" /* 透明度 */, "f32", /* マスクタイプ */], "1");
         this.textureAtls = null;
         this.textureAtlsView = null;
         this.renderGroup = null;
@@ -40,13 +41,14 @@ export class GraphicMeshData extends RuntimeDataBase {
         map.set(this.shapeKeyWights, null);
         map.set(this.uvOffsets, null);
         map.set(this.renderingVertices, graphicMesh.allVertices);
+        map.set(this.renderingMetaDatas, [1, 0]);
         console.log(this);
         return map;
     }
 
     getAllocationData(/** @type {GraphicMesh} */graphicMesh) {
-        if (!graphicMesh.parent || graphicMesh.parent instanceof UnfixedReference) return new Uint32Array([graphicMesh.runtimeOffsetData.start.verticesOffset, graphicMesh.runtimeOffsetData.start.shapeKeysOffset, graphicMesh.runtimeOffsetData.start.shapeKeyWeightsOffset, graphicMesh.verticesNum, graphicMesh.shapeKeysNum, 0, 0, graphicMesh.runtimeOffsetData.start.allocationOffset]);
-        else return new Uint32Array([graphicMesh.runtimeOffsetData.start.verticesOffset, graphicMesh.runtimeOffsetData.start.shapeKeysOffset, graphicMesh.runtimeOffsetData.start.shapeKeyWeightsOffset, graphicMesh.verticesNum, graphicMesh.shapeKeysNum, objectToNumber[graphicMesh.parent.type], graphicMesh.parent.runtimeOffsetData.start.allocationOffset, graphicMesh.runtimeOffsetData.start.allocationOffset]);
+        if (!graphicMesh.parent || graphicMesh.parent instanceof UnfixedReference) return new Uint32Array([graphicMesh.runtimeOffsetData.start.allocationOffset, 0, 0, graphicMesh.runtimeOffsetData.start.verticesOffset, graphicMesh.runtimeOffsetData.start.meshesOffset, graphicMesh.runtimeOffsetData.start.shapeKeysOffset, graphicMesh.runtimeOffsetData.start.shapeKeyWeightsOffset, graphicMesh.verticesNum, graphicMesh.meshesNum, graphicMesh.shapeKeysNum]);
+        else return new Uint32Array([graphicMesh.runtimeOffsetData.start.allocationOffset, objectToNumber[graphicMesh.parent.type], graphicMesh.parent.runtimeOffsetData.start.allocationOffset, graphicMesh.runtimeOffsetData.start.verticesOffset, graphicMesh.runtimeOffsetData.start.meshesOffset, graphicMesh.runtimeOffsetData.start.shapeKeysOffset, graphicMesh.runtimeOffsetData.start.shapeKeyWeightsOffset, graphicMesh.verticesNum, graphicMesh.meshesNum, graphicMesh.shapeKeysNum]);
     }
 
     updateAllocationData(/** @type {GraphicMesh} */graphicMesh) {
@@ -54,8 +56,6 @@ export class GraphicMeshData extends RuntimeDataBase {
         const allocationData = this.getAllocationData(graphicMesh);
         GPU.writeBuffer(this.allocations.buffer, allocationData, (graphicMesh.runtimeOffsetData.start.allocationOffset * 8) * 4);
         GPU.writeBuffer(graphicMesh.objectDataBuffer, allocationData);
-        const meshAllocationData = new Uint32Array([graphicMesh.runtimeOffsetData.start.verticesOffset, graphicMesh.runtimeOffsetData.start.meshesOffset, graphicMesh.meshesNum, 0]);
-        GPU.writeBuffer(graphicMesh.objectMeshData, meshAllocationData);
     }
 
     setGroup() {
@@ -64,7 +64,7 @@ export class GraphicMeshData extends RuntimeDataBase {
             GPU.writeBuffer(this.uvOffsets.buffer, GPU.createBitData(result.uvOffset.flat(), ["f32"]), 0);
             changeParameter(this, "textureAtls", result.texture)
             this.textureAtlsView = this.textureAtls.createView();
-            this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Ft"), [this.renderingVertices.buffer, this.uv.buffer, this.uvOffsets.buffer, this.textureAtlsView ? this.textureAtlsView : GPU.isNotTexture.createView()]); // 表示用
+            this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), [this.renderingVertices.buffer, this.uv.buffer, this.uvOffsets.buffer, this.renderingMetaDatas.buffer, this.textureAtlsView ? this.textureAtlsView : GPU.isNotTexture.createView()]); // 表示用
             this.shapeKeyApplyGroup = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Csr_Csr_Csr"), [this.renderingVertices.buffer, this.baseVertices.buffer, this.shapeKeys.minimumOrMoreBuffer, this.shapeKeyWights.minimumOrMoreBuffer, this.allocations.buffer]); // アニメーション用
             this.parentApplyGroup = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Csr"), [this.renderingVertices.buffer, this.weightBlocks.buffer, this.allocations.buffer]); // 親の変形を適応するた
         } else {

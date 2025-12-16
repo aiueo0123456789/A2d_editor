@@ -1,3 +1,6 @@
+import ArmatureAllocation;
+import BoneVertices;
+
 struct Bone {
     position: vec2<f32>,
     scale: vec2<f32>,
@@ -5,26 +8,10 @@ struct Bone {
     length: f32,
 }
 
-struct BoneVertices {
-    h: vec2<f32>,
-    t: vec2<f32>,
-}
-
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
-
 @group(0) @binding(0) var<storage, read_write> vertices: array<BoneVertices>; // 出力
 @group(0) @binding(1) var<storage, read> boneMatrixs: array<f32>; // ボーンの行列
 @group(0) @binding(2) var<storage, read> boneData: array<Bone>; // ボーンのデータ
-@group(0) @binding(3) var<storage, read> allocationArray: array<Allocation>; // 配分
+@group(0) @binding(3) var<storage, read> armatureAllocations: array<ArmatureAllocation>; // 配分
 
 fn getMatrix(index: u32) -> mat3x3<f32> {
     let fixIndex = index * 9u;
@@ -39,14 +26,14 @@ fn getMatrix(index: u32) -> mat3x3<f32> {
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let objectIndex = global_id.x;
     let boneIndex = global_id.y;
-    if (arrayLength(&allocationArray) <= objectIndex) {
+    if (arrayLength(&armatureAllocations) <= objectIndex) {
         return;
     }
-    if (allocationArray[objectIndex].MAX_VERTICES <= boneIndex) {
+    if (armatureAllocations[objectIndex].bonesNum <= boneIndex) {
         return;
     }
 
-    let arrayIndex = allocationArray[objectIndex].vertexBufferOffset + boneIndex;
+    let arrayIndex = armatureAllocations[objectIndex].bonesOffset + boneIndex;
 
     // 頂点データを取得
     let matrix = getMatrix(arrayIndex);

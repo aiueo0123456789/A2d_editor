@@ -1,14 +1,5 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
-
-struct BoneVertices {
-    h: vec2<f32>,
-    t: vec2<f32>,
-}
+import Camera;
+import BoneVertices;
 
 struct VisualSettings {
     vertexSize: f32,

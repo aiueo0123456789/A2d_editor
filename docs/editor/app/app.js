@@ -25,8 +25,8 @@ import { UI } from "./ui/ui.js";
 import { Context } from "./context/context.js";
 import { Area_BlendShape } from "../ui/area/areas/BlendShapes/area_BlendShape.js";
 import { Area_BlendShapeSpaceData } from "../ui/area/areas/BlendShapes/area_BlendShapeSpaceData.js";
-import { BezierModifier } from "../core/objects/bezierModifier.js";
-import { GraphicMesh } from "../core/objects/graphicMesh.js";
+import { BezierModifier } from "../core/entity/bezierModifier.js";
+import { GraphicMesh } from "../core/entity/graphicMesh.js";
 
 const allLanguageData = await loadFile("./config/language/language.json");
 const calculateMeshParentWeightByBone = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu")], await loadFile("./editor/shader/compute/objectUtil/setWeight/mesh/byBone.wgsl"));

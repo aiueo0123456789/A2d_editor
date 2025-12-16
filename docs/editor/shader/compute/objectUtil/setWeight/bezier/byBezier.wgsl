@@ -1,5 +1,6 @@
+// 作成途中
 struct Allocation {
-    vertexBufferOffset: u32,
+    verticesOffset: u32,
     animationBufferOffset: u32,
     weightBufferOffset: u32,
     MAX_VERTICES: u32,
@@ -180,7 +181,7 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     if (allocation.MAX_VERTICES <= global_id.x) {
         return;
     }
-    let verticesIndex = global_id.x + allocation.vertexBufferOffset;
+    let verticesIndex = global_id.x + allocation.verticesOffset;
 
     weightBlocks[verticesIndex] = bezierModifierWeightFromPoint(baseVertices[verticesIndex]);
 }

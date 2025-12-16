@@ -1,4 +1,4 @@
-import { isLowerCase, isPlainObject } from "./utility.js";
+import { isLowerCase, isPlainObject, loadFile } from "./utility.js";
 import { MathVec2 } from "./mathVec.js";
 
 export function IsString(value) {
@@ -12,76 +12,6 @@ class EmptyGPUBuffer {
     }
 }
 
-// texture: GPUTexture (format: 'rgba8unorm' など)
-// device: GPUDevice
-// width, height: テクスチャの幅・高さ（ピクセル）
-async function downloadTextureAsPNG(device, texture, width, height, filename = 'texture.png') {
-    const bytesPerPixel = 4; // rgba8unorm の場合
-    const unpaddedBytesPerRow = width * bytesPerPixel;
-    const alignment = 256;
-    const bytesPerRow = Math.ceil(unpaddedBytesPerRow / alignment) * alignment;
-  
-    // バッファを作る（COPY_DST と MAP_READ が必要）
-    const readBuffer = device.createBuffer({
-      size: bytesPerRow * height,
-      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ,
-    });
-  
-    // コマンドでテクスチャをバッファにコピー
-    const cmd = device.createCommandEncoder();
-    cmd.copyTextureToBuffer(
-      { texture: texture },
-      { buffer: readBuffer, bytesPerRow: bytesPerRow, rowsPerImage: height },
-      { width: width, height: height, depthOrArrayLayers: 1 }
-    );
-    device.queue.submit([cmd.finish()]);
-  
-    // GPU の完了を待つ（安全策）
-    // 一部の実装は mapAsync が内部で同期するが、明示的に待つのが確実
-    await device.queue.onSubmittedWorkDone();
-  
-    // バッファをマップして読み出し
-    await readBuffer.mapAsync(GPUMapMode.READ);
-    const mappedRange = readBuffer.getMappedRange();
-    const copyArray = new Uint8Array(mappedRange); // バッファ全体（行パディング含む）
-  
-    // パディングを取り除いて ImageData 用の連続配列に詰め替え
-    const imageDataArray = new Uint8ClampedArray(width * height * 4);
-    for (let y = 0; y < height; y++) {
-      const srcStart = y * bytesPerRow;
-      const dstStart = y * width * 4;
-      // unpaddedBytesPerRow バイトだけコピー（RGBA）
-      imageDataArray.set(copyArray.subarray(srcStart, srcStart + unpaddedBytesPerRow), dstStart);
-    }
-  
-    // 使い終わったらアンマップしてバッファ破棄（必要なら）
-    readBuffer.unmap();
-    readBuffer.destroy();
-  
-    // Canvas に描画して PNG 化
-    const canvas = document.createElement('canvas');
-    canvas.width = width;
-    canvas.height = height;
-    const ctx = canvas.getContext('2d');
-    const id = new ImageData(imageDataArray, width, height);
-    ctx.putImageData(id, 0, 0);
-  
-    // ダウンロードリンク作って click()
-    return new Promise((resolve) => {
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        document.body.appendChild(a);
-        a.click();
-        a.remove();
-        URL.revokeObjectURL(url);
-        resolve();
-      }, 'image/png');
-    });
-  }
-
 class WebGPU {
     constructor() {
         this.structures = new Map();
@@ -89,6 +19,7 @@ class WebGPU {
 
         this.sampler = this.createTextureSampler();
         // this.isNotTexture = isNotTexture;
+        this.shaderModules = [];
 
         this.padding = 0;
     }
@@ -138,10 +69,9 @@ class WebGPU {
     }
 
     codeToStructures() {
-
     }
 
-    setBaseStruct(code) {
+    setStructByCode(code) {
         const allReplace = (strings, targetStrings, newStrings = "") => {
             let checkString = "";
             let result = "";
@@ -167,7 +97,7 @@ class WebGPU {
             return [...text.matchAll(regex)].map(match => match[1]);
         }
         const getStructNameFromString = (strings) => {
-            return extractBetween(strings, "struct ", "{")[0];
+            return allReplace(extractBetween(strings, "struct ", "{")[0], " ");
         }
         let structures = code.split("struct "); // 型宣言で分割
         structures.splice(0,1); // 先頭の空文字を削除
@@ -178,10 +108,10 @@ class WebGPU {
                 console.warn("}が{の前にあります",text);
                 return "";
             }
-            text = allReplace(text,"\n");
-            text = allReplace(text," ");
-            text = "struct " + text;
-            this.structures.set(getStructNameFromString(text), text);
+            // text = allReplace(text,"\n");
+            // text = allReplace(text," ");
+            const struct = "struct " + text;
+            this.structures.set(getStructNameFromString(struct), struct);
         })
         console.log(this.structures);
     }
@@ -201,19 +131,22 @@ class WebGPU {
         }
     }
 
+    // importの解決
+    importResolution(code) {
+        return code.replace(/^import\s+(.+)$/gm, (match, importBody) => {
+            importBody = importBody.slice(0, -1);
+            return this.structures.has(importBody) ? this.structures.get(importBody) : "";
+        });
+    }
+
     // シェーダモデルの作成
-    createShaderModule(code, label = code) {
+    createShaderModule(code, label = this.shaderModules.length) {
+        code = this.importResolution(code);
         const shaderModule = device.createShaderModule({
             label: label,
             code: code,
         });
-
-        async function consoleLog() {
-            const shaderInfo = await shaderModule.getCompilationInfo();
-            // console.log(shaderInfo, code);
-        }
-
-        consoleLog();
+        this.shaderModules.push(shaderModule);
         return shaderModule;
     }
 
@@ -2299,6 +2232,7 @@ console.log("最大そのた:", limits);
 export const format = navigator.gpu.getPreferredCanvasFormat();
 
 export const GPU = new WebGPU();
+GPU.setStructByCode(await loadFile("./editor/shader/structures.wgsl"));
 const isNotTexture = await GPU.imageToTexture2D("./config/images/ui_icon/画像未設定.png");
 const transparentToWhitePipeline = GPU.createComputePipeline(
     [GPU.createGroupLayout([{useShaderTypes: ['c'], type: 'stw'},{useShaderTypes: ['c'], type: 't'}])],

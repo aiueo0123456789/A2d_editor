@@ -47,11 +47,8 @@ export class GraphicMesh extends ObjectBase {
         /** @type {MaskTexture} */
         this.clippingMask = null;
         // this.changeClippingMask(app.scene.searchMaskTextureFromName("base"));
-        this.maskTypeBuffer = GPU.createUniformBuffer(4, undefined, ["f32"]);
-        GPU.writeBuffer(this.maskTypeBuffer, new Float32Array([0])); // 0　マスク 反転マスク
 
-        this.objectDataBuffer = GPU.createUniformBuffer(8 * 4, undefined, ["u32"]); // GPUでオブジェクトを識別するためのデータを持ったbuffer
-        this.objectMeshData = GPU.createUniformBuffer(4 * 4, undefined, ["u32"]); // GPUでオブジェクトを識別するためのデータを持ったbuffer
+        this.objectDataBuffer = GPU.createUniformBuffer(10 * 4, undefined, ["u32"]); // GPUでオブジェクトを識別するためのデータを持ったbuffer
         this.objectDataGroup = GPU.createGroup(GPU.getGroupLayout("Vu"), [this.objectDataBuffer]);
 
         this.autoWeight = "autoWeight" in data ? data.autoWeight : true;
@@ -91,7 +88,7 @@ export class GraphicMesh extends ObjectBase {
     }
 
     get hasAllData() {
-        return this.texture instanceof Texture && this.objectDataBuffer instanceof GPUBuffer && this.zIndexBuffer instanceof GPUBuffer && this.maskTypeBuffer instanceof GPUBuffer && this.clippingMask instanceof MaskTexture;
+        return this.texture instanceof Texture && this.objectDataBuffer instanceof GPUBuffer && this.zIndexBuffer instanceof GPUBuffer && this.clippingMask instanceof MaskTexture;
     }
 
     resolvePhase() {
@@ -161,7 +158,7 @@ export class GraphicMesh extends ObjectBase {
 
     setGroup() {
         if (!this.hasAllData) return ;
-        this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vu_Vu_Ft_Fu"), [this.objectDataBuffer, this.zIndexBuffer, this.clippingMask.view, this.maskTypeBuffer]);
+        this.renderGroup = GPU.createGroup(GPU.getGroupLayout("Vu_Vu_Ft"), [this.objectDataBuffer, this.zIndexBuffer, this.clippingMask.view]);
     }
 
     async getSaveData() {

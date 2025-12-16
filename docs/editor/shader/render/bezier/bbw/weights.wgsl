@@ -1,12 +1,7 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
+import Camera;
 
 struct Allocation {
-    vertexBufferOffset: u32,
+    verticesOffset: u32,
     animationBufferOffset: u32,
     weightBufferOffset: u32,
     MAX_VERTICES: u32,

@@ -3,7 +3,7 @@ import { MathMat3x3 } from "../../../utils/mathMat.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { changeParameter, range, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { Armature } from "../../objects/armature.js";
+import { Armature } from "../../entity/armature.js";
 import { BBezierWeight } from "./BBezierWeight.js";
 import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 import { BMeshWeight } from "./BMeshWeight.js";

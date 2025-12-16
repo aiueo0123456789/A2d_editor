@@ -1,9 +1,4 @@
-struct MeshAllocation {
-    vertexBufferOffset: u32,
-    meshBufferOffset: u32,
-    meshesNum: u32,
-    padding: u32,
-}
+import GraphicMeshAllocation;
 
 struct Option {
     add: u32,
@@ -12,7 +7,7 @@ struct Option {
 @group(0) @binding(0) var<storage, read_write> result: atomic<u32>;
 @group(0) @binding(1) var<storage, read> vertices: array<vec2<f32>>; // 頂点
 @group(0) @binding(2) var<storage, read> meshLoops: array<u32>; // メッシュを構成する頂点インデックス
-@group(0) @binding(3) var<uniform> allocation: MeshAllocation; // 配分
+@group(0) @binding(3) var<uniform> graphicMeshAllocation: GraphicMeshAllocation; // 配分
 @group(0) @binding(4) var<uniform> optionData: Option; // オプション
 @group(0) @binding(5) var<uniform> p: vec2<f32>;
 
@@ -46,11 +41,11 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
         atomicStore(&result, 0);
     }
     workgroupBarrier();
-    if (allocation.meshesNum <= global_id.x) {
+    if (graphicMeshAllocation.meshesNum <= global_id.x) {
         return;
     }
 
-    let indexs = getMeshLoop(global_id.x + allocation.meshBufferOffset) + allocation.vertexBufferOffset;
+    let indexs = getMeshLoop(global_id.x + graphicMeshAllocation.meshesOffset) + graphicMeshAllocation.verticesOffset;
     if (hitTestPointTriangle(vertices[indexs.x],vertices[indexs.y],vertices[indexs.z])) {
     // if (hitTestPointTriangle(vec2<f32>(0,-1000),vec2<f32>(500,0),vec2<f32>(1000,-1000))) {
         atomicStore(&result, 1);

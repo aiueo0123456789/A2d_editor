@@ -1,9 +1,4 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
+import Camera;
 
 struct VisualSettings {
     vertexSize: f32,
@@ -32,7 +27,6 @@ const pointData = array<vec4<f32>, 4>(
     vec4<f32>( 1.0, -1.0, 0.5, 0.5), // 右下
     vec4<f32>( 1.0,  1.0, 0.5, -0.5), // 右上
 );
-
 
 // バーテックスシェーダー
 @vertex

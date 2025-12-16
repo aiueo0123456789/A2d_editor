@@ -1,6 +1,6 @@
 import { ChangeEditModeCommand } from "../../commands/utile/changeEditMode.js";
 import { SelectObjectsCommand, SetActiveObjectsCommand } from "../../commands/utile/selectObject.js";
-import { Armature } from "../../core/objects/armature.js";
+import { Armature } from "../../core/entity/armature.js";
 import { Application } from "../app.js";
 
 export class Context {

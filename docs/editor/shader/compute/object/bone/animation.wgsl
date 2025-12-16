@@ -1,13 +1,4 @@
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_BONES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import ArmatureAllocation;
 
 struct Bone {
     position: vec2<f32>,
@@ -19,7 +10,7 @@ struct Bone {
 @group(0) @binding(0) var<storage, read_write> localBonewMatrix: array<f32>; // 出力
 @group(0) @binding(1) var<storage, read> base: array<Bone>; // 元
 @group(0) @binding(2) var<storage, read> animations: array<Bone>; // アニメーション
-@group(0) @binding(3) var<storage, read> allocationArray: array<Allocation>; // 配分
+@group(0) @binding(3) var<storage, read> armatureAllocations: array<ArmatureAllocation>; // 配分
 
 // 2次元の回転、スケール、平行移動を表現する行列を作成する関数
 fn createTransformMatrix(scale: vec2<f32>, angle: f32, translation: vec2<f32>) -> mat3x3<f32> {
@@ -51,14 +42,14 @@ fn setMatrix(index: u32, m: mat3x3<f32>) {
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let objectIndex = global_id.x;
     let vertexIndex = global_id.y;
-    if (arrayLength(&allocationArray) <= objectIndex) { // オブジェクト数を超えているか
+    if (arrayLength(&armatureAllocations) <= objectIndex) { // オブジェクト数を超えているか
         return ;
     }
-    if (allocationArray[objectIndex].MAX_BONES <= vertexIndex) { // ボーン数を超えているか
+    if (armatureAllocations[objectIndex].bonesNum <= vertexIndex) { // ボーン数を超えているか
         return ;
     }
 
-    let fixVertexIndex = allocationArray[objectIndex].vertexBufferOffset + vertexIndex;
+    let fixVertexIndex = armatureAllocations[objectIndex].bonesOffset + vertexIndex;
     var localBoneData = base[fixVertexIndex];
     let animation = animations[fixVertexIndex];
     localBoneData.position += animation.position;

@@ -1,24 +1,5 @@
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
-
-struct AllocationBezier {
-    pointsOffset: u32,
-    shapesOffset: u32,
-    shapeKeyWeightsOffset: u32,
-    pointsNum: u32,
-    shapeKeysNum: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import GraphicMeshAllocation;
+import BezierModifierAllocation;
 
 struct WeightBlock {
     indexs: vec4<u32>,
@@ -33,9 +14,9 @@ struct Bezier {
 
 @group(0) @binding(0) var<storage, read_write> weightBlocks: array<WeightBlock>; // indexと重みのデータ
 @group(0) @binding(1) var<storage, read> baseVertices: array<vec2<f32>>;
-@group(0) @binding(2) var<uniform> allocation: Allocation; // 配分;
+@group(0) @binding(2) var<uniform> graphicMeshAllocation: GraphicMeshAllocation; // 配分;
 @group(0) @binding(3) var<storage, read> modifierVertices: array<Bezier>; // モディファイアの頂点位置
-@group(0) @binding(4) var<uniform> allocationBezier: AllocationBezier; // 配分
+@group(0) @binding(4) var<uniform> bezierModifierAllocation: BezierModifierAllocation; // 配分
 
 // 内積
 fn dot(a: vec2<f32>, b: vec2<f32>) -> f32 {
@@ -156,10 +137,10 @@ fn bezierModifierWeightFromPoint(point: vec2<f32>) -> WeightBlock {
     var resultIndex = 0u;
     var resultT = 0.0;
     var minDist = f32(99999999.0);
-    let startIndex = allocationBezier.pointsOffset;
+    let startIndex = bezierModifierAllocation.pointsOffset;
     var lastVertices = modifierVertices[startIndex].p;
     var lastControlPoint = modifierVertices[startIndex].c2;
-    for (var i = startIndex + 1u; i < startIndex + allocationBezier.pointsOffset; i ++) {
+    for (var i = startIndex + 1u; i < startIndex + bezierModifierAllocation.pointsOffset; i ++) {
         let vertices = modifierVertices[i].p;
         let controlPoint = modifierVertices[i].c1;
         let controlPoints = array<vec2<f32>, 4>(lastVertices, lastControlPoint, controlPoint, vertices); // ベジェ曲線の制御点
@@ -172,15 +153,15 @@ fn bezierModifierWeightFromPoint(point: vec2<f32>) -> WeightBlock {
         lastVertices = vertices;
         lastControlPoint = modifierVertices[i].c2;
     }
-    return WeightBlock(vec4<u32>(resultIndex - allocationBezier.pointsOffset, 0u, 0u, 0u), vec4<f32>(resultT, 0.0, 0.0, 0.0));
+    return WeightBlock(vec4<u32>(resultIndex - bezierModifierAllocation.pointsOffset, 0u, 0u, 0u), vec4<f32>(resultT, 0.0, 0.0, 0.0));
 }
 
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
-    if (allocation.MAX_VERTICES <= global_id.x) {
+    if (graphicMeshAllocation.verticesNum <= global_id.x) {
         return;
     }
-    let verticesIndex = global_id.x + allocation.vertexBufferOffset;
+    let verticesIndex = global_id.x + graphicMeshAllocation.verticesOffset;
 
     weightBlocks[verticesIndex] = bezierModifierWeightFromPoint(baseVertices[verticesIndex]);
 }

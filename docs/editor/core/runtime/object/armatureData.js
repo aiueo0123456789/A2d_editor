@@ -1,6 +1,6 @@
 import { Application } from "../../../app/app.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { Armature } from "../../objects/armature.js";
+import { Armature } from "../../entity/armature.js";
 import { BufferManager } from "../bufferManager.js";
 import { RuntimeDataBase } from "../runtimeDataBase.js";
 
@@ -22,7 +22,7 @@ export class ArmatureData extends RuntimeDataBase {
         this.runtimeAnimationData = new BufferManager(this, "runtimeAnimationData", ["f32","f32","f32","f32","f32","f32"], "bonesNum");
 
         this.colors = new BufferManager(this, "colors", ["f32","f32","f32","f32"], "bonesNum");
-        this.allocations = new BufferManager(this, "allocations", ["u32","u32","u32","u32","u32","u32","u32","u32"], "1");
+        this.allocations = new BufferManager(this, "allocations", ["u32","u32","u32","u32"], "1");
         this.physicsData = new BufferManager(this, "physicsData", [
             "f32", "f32", // x, y
             "f32", // rotate
@@ -134,7 +134,7 @@ export class ArmatureData extends RuntimeDataBase {
     }
 
     getAllocationData(/** @type {Armature} */armature) {
-        return new Uint32Array([armature.runtimeOffsetData.start.boneOffset, 0, 0, armature.bonesNum, 0, 0, 0, GPU.padding]);
+        return new Uint32Array([armature.runtimeOffsetData.start.allocationOffset, armature.runtimeOffsetData.start.boneOffset, armature.bonesNum, GPU.padding]);
     }
 
     setGroup() {

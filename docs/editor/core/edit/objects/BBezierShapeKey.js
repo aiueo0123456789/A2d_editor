@@ -3,7 +3,7 @@ import { MathVec2 } from "../../../utils/mathVec.js";
 import { createID, useEffect } from "../../../utils/ui/util.js";
 import { pushToArray, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { BezierModifier } from "../../objects/bezierModifier.js";
+import { BezierModifier } from "../../entity/bezierModifier.js";
 
 class Vert {
     constructor(data) {

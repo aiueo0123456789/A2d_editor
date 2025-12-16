@@ -1,6 +1,6 @@
 import { Application } from "../../../app/app.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { Particle, ParticleParameter } from "../../objects/particle.js";
+import { Particle, ParticleParameter } from "../../entity/particle.js";
 import { BufferManager } from "../bufferManager.js";
 import { RuntimeDataBase } from "../runtimeDataBase.js";
 

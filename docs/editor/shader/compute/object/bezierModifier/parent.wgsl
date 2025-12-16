@@ -1,20 +1,12 @@
-struct Allocation {
-    pointsOffset: u32,
-    shapesOffset: u32,
-    shapeKeyWeightsOffset: u32,
-    pointsNum: u32,
-    shapeKeysNum: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import BezierModifierAllocation;
+import ArmatureAllocation;
 
 struct WeightBlock {
     indexs: vec4<u32>,
     weights: vec4<f32>,
 }
 
-@group(0) @binding(0) var<uniform> allocation: Allocation; // 配分
+@group(0) @binding(0) var<uniform> bezierModifierAllocations: BezierModifierAllocation; // 配分
 
 // ベジェモディファイ
 struct BezierData {
@@ -24,7 +16,7 @@ struct BezierData {
 }
 @group(1) @binding(0) var<storage, read_write> renderingBezier: array<vec2<f32>>; // 変形後のベジェ
 @group(1) @binding(1) var<storage, read> baseBezier: array<vec2<f32>>; // 元のベジェ
-@group(1) @binding(2) var<storage, read> bezierAllocationArray: array<Allocation>; // ベジェのメモリ配分
+@group(1) @binding(2) var<storage, read> bezierModifierAllocations_: array<BezierModifierAllocation>; // ベジェのメモリ配分
 @group(1) @binding(3) var<storage, read> bezierWeightBlocks: array<WeightBlock>; // indexと重みのデータ
 fn getRenderingBezierData(index: u32) -> BezierData {
     return BezierData(
@@ -68,7 +60,7 @@ fn rotate2D(point: vec2<f32>, angle: f32) -> vec2<f32> {
 // アーマチュア
 @group(2) @binding(0) var<storage, read> poseBoneMatrixArray: array<f32>; // ボーンの行列
 @group(2) @binding(1) var<storage, read> baseBoneMatrixArray: array<f32>; // ベースボーンの行列
-@group(2) @binding(2) var<storage, read> boneAllocationArray: array<Allocation>; // ボーンのメモリ配分
+@group(2) @binding(2) var<storage, read> armatureAllocations: array<ArmatureAllocation>; // ボーンのメモリ配分
 
 fn getPoseMatrix(index: u32) -> mat3x3<f32> {
     let fixIndex = index * 9u;
@@ -128,16 +120,16 @@ fn isNaN(x: f32) -> bool {
 @compute @workgroup_size(64)
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let vertexIndex = global_id.x;
-    if (allocation.pointsNum * 3u <= vertexIndex) { // 頂点数を超えているか
+    if (bezierModifierAllocations.pointsNum * 3u <= vertexIndex) { // 頂点数を超えているか
         return ;
     }
 
-    let fixVertexIndex = allocation.pointsOffset * 3u + vertexIndex;
+    let fixVertexIndex = bezierModifierAllocations.pointsOffset * 3u + vertexIndex;
     let targetVertices = renderingBezier[fixVertexIndex];
     var newPosition = vec2<f32>(0.0);
-    if (allocation.parentType == 2) { // 親がベジェモディファイア
+    if (bezierModifierAllocations.parentType == 2) { // 親がベジェモディファイア
         let weightBlock = bezierWeightBlocks[fixVertexIndex];
-        let bezierIndex = weightBlock.indexs[0] + bezierAllocationArray[allocation.parentIndex].pointsOffset; // ベジェのindex
+        let bezierIndex = weightBlock.indexs[0] + bezierModifierAllocations_[bezierModifierAllocations.parentIndex].pointsOffset; // ベジェのindex
         let t = weightBlock.weights[0]; // ベジェのt
 
         // 元のベジェ
@@ -156,20 +148,20 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
         let rotatePosition = rotate2D(targetVertices + (position2 - position1) - position2, calculateRotation(normal1, normal2));
         newPosition = rotatePosition + position2;
-    } else if (allocation.parentType == 3) { // 親がアーマチュア
+    } else if (bezierModifierAllocations.parentType == 3) { // 親がアーマチュア
         let weightBlock = bezierWeightBlocks[fixVertexIndex];
         let position = vec3<f32>(targetVertices,1.0);
-        let indexs = weightBlock.indexs + boneAllocationArray[allocation.parentIndex].pointsOffset;
+        let indexs = weightBlock.indexs + armatureAllocations[bezierModifierAllocations.parentIndex].bonesOffset;
         let weights = weightBlock.weights;
         // 各ボーンのワールド行列を用いてスキニング
         for (var i = 0u; i < 4u; i = i + 1u) {
             let weight = weights[i];
             if (0.0 < weight) {
-                let boneIndex = indexs[i] + boneAllocationArray[allocation.parentIndex].pointsOffset;
+                let boneIndex = indexs[i] + armatureAllocations[bezierModifierAllocations.parentIndex].bonesOffset;
                 newPosition += weight * (getPoseMatrix(boneIndex) * inverseMat3x3(getBaseMatrix(boneIndex)) * position).xy;
             }
         }
-    } else if (allocation.parentType == 0) { // 親なし
+    } else if (bezierModifierAllocations.parentType == 0) { // 親なし
         newPosition = targetVertices;
     }
     renderingBezier[fixVertexIndex] = newPosition;

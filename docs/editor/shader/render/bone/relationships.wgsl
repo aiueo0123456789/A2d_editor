@@ -1,25 +1,6 @@
-struct Camera {
-    position: vec2<f32>,
-    cvsSize: vec2<f32>,
-    zoom: f32,
-    padding: f32,
-}
-
-struct BoneVertices {
-    h: vec2<f32>,
-    t: vec2<f32>,
-}
-
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import Camera;
+import ArmatureAllocation;
+import BoneVertices;
 
 struct VisualSettings {
     vertexSize: f32,
@@ -32,7 +13,7 @@ struct VisualSettings {
 @group(2) @binding(0) var<storage, read> verticesPosition: array<BoneVertices>;
 @group(2) @binding(1) var<storage, read> boneColors: array<vec4<f32>>;
 @group(2) @binding(2) var<storage, read> relationships: array<u32>;
-@group(3) @binding(0) var<uniform> armatureAllocation: Allocation; // 配分情報
+@group(3) @binding(0) var<uniform> armatureAllocation: ArmatureAllocation; // 配分情報
 
 const size = 2;
 
@@ -52,7 +33,7 @@ fn vmain(
     @builtin(vertex_index) vertexIndex: u32
 ) -> VertexOutput {
     // 頂点データを取得
-    let index = instanceIndex + armatureAllocation.vertexBufferOffset;
+    let index = instanceIndex + armatureAllocation.bonesOffset;
     let parent = relationships[index];
     let position1 = verticesPosition[index].h;
     let position2 = verticesPosition[parent].h;

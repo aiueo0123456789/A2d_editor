@@ -1,13 +1,6 @@
-struct Allocation {
-    vertexBufferOffset: u32,
-    animationBufferOffset: u32,
-    weightBufferOffset: u32,
-    MAX_VERTICES: u32,
-    MAX_ANIMATIONS: u32,
-    parentType: u32, // 親がなければ0
-    parentIndex: u32, // 親がなければ0
-    myIndex: u32,
-}
+import GraphicMeshAllocation;
+import BezierModifierAllocation;
+import ArmatureAllocation;
 
 struct WeightBlock {
     indexs: vec4<u32>,
@@ -16,7 +9,7 @@ struct WeightBlock {
 
 @group(0) @binding(0) var<storage, read_write> renderingVertices: array<vec2<f32>>; // 出力
 @group(0) @binding(1) var<storage, read> weightBlocks: array<WeightBlock>; // indexと重みのデータ
-@group(0) @binding(2) var<storage, read> allocationArray: array<Allocation>; // メモリ配分
+@group(0) @binding(2) var<storage, read> graphicMeshAllocations: array<GraphicMeshAllocation>; // メモリ配分
 
 // ベジェモディファイ
 struct BezierData {
@@ -26,7 +19,7 @@ struct BezierData {
 }
 @group(1) @binding(0) var<storage, read> renderingBezier: array<BezierData>; // 変形後のベジェ
 @group(1) @binding(1) var<storage, read> baseBezier: array<BezierData>; // 元のベジェ
-@group(1) @binding(2) var<storage, read> bezierAllocationArray: array<Allocation>; // ベジェのメモリ配分
+@group(1) @binding(2) var<storage, read> bezierModifierAllocations: array<BezierModifierAllocation>; // ベジェのメモリ配分
 fn mathBezier(p1: vec2<f32>, c1: vec2<f32>, c2: vec2<f32>, p2: vec2<f32>, t: f32) -> vec2<f32> {
     let u = 1.0 - t;
     return p1 * pow(u, 3.0) + c1 * 3.0 * pow(u, 2.0) * t + c2 * 3.0 * u * pow(t, 2.0) + p2 * pow(t, 3.0);
@@ -55,7 +48,7 @@ fn rotate2D(point: vec2<f32>, angle: f32) -> vec2<f32> {
 // アーマチュア
 @group(2) @binding(0) var<storage, read> poseBoneMatrixArray: array<f32>; // ボーンの行列
 @group(2) @binding(1) var<storage, read> baseBoneMatrixArray: array<f32>; // ベースボーンの行列
-@group(2) @binding(2) var<storage, read> boneAllocationArray: array<Allocation>; // ボーンのメモリ配分
+@group(2) @binding(2) var<storage, read> armatureAllocations: array<ArmatureAllocation>; // ボーンのメモリ配分
 
 fn getPoseMatrix(index: u32) -> mat3x3<f32> {
     let fixIndex = index * 9u;
@@ -115,18 +108,18 @@ fn isNaN(x: f32) -> bool {
 fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
     let objectIndex = global_id.x;
     let vertexIndex = global_id.y;
-    if (arrayLength(&allocationArray) <= objectIndex) { // オブジェクト数を超えているか
+    if (arrayLength(&graphicMeshAllocations) <= objectIndex) { // オブジェクト数を超えているか
         return ;
     }
-    let allocation = allocationArray[objectIndex];
-    if (allocation.MAX_VERTICES <= vertexIndex) { // 頂点数を超えているか
+    let graphicMeshAllocation = graphicMeshAllocations[objectIndex];
+    if (graphicMeshAllocation.verticesNum <= vertexIndex) { // 頂点数を超えているか
         return ;
     }
 
-    let fixVertexIndex = allocation.vertexBufferOffset + vertexIndex;
-    if (allocation.parentType == 2u) { // 親がベジェモディファイア
+    let fixVertexIndex = graphicMeshAllocation.verticesOffset + vertexIndex;
+    if (graphicMeshAllocation.parentType == 2u) { // 親がベジェモディファイア
         let weightBlock = weightBlocks[fixVertexIndex];
-        let bezierIndex = weightBlock.indexs[0] + bezierAllocationArray[allocation.parentIndex].vertexBufferOffset; // ベジェのindex
+        let bezierIndex = weightBlock.indexs[0] + bezierModifierAllocations[graphicMeshAllocation.parentIndex].pointsOffset; // ベジェのindex
         let t = weightBlock.weights[0]; // ベジェのt
 
         // 元のベジェ
@@ -145,10 +138,10 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
 
         let rotatePosition = rotate2D(renderingVertices[fixVertexIndex] + (position2 - position1) - position2, calculateRotation(normal1, normal2));
         renderingVertices[fixVertexIndex] = rotatePosition + position2;
-    } else if (allocation.parentType == 3u) { // 親がアーマチュア
+    } else if (graphicMeshAllocation.parentType == 3u) { // 親がアーマチュア
         let weightBlock = weightBlocks[fixVertexIndex];
         let position = vec3<f32>(renderingVertices[fixVertexIndex],1.0);
-        let indexs = weightBlock.indexs + boneAllocationArray[allocation.parentIndex].vertexBufferOffset;
+        let indexs = weightBlock.indexs + armatureAllocations[graphicMeshAllocation.parentIndex].bonesOffset;
         let weights = weightBlock.weights;
         var skinnedPosition = vec3<f32>(0.0,0.0,1.0);
         // 各ボーンのワールド行列を用いてスキニング

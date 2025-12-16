@@ -1,23 +1,23 @@
 import { device, GPU } from '../../utils/webGPU.js';
 import { useEffect } from '../../utils/ui/util.js';
-import { GraphicMesh } from '../../core/objects/graphicMesh.js';
-import { BezierModifier } from '../../core/objects/bezierModifier.js';
-import { Armature } from '../../core/objects/armature.js';
+import { GraphicMesh } from '../../core/entity/graphicMesh.js';
+import { BezierModifier } from '../../core/entity/bezierModifier.js';
+import { Armature } from '../../core/entity/armature.js';
 import { indexOfSplice, loadFile, pushToArray } from '../../utils/utility.js';
 import { Application } from '../app.js';
 import { RuntimeDatas } from '../../core/runtime/runtimeDatas.js';
-import { ParameterManager } from '../../core/objects/parameterManager.js';
-import { Particle } from '../../core/objects/particle.js';
-import { Script } from '../../core/objects/script.js';
-import { Camera } from '../../core/objects/camera.js';
+import { ParameterManager } from '../../core/entity/parameterManager.js';
+import { Particle } from '../../core/entity/particle.js';
+import { Script } from '../../core/entity/script.js';
+import { Camera } from '../../core/entity/camera.js';
 import { DeleteObjectCommand } from '../../commands/object/object.js';
-import { Texture } from '../../core/objects/texture.js';
-import { MaskTexture } from '../../core/objects/maskTexture.js';
+import { Texture } from '../../core/entity/texture.js';
+import { MaskTexture } from '../../core/entity/maskTexture.js';
 import { UnfixedReference } from '../../utils/objects/util.js';
 import { EditDatas } from '../../core/edit/editData.js';
-import { KeyframeBlock } from '../../core/objects/keyframeBlock.js';
+import { KeyframeBlock } from '../../core/entity/keyframeBlock.js';
 import { BArmatureAnimation } from '../../core/edit/objects/BArmatureAnimation.js';
-import { BlendShape } from '../../core/objects/blendShape.js';
+import { BlendShape } from '../../core/entity/blendShape.js';
 
 const parallelAnimationApplyPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/graphicMesh/parent.wgsl"));
 const treeAnimationApplyPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Cu"), GPU.getGroupLayout("Csrw_Csr_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/bezierModifier/parent.wgsl"));
@@ -357,7 +357,7 @@ export class Scene {
                             resultBuffer,
                             this.runtimeData.graphicMeshData.renderingVertices.buffer,
                             this.runtimeData.graphicMeshData.meshes.buffer,
-                            object.objectMeshData,
+                            object.objectDataBuffer,
                             optionBuffer,
                             pointBuffer
                         ]
