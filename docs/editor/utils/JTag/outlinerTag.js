@@ -1,8 +1,9 @@
 import { app } from "../../../main.js";
 import { isFunction, IsString } from "../utility.js";
 import { CustomTag } from "./customTag.js";
-import { createID, createTag, useEffect } from "../ui/util.js";
+import { createTag, useEffect } from "../ui/util.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";
+import { createID } from "../idGenerator.js";
 
 /**
  * 検索の仕方

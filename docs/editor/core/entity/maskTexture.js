@@ -1,5 +1,6 @@
 import { app } from "../../../main.js";
-import { createID, useEffect } from "../../utils/ui/util.js";
+import { createID } from "../../utils/idGenerator.js";
+import { useEffect } from "../../utils/ui/util.js";
 import { changeParameter } from "../../utils/utility.js";
 import { device, GPU } from "../../utils/webGPU.js";
 

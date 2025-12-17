@@ -14,7 +14,7 @@ export class RuntimeDatas {
         this.particle = new ParticleData(app);
     }
 
-    getID(object) {
+    getByID(object) {
         console.log("呼び出された")
         let index = 0;
         if (object.type == "ベジェモディファイア") {

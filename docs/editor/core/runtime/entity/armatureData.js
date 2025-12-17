@@ -129,7 +129,7 @@ export class ArmatureData extends RuntimeDataBase {
     updateAllocationData(/** @type {Armature} */armature) {
         // 頂点オフセット, アニメーションオフセット, ウェイトオフセット, 頂点数, 最大アニメーション数, 親の型, 親のインデックス, パディング
         let allocationData = this.getAllocationData(armature);
-        GPU.writeBuffer(this.allocations.buffer, allocationData, (armature.runtimeOffsetData.start.allocationOffset * 8) * 4);
+        GPU.writeBuffer(this.allocations.buffer, allocationData, armature.runtimeOffsetData.start.allocationOffset * this.allocations.structByteSize);
         GPU.writeBuffer(armature.objectDataBuffer, allocationData);
     }
 

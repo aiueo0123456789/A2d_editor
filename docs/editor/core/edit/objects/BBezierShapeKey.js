@@ -1,6 +1,7 @@
 import { app } from "../../../../main.js";
+import { createID } from "../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
-import { createID, useEffect } from "../../../utils/ui/util.js";
+import { useEffect } from "../../../utils/ui/util.js";
 import { pushToArray, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { BezierModifier } from "../../entity/bezierModifier.js";

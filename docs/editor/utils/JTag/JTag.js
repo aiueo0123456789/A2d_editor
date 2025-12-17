@@ -1,5 +1,5 @@
 import { CustomTag } from "./customTag.js";
-import { createGroupButton, createID, createRadios, createTag, useEffect, setClass, setStyle, updateRangeStyle } from "../ui/util.js";
+import { createGroupButton, createRadios, createTag, useEffect, setClass, setStyle, updateRangeStyle } from "../ui/util.js";
 import { changeParameter, hexToRgba, isFunction, isNumber, isPassByReference, rgbToHex } from "../utility.js";
 import { app } from "../../../main.js";
 import { MenuTag } from "./menuTag.js";
@@ -29,6 +29,7 @@ import { CanvasTag } from "./canvasTag.js";
 import { DualListboxTag } from "./dualListbox.js";
 import { ParameterManagerTag } from "./parameterManagerTag.js";
 import { ChecksTag } from "./checksTag.js";
+import { createID } from "../idGenerator.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
@@ -273,8 +274,8 @@ export class JTag {
             appendTarget.append(appendChild);
         }
     }
-    constructor() {
-        this.groupID = createID();
+    constructor(groupID) {
+        this.groupID = groupID ? groupID : createID();
         this.dom = null;
         this.lists = new Map();
         this.globalInputObject = {};

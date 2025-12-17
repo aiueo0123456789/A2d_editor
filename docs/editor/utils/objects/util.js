@@ -1,6 +1,7 @@
 import { app } from "../../../main.js";
+import { createID } from "../idGenerator.js";
 import { MathVec2 } from "../mathVec.js";
-import { createID, useEffect } from "../ui/util.js";
+import { useEffect } from "../ui/util.js";
 import { isFunction } from "../utility.js";
 
 export class UnfixedReference {

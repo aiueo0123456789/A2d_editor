@@ -5,12 +5,12 @@ import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { OutlinerTag } from "../../../../utils/JTag/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
-import { createID } from "../../../../utils/ui/util.js";
 import { calculateLocalMousePosition, changeParameter, errorCut } from "../../../../utils/utility.js";
 import { KeyDelete } from "../../../tools/KeyDelete.js";
 import { KeyframeResize } from "../../../tools/KeyframeResize.js";
 import { KeyframeTranslateInTimeline } from "../../../tools/KeyframeTranslate.js";
 import { TimelineSpaceData } from "../Graph/area_TimelineSpaceData.js";
+import { createID } from "../../../../utils/idGenerator.js";
 
 const targetValueToColor = {
     "x": "rgb(0, 0, 255)",

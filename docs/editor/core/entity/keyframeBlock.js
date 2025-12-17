@@ -1,6 +1,7 @@
 import { changeParameter } from "../../utils/utility.js";
-import { createID, useEffect } from "../../utils/ui/util.js";
+import {useEffect } from "../../utils/ui/util.js";
 import { app } from "../../../main.js";
+import { createID } from "../../utils/idGenerator.js";
 
 
 function bezierInterpolation(keyA, keyB, currentFrame) {

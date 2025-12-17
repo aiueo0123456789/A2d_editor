@@ -325,6 +325,8 @@ class AppPerformance {
 
 export class Application { // 全てをまとめる
     constructor(/** @type {HTMLElement} **/ dom) {
+        this.usedIDs = new Map();
+
         this.dom = dom; // エディターが作られるdom
         this.appPerformance = new AppPerformance(this);
         this.appConfig = new AppConfig(this);

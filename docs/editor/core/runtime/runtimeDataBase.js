@@ -1,6 +1,5 @@
 import { Application } from "../../app/app.js";
 import { objectInit } from "../../utils/utility.js";
-import { GPU } from "../../utils/webGPU.js";
 import { BufferManager } from "./bufferManager.js";
 
 // そのうち動的ストレージバッファ（dynamic storage buffer）を使うかも

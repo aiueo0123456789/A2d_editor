@@ -1,5 +1,6 @@
-import { createID, createTag, useEffect, setClass } from "../utils/ui/util.js";
+import { createTag, setClass } from "../utils/ui/util.js";
 import { JTag } from "../utils/JTag/JTag.js";
+import { createID } from "../utils/idGenerator.js";
 
 export class ToolsBarOperator {
     constructor(/** @type {HTMLElement} */dom, shelfes) {

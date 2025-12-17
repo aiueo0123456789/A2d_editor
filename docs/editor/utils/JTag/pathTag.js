@@ -1,7 +1,9 @@
 import { JTag, ParameterReference } from "./JTag.js";
 import { CustomTag } from "./customTag.js";
-import { createID, createTag, useEffect } from "../ui/util.js";
+import { createTag, useEffect } from "../ui/util.js";
 import { isFunction } from "../utility.js";
+import { app } from "../../../main.js";
+import { createID } from "../idGenerator.js";
 
 export class PathTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,/** @type {HTMLElement}} */t,parent,searchTarget,child,flag) {

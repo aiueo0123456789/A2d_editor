@@ -1,4 +1,5 @@
-import { createID, useEffect } from "../utils/ui/util.js";
+import { createID } from "../utils/idGenerator.js";
+import { useEffect } from "../utils/ui/util.js";
 import { isFunction } from "../utils/utility.js";
 
 // undoとredoを実行

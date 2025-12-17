@@ -1,7 +1,8 @@
 import { Area } from "../../ui/area/Area.js";
+import { createID } from "../../utils/idGenerator.js";
 import { JTag } from "../../utils/JTag/JTag.js";
 import { AutoGrid } from "../../utils/ui/grid.js";
-import { createID, createTag } from "../../utils/ui/util.js";
+import { createTag } from "../../utils/ui/util.js";
 import { indexOfSplice } from "../../utils/utility.js";
 import { Application } from "../app.js";
 
@@ -9,7 +10,7 @@ export class UI {
     constructor(/** @type {Application} */ app) {
         this.app = app;
 
-        this.jTag = new JTag();
+        this.jTag = new JTag(createID("UI_jTagID"));
         this.jTag.create(
             app.dom,
             {

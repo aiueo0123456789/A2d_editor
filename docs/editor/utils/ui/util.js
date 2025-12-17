@@ -5,12 +5,6 @@ import { UseEffect } from "../useEffect.js";
 
 export const useEffect = new UseEffect();
 
-export function createID() {
-    var S="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    var N=16;
-    return Array.from(Array(N)).map(()=>S[Math.floor(Math.random()*S.length)]).join('');
-}
-
 export function createTag(target, type, option = {}) {
     const element = document.createElement(type);
     if (target) {

@@ -1,5 +1,6 @@
 import { isFunction } from "../utility.js";
-import { createIcon, createID, createTag, useEffect, removeHTMLElementInObject, setClass } from "../ui/util.js";
+import { useEffect } from "../ui/util.js";
+import { createID } from "../idGenerator.js";
 
 export class CustomTag {
     constructor(isSetLabel = true) {

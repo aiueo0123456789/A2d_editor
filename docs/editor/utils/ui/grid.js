@@ -1,4 +1,5 @@
-import { createID, removeHTMLElementInObject } from "./util.js";
+import { app } from "../../../main.js";
+import { createID } from "../idGenerator.js";
 
 export const connectingString = "><-/*+><";
 
