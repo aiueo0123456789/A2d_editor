@@ -4,4 +4,4 @@ export const app = new Application(document.getElementById("appContainer"));
 
 app.init();
 
-appUpdate(app);1
+appUpdate(app);
