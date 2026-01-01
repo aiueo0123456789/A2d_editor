@@ -22,15 +22,15 @@ export class UI {
                     {tagType: "html", id: "parameterManagerSelecter", class: "custom-select-items hidden", tag: "ul"},
                     {tagType: "html", id: "loadingModalsContainer", class: "loadingModalsContainer hidden", tag: "ul"},
                     {tagType: "div", id: "headMenubar", class: "menubar", children: [
-                        {tagType: "input", label: "プロジェクト名", value: "app/appConfig/projectName", type: "text"},
-                        {tagType: "menu", title: "ファイル", struct: [
-                            {label: "クリーン", children: [], onClick: () => {
+                        {tagType: "input", label: "projectName", value: "app/appConfig/projectName", type: "text"},
+                        {tagType: "menu", title: "file", struct: [
+                            {label: "clean", children: [], onClick: () => {
                                 app.scene.objects.clean();
                             }},
-                            {label: "保存", icon: "export", children: [], onClick: () => {
+                            {label: "export", icon: "export", children: [], onClick: () => {
                                 app.fileIO.save();
                             }},
-                            {label: "開く", icon: "import", children: [
+                            {label: "import", icon: "import", children: [
                                 {label: "zip", children: [], type: "file", onClick: (event) => {
                                     app.fileIO.loadFile(event.target.files[0], "open-btn");
                                 }},
@@ -39,8 +39,8 @@ export class UI {
                                 }},
                             ]},
                         ]},
-                        {tagType: "menu", title: "編集", struct: [
-                            {label: "設定", icon: "setting", children: [], onClick: () => {
+                        {tagType: "menu", title: "edit", struct: [
+                            {label: "setting", icon: "setting", children: [], onClick: () => {
                             }},
                         ]},
                         {tagType: "html", id: "workSpaces", style: "width: 100%; display: flex; gap: 10px; alignItems: center; overflowX: auto;", tag: "div"},
@@ -49,7 +49,7 @@ export class UI {
                     {tagType: "div", id: "headMenubar", class: "menubar", children: [
                         // {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/jsHeapByteSizeLimit"},
                         {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/totalJSHeapByteSize"},
-                        {tagType: "input", label: "DOM数", value: "app/appPerformance/domCount", type: "number"},
+                        {tagType: "input", label: "DOMs", value: "app/appPerformance/domCount", type: "number"},
                     ]}
                 ]
             },

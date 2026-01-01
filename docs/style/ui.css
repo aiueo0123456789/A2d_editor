@@ -1,3 +1,8 @@
+:root {
+    --areaBack: rgb(39, 39, 39);
+    --sectionOrPanelHeader: rgb(58, 58, 58);
+}
+
 .imgText {
     width: fit-content;
     height: fit-content;
@@ -22,7 +27,7 @@
     display: flex;
     flex-flow: column;
     border-radius: 0px;
-    background-color: var(--backColor);
+    /* background-color: var(--backColor); */
 }
 .ui_container_0 > *{
     flex-shrink: 0;
@@ -50,7 +55,7 @@
     /* border: 1; */
 }
 /* ヘッダー */
-.area .header {
+.areaHeader {
     grid-row: 1/2;
     padding: 0px 5px;
     display: flex;
@@ -58,16 +63,19 @@
     align-items: center;      /* 縦方向中央 */
     width: fit-content;
     height: 100%;
+    background-color: var(--areaBack);
+    border-top-right-radius: 4px;
+    border-top-left-radius: 4px;
 }
-.area .header :first-child {
+.areaHeader :first-child {
 }
-.area .header :nth-child(2) {
+.areaHeader :nth-child(2) {
 }
-.area .header :nth-child(3) > * {
+.areaHeader :nth-child(3) > * {
     font-weight: 900;
 }
 /* メイン */
-.area .main {
+.areaBody {
     grid-row: 2/3;
     height: 100%;
     width: 100%;
@@ -76,6 +84,7 @@
     border-top-right-radius: 0px;
     border-top-left-radius: 0px;
     border-radius: 0px;
+    background-color: var(--areaBack);
 }
 
 .canvasContainer {
@@ -124,15 +133,17 @@ canvas {
     width: 100%;
     height: fit-content;
     /* border: 1px solid var(--sub2Color); */
-    background-color: var(--subColor);
+    /* background-color: var(--subColor); */
     display: flex;
     flex-flow: column;
     gap: 5px;
     /* padding: 5px; */
 }
 .sectionOrPanel-header {
+    padding: 5px 0px;
     width: 100%;
     display: flex;
+    background-color: var(--sectionOrPanelHeader);
 }
 .sectionOrPanel-mainContainer {
     width: 100%;

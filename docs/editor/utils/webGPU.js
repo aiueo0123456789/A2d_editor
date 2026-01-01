@@ -271,11 +271,12 @@ class WebGPU {
         const buffer = device.createBuffer({
             size: size,
             usage: usage,
-            mappedAtCreation: data ? true : false,
+            // mappedAtCreation: data ? true : false,
         });
         if (data) {
-            new Uint8Array(buffer.getMappedRange()).set(data);
-            buffer.unmap();
+            // new Uint8Array(buffer.getMappedRange()).set(data);
+            // buffer.unmap();
+            device.queue.writeBuffer(buffer, 0, data);
         }
         return buffer;
     }
@@ -1732,7 +1733,7 @@ class WebGPU {
         const commandBuffer = commandEncoder.finish();
         device.queue.submit([commandBuffer]);
 
-        return {texture: atlasTexture, uvOffset: textures.map(texture => {
+        return {texture: atlasTexture, texCoordOffset: textures.map(texture => {
             const point = textureLeftBottom[sortedTextures.indexOf(texture)];
             return [point[0] / width, point[1] / height, texture.width / width, texture.height / height];
         })};
@@ -2222,6 +2223,10 @@ export const device = await adapter.requestDevice({
     requiredLimits: {
         maxStorageBuffersPerShaderStage: 10, // ストレージバッファを10個まで使えるようにする
     },
+});
+
+device.lost.then(info => {
+    console.error("Device lost:", info.message);
 });
 
 const limits = adapter.limits;

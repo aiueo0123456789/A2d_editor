@@ -23,7 +23,7 @@ struct VisualSettings {
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
     @location(1) weight: f32,
 }
 
@@ -47,7 +47,7 @@ fn vmain(
 
     var output: VertexOutput;
     output.position = vec4f((verticesCoordinates[fixIndex] + point.xy * visualSetting.vertexSize / camera.zoom - camera.position) * camera.zoom * camera.cvsSize, 0, 1.0);
-    output.uv = point.zw;
+    output.texCoord = point.zw;
     // 表示ターゲットのindexを検索する
     let weight = weightBlocks[fixIndex];
     output.weight = weight;
@@ -102,17 +102,17 @@ const strokeWidth = 0.1;
 
 @fragment
 fn fmain(
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
     @location(1) weight: f32,
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    if (uv.x * uv.x + uv.y * uv.y > 0.5 * 0.5) { // 円の外
+    if (texCoord.x * texCoord.x + texCoord.y * texCoord.y > 0.5 * 0.5) { // 円の外
         discard ;
-    } else if (uv.x * uv.x + uv.y * uv.y > (0.5 - strokeWidth) * (0.5 - strokeWidth)) {
+    } else if (texCoord.x * texCoord.x + texCoord.y * texCoord.y > (0.5 - strokeWidth) * (0.5 - strokeWidth)) {
         output.color = vec4<f32>(0,0,0,1);
     } else {
         let end_angle = weight * 2.0 * PI; // weightが1の時ラジアンで360になるように
-        let color = select(0.2, 0.9, is_point_in_sector(uv, 0, end_angle, 0, 0.5));
+        let color = select(0.2, 0.9, is_point_in_sector(texCoord, 0, end_angle, 0, 0.5));
         output.color = vec4<f32>(color,color,color,1);
     }
     return output;

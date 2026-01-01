@@ -1,6 +1,6 @@
 struct VertexOutput {
     @builtin(position) position: vec4<f32>,
-    @location(0) uvForMask: vec2<f32>,
+    @location(0) texCoordForMask: vec2<f32>,
 };
 
 const pointData = array<vec4<f32>, 4>(
@@ -15,7 +15,7 @@ fn vmain(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
     var output: VertexOutput;
     let point = pointData[vertexIndex];
     output.position = vec4<f32>(point.xy, 0.0, 1.0);
-    output.uvForMask = vec2<f32>(point.z, 1.0 - point.w);
+    output.texCoordForMask = vec2<f32>(point.z, 1.0 - point.w);
     return output;
 }
 
@@ -27,23 +27,23 @@ const outlineSize = 1.5;
 const threshold = 1.0 / 255.0; // 約0.0039215
 
 @fragment
-fn fmain(@location(0) uvForMask: vec2<f32>) -> @location(0) vec4<f32> {
+fn fmain(@location(0) texCoordForMask: vec2<f32>) -> @location(0) vec4<f32> {
     let texSize = vec2<f32>(textureDimensions(maskTexture, 0));
     let pixel = 1.0 / texSize;
     let offset = pixel * outlineSize;
 
     // Sobel フィルターのサンプル座標
-    let s00 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>(-offset.x, -offset.y)).r;
-    let s01 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>( 0.0,       -offset.y)).r;
-    let s02 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>( offset.x,  -offset.y)).r;
+    let s00 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x, -offset.y)).r;
+    let s01 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( 0.0,       -offset.y)).r;
+    let s02 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,  -offset.y)).r;
 
-    let s10 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>(-offset.x,  0.0)).r;
-    let s11 = textureSample(maskTexture, mySampler, uvForMask).r;
-    let s12 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>( offset.x,  0.0)).r;
+    let s10 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x,  0.0)).r;
+    let s11 = textureSample(maskTexture, mySampler, texCoordForMask).r;
+    let s12 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,  0.0)).r;
 
-    let s20 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>(-offset.x,  offset.y)).r;
-    let s21 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>( 0.0,        offset.y)).r;
-    let s22 = textureSample(maskTexture, mySampler, uvForMask + vec2<f32>( offset.x,   offset.y)).r;
+    let s20 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x,  offset.y)).r;
+    let s21 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( 0.0,        offset.y)).r;
+    let s22 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,   offset.y)).r;
 
     // Sobelカーネルによる勾配計算
     let gx = (s02 + 2.0 * s12 + s22) - (s00 + 2.0 * s10 + s20);

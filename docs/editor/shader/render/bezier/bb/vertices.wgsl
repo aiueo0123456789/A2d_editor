@@ -12,7 +12,7 @@ struct VisualSettings {
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
     @location(1) kind: f32,
     @location(2) color: vec4<f32>,
 }
@@ -43,7 +43,7 @@ fn vmain(
     let p = bezier[vertexType];
     var output: VertexOutput;
     output.position = worldPosToClipPos(p + (point * visualSetting.vertexSize) / camera.zoom);
-    output.uv = point;
+    output.texCoord = point;
     output.kind = select(1.0, 0.0, vertexType == 0);
     output.color = select(vec4<f32>(0.0,1.0,0.0,1.0), vec4<f32>(1.0,0.0,0.0,1.0), verticesSelected[index * 3u + vertexType] == 1u);
     return output;
@@ -57,20 +57,20 @@ const edgeWidth = 1.0 - 0.3;
 
 @fragment
 fn fmain(
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
     @location(1) kind: f32,
     @location(2) color: vec4<f32>,
 ) -> FragmentOutput {
     var output: FragmentOutput;
     var colorKind = false;
     if (kind == 0.0) {
-        let dist = pow(uv.x, 2.0) + pow(uv.y, 2.0);
+        let dist = pow(texCoord.x, 2.0) + pow(texCoord.y, 2.0);
         if (dist > 1.0) {
             discard ;
         }
         colorKind = dist < edgeWidth;
     } else {
-        colorKind = abs(uv.x) < edgeWidth && abs(uv.y) < edgeWidth;
+        colorKind = abs(texCoord.x) < edgeWidth && abs(texCoord.y) < edgeWidth;
     }
     output.color = select(color, vec4<f32>(0,0,0,1), colorKind);
     return output;

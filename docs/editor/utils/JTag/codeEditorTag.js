@@ -42,10 +42,10 @@ function createUtil(t, name) {
 }
 
 export class CodeEditorTag extends CustomTag {
-    constructor (jTag,t,parent,searchTarget,child,flag) {
+    constructor (jTag,t,parent,source,child,flag) {
         super();
         const builtInFunction = [{name: "noise", return: "f32"}, {name: "arrayLength", return: "u32"}, {name: "vec2f", return: "f32"}, {name: "vec3f", return: "f32"}, {name: "vec4f", return: "f32"}, {name: "fract", return: "f32"}, {name: "floor", return: "f32"}, {name: "mix", return: "f32"}, {name: "abs", return: "f32"}, {name: "dot", return: "f32"}];
-        this.sourceCode = jTag.getParameter(searchTarget, child.source, 1);
+        this.sourceCode = jTag.getParameter(source, child.source, 1);
         /** @type {HTMLElement} */
         this.container = createGrid(t, "c");
         // setStyle(this.container, "width: 100%; height: 100%; display: grid; gridTemplateColumns: auto 1fr; overflow: hidden; backgroundColor: rgb(52, 52, 52); fontSize: 100%;");

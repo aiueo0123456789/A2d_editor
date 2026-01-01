@@ -24,7 +24,7 @@ struct Particle {
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
 }
 
 const pointData = array<vec2<f32>, 4>(
@@ -46,7 +46,7 @@ fn vmain(
     let fixIndex = objectData.particleOffset + instanceIndex;
     let particle = particles[fixIndex];
     output.position = vec4f((particle.position + pointData[localIndex] * particle.scale - camera.position) * camera.zoom * camera.cvsSize, 1.0 / (particles[fixIndex].zIndex + 1.0), 1.0);
-    output.uv = pointData[localIndex] + 0.5;
+    output.texCoord = pointData[localIndex] + 0.5;
     return output;
 }
 
@@ -59,12 +59,12 @@ struct FragmentOutput {
 // フラグメントシェーダー
 @fragment
 fn fmain(
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    // if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+    // if (texCoord.x < 0.0 || texCoord.x > 1.0 || texCoord.y < 0.0 || texCoord.y > 1.0) {
     //     discard ;
     // }
-    output.color = vec4<f32>(1.0, 1.0, 1.0, 1.0 - length(uv - 0.5) * 2.0);
+    output.color = vec4<f32>(1.0, 1.0, 1.0, 1.0 - length(texCoord - 0.5) * 2.0);
     return output;
 }

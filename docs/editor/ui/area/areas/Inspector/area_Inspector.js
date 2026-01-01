@@ -109,11 +109,12 @@ export class Area_Inspector {
                             // const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
                             // changeParameter(bms, "activeShapeKey", object);
                             // bms.updateGPUData();
-                        }, src: "/shapeKeyMetaDatas", type: "min", liStruct:[
-                            {tagType: "gridBox", axis: "c", allocation: "1fr", children: [
+                        }, src: "/shapeKeyMetaDatas", type: "min",
+                        liStruct: {
+                            tagType: "gridBox", id: {path: "/shapeKeyMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
                                 {tagType: "dblClickInput", value: "/name"},
-                            ]},
-                        ]}
+                            ]
+                        }}
                     ]},
                 ], errorChildren: [
                     {tagType: "section", name: "基本情報", children: []}
@@ -134,11 +135,12 @@ export class Area_Inspector {
                                     const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
                                     changeParameter(bms, "activeShapeKey", object);
                                     bms.updateGPUData();
-                                }, src: "/shapeKeys", type: "min", liStruct:[
-                                    {tagType: "gridBox", axis: "c", allocation: "1fr", children: [
+                                }, src: "/shapeKeys", type: "min",
+                                liStruct: {
+                                    tagType: "gridBox", id: {path: "/shapeKeyMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
                                         {tagType: "dblClickInput", value: "/name"},
-                                    ]},
-                                ]}
+                                    ]
+                                }}
                             ]},
                         ],
                         false: [
@@ -157,11 +159,12 @@ export class Area_Inspector {
                                             const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
                                             changeParameter(bms, "activeShapeKey", object);
                                             bms.updateGPUData();
-                                        }, src: "/shapeKeys", type: "min", liStruct:[
-                                            {tagType: "gridBox", axis: "c", allocation: "1fr", children: [
+                                        }, src: "/shapeKeys", type: "min",
+                                        liStruct: {
+                                            tagType: "gridBox", id: {path: "/shapeKeyMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
                                                 {tagType: "dblClickInput", value: "/name"},
-                                            ]},
-                                        ]}
+                                            ]
+                                        }}
                                     ]},
                                 ],
                                 false: [

@@ -7,7 +7,7 @@ import { GraphicMesh } from "../../entity/graphicMesh.js";
 class Vert {
     constructor(data) {
         this.co = data.co;
-        this.uv = data.uv;
+        this.texCoord = data.texCoord;
         this.weightBlock = data.weightBlock;
         this.selected = false;
     }
@@ -41,8 +41,8 @@ class Edge {
 }
 
 export class BMesh {
-    static createVertex(co, uv, weightBlock = [0,0,0,0,1,0,0,0]) {
-        return new Vert({co: co, uv: uv, weightBlock: weightBlock});
+    static createVertex(co, texCoord, weightBlock = [0,0,0,0,1,0,0,0]) {
+        return new Vert({co: co, texCoord: texCoord, weightBlock: weightBlock});
     }
     static createEdge(v0, v1) {
         return new Edge({vertices: [v0, v1]});
@@ -94,30 +94,30 @@ export class BMesh {
     get imageBoundingBox() {
         let min = [Infinity,Infinity];
         let max = [-Infinity,-Infinity];
-        let minUV = [Infinity,Infinity];
-        let maxUV = [-Infinity,-Infinity];
+        let minTexCoord = [Infinity,Infinity];
+        let maxTexCoord = [-Infinity,-Infinity];
         for (const vertex of this.vertices) {
             if (min[0] > vertex.co[0]) {
                 min[0] = vertex.co[0];
-                minUV[0] = vertex.uv[0];
+                minTexCoord[0] = vertex.texCoord[0];
             }
             if (min[1] > vertex.co[1]) {
                 min[1] = vertex.co[1];
-                minUV[1] = vertex.uv[1];
+                minTexCoord[1] = vertex.texCoord[1];
             }
             if (max[0] < vertex.co[0]) {
                 max[0] = vertex.co[0];
-                maxUV[0] = vertex.uv[0];
+                maxTexCoord[0] = vertex.texCoord[0];
             }
             if (max[1] < vertex.co[1]) {
                 max[1] = vertex.co[1];
-                maxUV[1] = vertex.uv[1];
+                maxTexCoord[1] = vertex.texCoord[1];
             }
         }
-        let minDiff = MathVec2.subR([0,1], minUV);
-        let maxDiff = MathVec2.subR([1,0], maxUV);
-        let raitoUV = MathVec2.divR(MathVec2.subR(max, min), MathVec2.subR(maxUV, minUV)); // 座標に対するuvの影響力
-        const result = {min: MathVec2.subR(min, MathVec2.mulR(raitoUV, minDiff)), max: MathVec2.addR(max, MathVec2.mulR(raitoUV, maxDiff))};
+        let minDiff = MathVec2.subR([0,1], minTexCoord);
+        let maxDiff = MathVec2.subR([1,0], maxTexCoord);
+        let raitoTexCoord = MathVec2.divR(MathVec2.subR(max, min), MathVec2.subR(maxTexCoord, minTexCoord)); // 座標に対するtexCoordの影響力
+        const result = {min: MathVec2.subR(min, MathVec2.mulR(raitoTexCoord, minDiff)), max: MathVec2.addR(max, MathVec2.mulR(raitoTexCoord, maxDiff))};
         result.size = MathVec2.subR(result.max, result.min);
         return result;
     }
@@ -206,7 +206,7 @@ export class BMesh {
 
     updateGPUData() {
         this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        this.uvsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.uv).flat(), ["f32", "f32"]);
+        this.texCoordsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.texCoord).flat(), ["f32", "f32"]);
         this.autoEdgesBuffer = GPU.createStorageBuffer(roundUp(this.autoEdges.length * 2 * 4, 2 * 4), this.autoEdges.map(edge => this.getVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
         this.manualEdgesBuffer = GPU.createStorageBuffer(roundUp(this.manualEdges.length * 2 * 4, 2 * 4), this.manualEdges.map(edge => this.getVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
         this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => this.getMeshLoop(mesh)).flat(), ["u32", "u32", "u32"]);
@@ -215,7 +215,7 @@ export class BMesh {
         this.manualEdgeselectedBuffer = GPU.createStorageBuffer(roundUp(this.manualEdges.length * 4, 4), this.manualEdges.map(edge => edge.selected ? 1 : 0), ["u32"]);
         this.meshSelectedBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 4, 4), this.meshes.map(mesh => mesh.selected ? 1 : 0), ["u32"]);
         this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.uvsBuffer, this.autoEdgesBuffer, this.manualEdgesBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.autoEdgeselectedBuffer, this.manualEdgeselectedBuffer, this.meshSelectedBuffer, this.zIndexBuffer, this.texture.view]);
+        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.texCoordsBuffer, this.autoEdgesBuffer, this.manualEdgesBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.autoEdgeselectedBuffer, this.manualEdgeselectedBuffer, this.meshSelectedBuffer, this.zIndexBuffer, this.texture.view]);
     }
 
     setMeshData(data) {
@@ -223,7 +223,7 @@ export class BMesh {
         if ("vertices" in data) {
             this.vertices.length = 0;
             for (let i = 0; i < data.vertices.length; i ++) {
-                this.vertices.push(new Vert({co: data.vertices[i].co, uv: data.vertices[i].uv, weightBlock: [0,0,0,0, 1,0,0,0]}));
+                this.vertices.push(new Vert({co: data.vertices[i].co, texCoord: data.vertices[i].texCoord, weightBlock: [0,0,0,0, 1,0,0,0]}));
             }
         }
         if ("meshes" in data) {
@@ -252,14 +252,14 @@ export class BMesh {
         this.meshes.length = 0;
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         this.object = object;
-        const [coordinates,meshes,weightBlocks,uvs] = await Promise.all([
+        const [coordinates,meshes,weightBlocks,texCoords] = await Promise.all([
             graphicMeshData.baseVertices.getObjectData(object),
             graphicMeshData.meshes.getObjectData(object),
             graphicMeshData.weightBlocks.getObjectData(object),
-            graphicMeshData.uv.getObjectData(object)
+            graphicMeshData.texCoords.getObjectData(object)
         ]);
         for (let i = 0; i < coordinates.length; i ++) {
-            this.vertices.push(new Vert({co: coordinates[i], uv: uvs[i], weightBlock: weightBlocks[i]}));
+            this.vertices.push(new Vert({co: coordinates[i], texCoord: texCoords[i], weightBlock: weightBlocks[i]}));
         }
         for (let i = 0; i < meshes.length; i ++) {
             this.meshes.push(new Mesh({vertices: meshes[i].map(vertexIndex => this.vertices[vertexIndex])}));
@@ -271,12 +271,12 @@ export class BMesh {
 
     toRutime() {
         this.object.allVertices.length = 0;
-        this.object.allUVs.length = 0;
+        this.object.allTexCoords.length = 0;
         this.object.allWeightBlocks.length = 0;
         this.object.allMeshes.length = 0;
         for (const vert of this.vertices) {
             this.object.allVertices.push(...vert.co);
-            this.object.allUVs.push(...vert.uv);
+            this.object.allTexCoords.push(...vert.texCoord);
             this.object.allWeightBlocks.push(...vert.weightBlock);
         }
         for (const mesh of this.meshes) {

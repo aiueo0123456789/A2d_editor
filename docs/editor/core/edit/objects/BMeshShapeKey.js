@@ -9,7 +9,7 @@ import { GraphicMesh } from "../../entity/graphicMesh.js";
 class Vert {
     constructor(data) {
         this.co = [...data.co];
-        this.uv = data.uv;
+        this.texCoord = data.texCoord;
         this.index = data.index;
         this.selected = false;
     }
@@ -113,24 +113,24 @@ export class BMeshShapeKey {
     updateGPUData() {
         if (this.activeShapeKey) this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => this.activeShapeKey.data[vertex.index].co).flat(), ["f32", "f32"]);
         else this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        this.uvsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.uv).flat(), ["f32", "f32"]);
+        this.texCoordsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.texCoord).flat(), ["f32", "f32"]);
         this.vertexSelectedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.vertices.map(vertex => vertex.selected ? 1 : 0), ["u32"]);
         this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => mesh.indexs).flat(), ["u32", "u32", "u32"]);
         this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.uvsBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.zIndexBuffer, this.texture.view]);
+        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.texCoordsBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.zIndexBuffer, this.texture.view]);
     }
 
     async fromMesh(object) {
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         this.object = object;
-        const [coordinates,meshes,uvs,shape] = await Promise.all([
+        const [coordinates,meshes,texCoords,shape] = await Promise.all([
             graphicMeshData.baseVertices.getObjectData(object),
             graphicMeshData.meshes.getObjectData(object),
-            graphicMeshData.uv.getObjectData(object),
+            graphicMeshData.texCoords.getObjectData(object),
             graphicMeshData.shapeKeys.getObjectData(object)
         ]);
         for (let i = 0; i < coordinates.length; i ++) {
-            this.vertices.push(new Vert({co: coordinates[i], uv: uvs[i], index: i}));
+            this.vertices.push(new Vert({co: coordinates[i], texCoord: texCoords[i], index: i}));
         }
         console.log(shape)
         this.object.shapeKeyMetaDatas.forEach((shapeKeyMetaDta, shapeKeyIndex) => {

@@ -9,7 +9,7 @@ import { GraphicMesh } from "../../entity/graphicMesh.js";
 class Vert {
     constructor(data) {
         this.co = data.co;
-        this.uv = data.uv;
+        this.texCoord = data.texCoord;
     }
 }
 
@@ -105,11 +105,11 @@ export class BMeshWeight {
         // this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
         if (!this.isInit) {
             this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.renderingVerticesCoordinates.flat(), ["f32", "f32"]);
-            this.uvsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.uv).flat(), ["f32", "f32"]);
+            this.texCoordsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.texCoord).flat(), ["f32", "f32"]);
             this.weightBlocksBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.weightBlocks[app.appConfig.areasConfig["Viewer"].weightPaintMetaData.weightBlockIndex].weights, ["f32"]);
             this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => mesh.indexs).flat(), ["u32", "u32", "u32"]);
             this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-            this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.uvsBuffer, this.weightBlocksBuffer, this.meshesBuffer, this.zIndexBuffer, this.texture.view]);
+            this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.texCoordsBuffer, this.weightBlocksBuffer, this.meshesBuffer, this.zIndexBuffer, this.texture.view]);
             this.isInit = true;
         } else {
             GPU.writeBuffer(this.verticesBuffer, new Float32Array(this.renderingVerticesCoordinates.flat()));
@@ -121,9 +121,9 @@ export class BMeshWeight {
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         const armatureData = app.scene.runtimeData.armatureData;
         this.object = object;
-        const [coordinates,uvs,vertexWeightBlocks,meshes,boneBaseMatrixs,bonePoseMatrixs] = await Promise.all([
+        const [coordinates,texCoords,vertexWeightBlocks,meshes,boneBaseMatrixs,bonePoseMatrixs] = await Promise.all([
             graphicMeshData.baseVertices.getObjectData(object),
-            graphicMeshData.uv.getObjectData(object),
+            graphicMeshData.texCoords.getObjectData(object),
             graphicMeshData.weightBlocks.getObjectData(object),
             graphicMeshData.meshes.getObjectData(object),
             armatureData.baseBoneMatrix.getObjectData(object.parent),
@@ -136,7 +136,7 @@ export class BMeshWeight {
                 if (isNaN(weightValue)) this.weightBlocks[boneIndex].weights[vertexIndex] = 1 / 4;
                 else this.weightBlocks[boneIndex].weights[vertexIndex] = weightValue;
             })
-            this.vertices.push(new Vert({co: coordinates[vertexIndex], uv: uvs[vertexIndex]}));
+            this.vertices.push(new Vert({co: coordinates[vertexIndex], texCoord: texCoords[vertexIndex]}));
         }
         for (let boneIndex = 0; boneIndex < boneBaseMatrixs.length; boneIndex ++) {
             this.bones.push(new Bone({baseMatrix: MathMat3x3.mat3x3ToArray(boneBaseMatrixs[boneIndex]), poseMatrix: MathMat3x3.mat3x3ToArray(bonePoseMatrixs[boneIndex])}));

@@ -27,11 +27,12 @@ export class Area_Property {
                     }, onDelete: (masks) => {
                         app.operator.appendCommand(new DeleteObjectCommand(masks));
                         app.operator.execute();
-                    }, src: "scene/objects/maskTextures", type: "min", liStruct:[
-                        {tagType: "gridBox", axis: "c", allocation: "1fr", children: [
+                    }, src: "scene/objects/maskTextures", type: "min",
+                    liStruct: {
+                        tagType: "gridBox", id: {path: "scene/objects/maskTextures/{!index}/id"}, axis: "c", allocation: "1fr", children: [
                             {tagType: "dblClickInput", value: "/name"},
-                        ]},
-                    ]}
+                        ]
+                    }}
                 ]},
                 {tagType: "section", name: "パラメーターマネージャー", children: [
                     {tagType: "list", onAppend: () => {
@@ -40,9 +41,9 @@ export class Area_Property {
                     }, onDelete: (parameterManagers) => {
                         app.operator.appendCommand(new DeleteObjectCommand(parameterManagers));
                         app.operator.execute();
-                    }, src: "scene/objects/parameterManagers", options: {}, notUseActiveAndSelect: true, liStruct:[
-                        // {tagType: "nodeFromFunction", source: "/getNodeData"}
-                        {tagType: "section", name: {path: "/name"}, children: [
+                    }, src: "scene/objects/parameterManagers", options: {}, notUseActiveAndSelect: true,
+                    liStruct: {
+                        tagType: "section", id: {path: "scene/objects/parameterManagers/{!index}/id"}, name: {path: "/name"}, children: [
                             {tagType: "gridBox", axis: "c",  allocation: "auto 1fr auto", children: [
                                 {tagType: "dblClickInput", value: "/name"},
                                 {tagType: "button", textContent: "複製", onClick: (object) => {
@@ -54,18 +55,19 @@ export class Area_Property {
                             {tagType: "list", onAppend: (object) => {
                                 app.operator.appendCommand(new AppendParameterInParameterManager(object.normal));
                                 app.operator.execute();
-                            }, src: "/parameters", options: {}, notUseActiveAndSelect: true, type: "noScroll", liStruct:[
-                                {tagType: "gridBox", axis: "c",  allocation: "auto 1fr auto", children: [
+                            }, src: "/parameters", options: {}, notUseActiveAndSelect: true, type: "noScroll",
+                            liStruct: {
+                                tagType: "gridBox", id: {path: "</{!index}"}, axis: "c",  allocation: "auto 1fr auto", children: [
                                     {tagType: "dblClickInput", value: "/label"},
                                     {tagType: "input", value: "/value", type: "number"},
                                     {tagType: "button", textContent: "削除", onClick: (object) => {
-                                        app.operator.appendCommand(new DeleteParameterInParameterManager(object.special.searchTarget.normal, object.normal));
+                                        app.operator.appendCommand(new DeleteParameterInParameterManager(object.special.source.normal, object.normal));
                                         app.operator.execute();
                                     }},
-                                ]}
-                            ]}
-                        ]}
-                    ]}
+                                ]
+                            }}
+                        ]
+                    }}
                 ]},
                 {tagType: "section", name: "カメラ", children: [
                     {tagType: "input", label: "表示範囲x", value: "scene/objects/renderingCamera/displayRange/0", type: "number", min: 1, max: 2048, step: 1, custom: {visual: "range"}},

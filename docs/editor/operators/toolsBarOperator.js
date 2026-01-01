@@ -29,7 +29,7 @@ export class ToolsBarOperator {
         this.jTag.remove();
         for (const shelfeName in this.shelfes) {
             // 横
-            this.jTag.createFromChildren(this.domForSideBar,null,[
+            this.jTag.createFromStructures(this.domForSideBar,null,[
                 {tagType: "div", children: [
                     {tagType: "div", options: {textContent: shelfeName}, style: "writingMode: vertical-rl;"},
                 ], class: "sideBar-toolTitle"}

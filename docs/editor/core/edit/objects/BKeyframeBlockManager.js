@@ -1,8 +1,7 @@
-import { app } from "../../../../main.js";
-
 export class BKeyframeBlockManager {
     constructor(data) {
         this.type = "キーフレームブロックマネージャー";
+        this.id = data.id ? data.id : createID();
         this.object = data.object;
         /** @type {Array} */
         this.parameters = data.parameters;

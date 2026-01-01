@@ -4,7 +4,7 @@ import Camera;
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>,
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
 };
 
 const pointData = array<vec2<f32>, 4>(
@@ -21,7 +21,7 @@ fn vmain(
     var output: VertexOutput;
     let point = pointData[vertexIndex];
     output.position = vec4<f32>(point.xy, 0.0, 1.0);
-    output.uv = point.xy * (1 / camera.cvsSize) / camera.zoom + camera.position;
+    output.texCoord = point.xy * (1 / camera.cvsSize) / camera.zoom + camera.position;
     return output;
 }
 
@@ -33,11 +33,11 @@ const gridSize = 10.0;
 
 @fragment
 fn fmain(
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    let x = select(uv.x, -uv.x, uv.x < 0.0) + gridSize / 2;
-    let y = select(uv.y, -uv.y, uv.y < 0.0) + gridSize / 2;
+    let x = select(texCoord.x, -texCoord.x, texCoord.x < 0.0) + gridSize / 2;
+    let y = select(texCoord.y, -texCoord.y, texCoord.y < 0.0) + gridSize / 2;
     let value = select(0.2, 0.3, (floor(x / gridSize) % 2 + floor(y / gridSize) % 2) % 2 == 0);
     output.color = vec4<f32>(value, value, value, 1.0);
     return output;

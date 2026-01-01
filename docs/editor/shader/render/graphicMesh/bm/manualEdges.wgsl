@@ -8,7 +8,7 @@ struct VisualSettings {
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
 @group(2) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
-@group(2) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
+@group(2) @binding(1) var<storage, read> verticesTexCoords: array<vec2<f32>>;
 @group(2) @binding(2) var<storage, read> autoEdges: array<vec2<u32>>; // シルエットの辺
 @group(2) @binding(3) var<storage, read> manualEdges: array<vec2<u32>>; // 辺
 @group(2) @binding(4) var<storage, read> meshLoops: array<u32>;

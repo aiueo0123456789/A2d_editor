@@ -9,23 +9,18 @@ export class WeightPaintPanel {
             DOM: [
                 {tagType: "div", class: "sideBar-shelfe", children: [
                     {tagType: "panel", name: "ウェイトペイント", children: [
-                        {
-                            tagType: "list", label: "ボーン",
-                            src: "context/activeObject/parent/boneMetaDatas",
-                            onActive: (object) => {
-                                changeParameter(app.appConfig.areasConfig["Viewer"].weightPaintMetaData,"weightBlockIndex",object.index)
-                                app.scene.editData.allEditObjects.forEach(editObject => editObject instanceof BArmatureAnimation && (editObject.selectedClear(),editObject.selectBones([object.index])));
-                            },
-                            type: "min",
-                            liStruct:[
-                                {
-                                    tagType: "gridBox",
-                                    axis: "c", allocation: "1fr", children: [
-                                        {tagType: "dblClickInput", value: "/name", options: {tagType: "text"}},
-                                    ]
-                                },
+                        {tagType: "list", label: "ボーン",
+                        src: "context/activeObject/parent/boneMetaDatas",
+                        onActive: (object) => {
+                            changeParameter(app.appConfig.areasConfig["Viewer"].weightPaintMetaData,"weightBlockIndex",object.index)
+                            app.scene.editData.allEditObjects.forEach(editObject => editObject instanceof BArmatureAnimation && (editObject.selectedClear(),editObject.selectBones([object.index])));
+                        },
+                        type: "min",
+                        liStruct: {
+                            tagType: "gridBox", id: {path: "context/activeObject/parent/boneMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
+                                {tagType: "dblClickInput", value: "/name", options: {tagType: "text"}},
                             ]
-                        }
+                        }}
                     ]}
                 ]}
             ]

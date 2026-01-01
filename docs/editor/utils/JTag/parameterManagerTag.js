@@ -5,7 +5,7 @@ import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
 
 export class ParameterManagerTag extends CustomTag {
-    constructor(/** @type {JTag} */ jTag,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */ jTag,t,parent,source,child,flag) {
         super();
         /** @type {HTMLElement} */
         this.element = createTag(t, "div");
@@ -27,7 +27,7 @@ export class ParameterManagerTag extends CustomTag {
                 li.addEventListener("click", () => {
                     child.targets.forEach((targetPath, index) => {
                         /** @type {ParameterReference} */
-                        const reference = jTag.getParameter(searchTarget, targetPath, 1);
+                        const reference = jTag.getParameter(source, targetPath, 1);
                         changeParameter(reference.object, reference.parameter, parameterManager.parameters[index].value);
                     });
                 })

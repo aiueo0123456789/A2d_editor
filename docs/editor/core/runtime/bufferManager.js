@@ -87,15 +87,20 @@ export class BufferManager {
 
     update(deleteOffset1, deleteOffset2, insertOffset1, insertOffset2, data) {
         // console.log("更新",this,deleteOffset1, deleteOffset2, insertOffset1, insertOffset2, data)
-        const beforeBuffer = GPU.copyBufferToNewBuffer(this.buffer, 0, this.structByteSize * deleteOffset1);
-        const afterBuffer = GPU.copyBufferToNewBuffer(this.buffer, this.structByteSize * deleteOffset2, this.buffer.size - this.structByteSize * deleteOffset2);
-        let newDataBuffer;
-        if (data) {
-            const newData = GPU.createBitData(data, this.struct);
-            newDataBuffer = GPU.createBuffer((insertOffset2 - insertOffset1) * this.structByteSize, this.buffer.usage, newData);
-        } else {
-            newDataBuffer = GPU.createBuffer((insertOffset2 - insertOffset1) * this.structByteSize, this.buffer.usage);
+        try {
+            const beforeBuffer = GPU.copyBufferToNewBuffer(this.buffer, 0, this.structByteSize * deleteOffset1);
+            const afterBuffer = GPU.copyBufferToNewBuffer(this.buffer, this.structByteSize * deleteOffset2, this.buffer.size - this.structByteSize * deleteOffset2);
+            let newDataBuffer;
+            if (data) {
+                const newData = GPU.createBitData(data, this.struct);
+                newDataBuffer = GPU.createBuffer((insertOffset2 - insertOffset1) * this.structByteSize, this.buffer.usage, newData);
+            } else {
+                newDataBuffer = GPU.createBuffer((insertOffset2 - insertOffset1) * this.structByteSize, this.buffer.usage);
+            }
+            this.buffer = GPU.concatBuffer(GPU.concatBuffer(beforeBuffer, newDataBuffer), afterBuffer);
+        } catch (error) {
+            console.log("更新",this,deleteOffset1, deleteOffset2, insertOffset1, insertOffset2, data)
+            throw Error(error);
         }
-        this.buffer = GPU.concatBuffer(GPU.concatBuffer(beforeBuffer, newDataBuffer), afterBuffer);
     }
 }

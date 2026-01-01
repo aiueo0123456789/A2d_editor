@@ -17,7 +17,7 @@ import { createID } from "../idGenerator.js";
  * 条件 && 条件 || 条件 && 条件のような場合||で区切られる
  */
 function isFilterIncluded(object, filter = "all") {
-    console.log(object, filter);
+    // console.log(object, filter);
     if (filter == "all" || filter == "") {
         return true;
     } else {
@@ -48,11 +48,11 @@ function isFilterIncluded(object, filter = "all") {
 }
 
 export class OutlinerTag extends CustomTag {
-    constructor(jTag,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,source,child,flag) {
         super();
         const options = child.options;
         const isSourceFunction = isFunction(child.withObject);
-        const source = child.withObject;
+        const withObject = child.withObject;
         const structures = child.structures;
         let loopTarget = child.loopTarget;
         let loopTargetIsPlainObject = false;
@@ -64,7 +64,7 @@ export class OutlinerTag extends CustomTag {
         const outlinerID = createID();
         let searchFilter = "";
 
-        this.element = createTag(t, "div", {style: "display: grid; width: 100%; height: 100%; gridTemplateRows: auto auto 1fr; backgroundColor: var(--subColor);"});
+        this.element = createTag(t, "div", {style: "display: grid; width: 100%; height: 100%; gridTemplateRows: auto auto 1fr;"});
         const searchBox = createTag(this.element, "div", {class: "searchBox"});
         const input = createTag(searchBox, "input", {style: "fontSize: 120%",value: ""});
         input.addEventListener("input", () => {
@@ -76,11 +76,11 @@ export class OutlinerTag extends CustomTag {
 
         let result = {active: null, selects: []};
         if (options.selectSource) {
-            result.selects = jTag.getParameter(searchTarget, options.selectSource.object);
+            result.selects = jTag.getParameter(source, options.selectSource.object);
         }
         let activeSource = null;
         if (options.activeSource) {
-            activeSource = {object: jTag.getParameter(searchTarget, options.activeSource.object), parameter: options.activeSource.parameter};
+            activeSource = {object: jTag.getParameter(source, options.activeSource.object), parameter: options.activeSource.parameter};
         } else {
             activeSource = {object: result, parameter: "active"};
         }
@@ -92,7 +92,7 @@ export class OutlinerTag extends CustomTag {
         /** @type {HTMLElement} */
         this.scrollable = createTag(this.scrollableContainer, "div", {class: "scrollable"});
         const array = [];
-        let rootObject = isSourceFunction ? source() : jTag.getParameter(searchTarget, source);
+        let rootObject = isSourceFunction ? withObject() : jTag.getParameter(source, withObject);
         const getAllObject = () => {
             const getLoopChildren = (children, resultObject = []) => {
                 let filterBool_ = false;
@@ -140,7 +140,7 @@ export class OutlinerTag extends CustomTag {
             return getLoopChildren(rootObject).result;
         }
         const outlinerUpdate = () => {
-            rootObject = isSourceFunction ? source() : jTag.getParameter(searchTarget, source);
+            rootObject = isSourceFunction ? withObject() : jTag.getParameter(source, withObject);
             array.length = 0;
             const allObject = getAllObject();
             // 削除があった場合対応するDOMを削除
@@ -194,12 +194,12 @@ export class OutlinerTag extends CustomTag {
                     });
 
                     const upContainer = createTag(container, "div", {style: "display: grid; gridTemplateColumns: auto 1fr; height: fit-content;"});
-                    const visibleCheck = new InputCheckboxTag(null,upContainer,this,{}, {tagType: "input", type: "checkbox", look: {check: "down", uncheck: "right"}},"defo");
+                    const visibleCheck = new InputCheckboxTag(null,upContainer,this,{}, {tagType: "input", type: "checkbox", look: {check: "down", uncheck: "right", size: "70%"}},"defo");
                     visibleCheck.checkbox.checked = true;
                     /** @type {HTMLElement} */
                     const myContainer = createTag(upContainer, "div");
                     const childrenContainer = createTag(container, "div", {style: "marginLeft: 10px; height: fit-content;"});
-                    const children = jTag.createFromChildren(myContainer, this, structures, {normal: object, special: {}}, flag);
+                    const children = jTag.createFromStructures(myContainer, this, structures, {normal: object, special: {}}, flag);
                     visibleCheck.checkbox.addEventListener("change", () => {
                         childrenContainer.classList.toggle("hidden");
                     })
@@ -273,7 +273,7 @@ export class OutlinerTag extends CustomTag {
         console.log("ヒエラルキー更新対象", child.updateEventTarget)
         const setUpdateEventTarget = (updateEventTarget) => {
             if (updateEventTarget.path) {
-                jTag.setUpdateEventByPath(searchTarget, updateEventTarget.path, outlinerUpdate, flag);
+                jTag.setUpdateEventByPath(source, updateEventTarget.path, outlinerUpdate, flag);
             } else { // 文字列に対応
                 useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag}, outlinerUpdate);
             }
@@ -288,7 +288,7 @@ export class OutlinerTag extends CustomTag {
             }
         } else {
             if (!isSourceFunction) {
-                useEffect.set({o: jTag.getParameter(searchTarget, source), g: jTag.groupID, f: flag}, outlinerUpdate);
+                useEffect.set({o: jTag.getParameter(source, withObject), g: jTag.groupID, f: flag}, outlinerUpdate);
             }
         }
         outlinerUpdate();

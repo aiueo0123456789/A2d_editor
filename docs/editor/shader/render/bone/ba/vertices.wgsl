@@ -17,7 +17,7 @@ struct VisualSettings {
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
     @location(0) @interpolate(flat) boneIndex : u32, // flat指定で補間を防ぐ
-    @location(1) uv: vec2<f32>,
+    @location(1) texCoord: vec2<f32>,
     @location(2) kind: f32,
     @location(3) color: vec4<f32>,
 }
@@ -51,7 +51,7 @@ fn vmain(
     let fixIndex = index * 2u + (vertexIndex % 12) / 6;
 
     output.position = worldPosToClipPos(p + point * visualSetting.vertexSize * length);
-    output.uv = point;
+    output.texCoord = point;
     output.kind = select(0.0, 1.0, (vertexIndex % 12) / 6 == 1);
     output.boneIndex = index;
     output.color = select(boneColors[index], vec4<f32>(1.0,0.5,0.0,1.0), vertexSelected[fixIndex] == 1u);
@@ -67,20 +67,20 @@ const edgeWidth = 1.0 - 0.3;
 @fragment
 fn fmain(
     @location(0) @interpolate(flat) boneIndex: u32,
-    @location(1) uv: vec2<f32>,
+    @location(1) texCoord: vec2<f32>,
     @location(2) kind: f32,
     @location(3) color: vec4<f32>,
 ) -> FragmentOutput {
     var output: FragmentOutput;
     var colorKind = false;
     if (kind == 0.0) {
-        let dist = pow(uv.x, 2.0) + pow(uv.y, 2.0);
+        let dist = pow(texCoord.x, 2.0) + pow(texCoord.y, 2.0);
         if (dist > 1.0) {
             discard ;
         }
         colorKind = dist < edgeWidth;
     } else {
-        colorKind = abs(uv.x) < edgeWidth && abs(uv.y) < edgeWidth;
+        colorKind = abs(texCoord.x) < edgeWidth && abs(texCoord.y) < edgeWidth;
     }
     output.color = select(color, vec4<f32>(0,0,0,1), colorKind);
     return output;

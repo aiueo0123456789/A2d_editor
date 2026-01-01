@@ -4,20 +4,20 @@ import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
 
 export class SelectTag extends CustomTag {
-    constructor(jTag,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,source,child,flag) {
         super();
         this.customTag = true;
         this.element = createTag(t, "div");
         this.element.classList.add("custom-select");
         this.input = createTag(this.element, "input", {style: "display: none;"});
         if (!isFunction(child.value)) {
-            jTag.setWith(this.input, child.value, searchTarget, flag, child.useCommand);
+            jTag.setWith(this.input, child.value, source, flag, child.useCommand);
         }
         let initValue = "選択されていません";
         const value = createTag(this.element, "p", {class: "nowrap"});
         if (child.options.initValue) {
             if (child.options.initValue.path) {
-                initValue = jTag.getParameter(searchTarget, child.options.initValue.path);
+                initValue = jTag.getParameter(source, child.options.initValue.path);
             } else {
                 initValue = child.options.initValue;
             }
@@ -28,7 +28,7 @@ export class SelectTag extends CustomTag {
         this.element.addEventListener("click", (e) => {
             let items;
             if (IsString(child.sourceObject)) {
-                items = jTag.getParameter(searchTarget, child.sourceObject);
+                items = jTag.getParameter(source, child.sourceObject);
             } else if (Array.isArray(child.sourceObject)) {
                 items = child.sourceObject;
             } else if (isFunction(child.sourceObject)) {

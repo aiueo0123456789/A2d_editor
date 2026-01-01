@@ -138,11 +138,11 @@ export async function createEdgeFromTexture(texture, pixelDensity, padding, simp
     const imageSize = [texture.width, texture.height];
     const imageBufferSize = MathVec2.addR(imageSize, [1,1]);
     const validImageSize = MathVec2.reverseScaleR(imageSize, pixelDensity);
-    const createUVAndFixVertices = (data) => {
+    const createTexCoordAndFixVertices = (data) => {
         const newData = {vertices: []};
         newData.vertices = data.map(x => {
             const a = MathVec2.mulR(x, [1 / validImageSize[0], 1 / validImageSize[1]]);
-            return {uv: [a[0], 1 - a[1]]};
+            return {texCoord: [a[0], 1 - a[1]]};
         });
         if (option == "center") {
             data.forEach((x, vertexIndex) => {
@@ -353,7 +353,7 @@ export async function createEdgeFromTexture(texture, pixelDensity, padding, simp
         }
     }
 
-    const resultData = {vertices: [], uv: [], edges: []};
+    const resultData = {vertices: [], texCoord: [], edges: []};
     let verticesNumOffset = 0;
     // for (const data of collectedLines) {
     for (const data of [maxLengthLine]) {
@@ -374,7 +374,7 @@ export async function createEdgeFromTexture(texture, pixelDensity, padding, simp
                 return MathVec2.addR(vert,MathVec2.scaleR(vec, padding));
             });
             const cnEdges = [...Array(vertices.length)].map((_, i) => [i + verticesNumOffset,(i + 1) % vertices.length + verticesNumOffset]);
-            const fixVertices = createUVAndFixVertices(vertices);
+            const fixVertices = createTexCoordAndFixVertices(vertices);
             resultData.vertices.push(...fixVertices.vertices);
             resultData.edges.push(...cnEdges);
             verticesNumOffset += vertices.length;

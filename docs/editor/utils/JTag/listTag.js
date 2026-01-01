@@ -6,7 +6,7 @@ import { ResizerForDOM } from "../ui/resizer.js";
 import { createButton, createMinButton, createTag, useEffect } from "../ui/util.js";
 
 export class ListTag extends CustomTag {
-    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,data,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,source,data,flag) {
         super(false);
         this.element;
         this.selected = [];
@@ -33,7 +33,6 @@ export class ListTag extends CustomTag {
                 if (data.onAppend) this.appendButton = createButton(this.actionBar, null, "新しい値を追加");
                 if (data.onDelete) this.deleteButton = createMinButton(this.actionBar, "-");
             }
-
             this.listContainer = createTag(this.element, "div", {style: "height: fit-content;"});
             /** @type {HTMLElement} */
             this.list = createTag(this.listContainer, "div", {style: "height: fit-content;"});
@@ -47,7 +46,6 @@ export class ListTag extends CustomTag {
                 if (data.onAppend) this.appendButton = createMinButton(this.actionBar, "+");
                 if (data.onDelete) this.deleteButton = createMinButton(this.actionBar, "-");
             }
-
             this.listContainer = createTag(this.element, "div", {style: "height: 200px;"});
             /** @type {HTMLElement} */
             this.list = createTag(this.listContainer, "div", {class: "scrollable", style: "padding: 2px; gap: 2px;"});
@@ -56,7 +54,7 @@ export class ListTag extends CustomTag {
         if (data.onAppend) {
             if (isFunction(data.onAppend)) {
                 this.appendButton.addEventListener("click", () => {
-                    data.onAppend(searchTarget);
+                    data.onAppend(source);
                 });
             }
         }
@@ -68,39 +66,32 @@ export class ListTag extends CustomTag {
             }
         }
 
-        let lastItems = [];
-        let tags = new Map();
-        let items = jTag.getParameter(searchTarget, data.src);
+        const keys = new Map();
+        let items = jTag.getParameter(source, data.src);
         this.children = [];
         const isPrimitive = data.isPrimitive;
         const listUpdate = () => {
-            if (isPrimitive && items.length === lastItems.length) return ;
             this.list.replaceChildren();
-            for (const lastItem of lastItems) {
-                if (!items.includes(lastItem)) { // 削除
-                    for (const tag of tags.get(lastItem)) {
-                        tag.remove();
+            const newKeys = items.map((item, index) => jTag.getKeyFromStructure(data.liStruct, isPrimitive ? {normal: items, special: {index: index, list: items, source: source}} : {normal: item, special: {index: index, list: items, source: source}}));
+            console.log(newKeys)
+            for (const key of keys.keys()) {
+                if (!newKeys.includes(key)) { // 再利用ができないものは削除
+                    const element = keys.get(key);
+                    if (element instanceof HTMLElement || element instanceof CustomTag) {
+                        element.remove();
                     }
-                    tags.delete(lastItem);
-                } else {
-                    // JTag.tagAppendChildren(dummy, [tags.get(lastItem)]);
                 }
             }
+            keys.clear();
             items.forEach((item, index) => {
                 /** @type {HTMLElement} */
-                let li = createTag(this.list, "li", {style: "width: 100%; minHeight: fit-content;"});
+                const li = createTag(this.list, "li", {style: "width: 100%; minHeight: fit-content;"});
                 if (isPrimitive) {
-                    if (this.active === index) {
-                        li.style.backgroundColor = "var(--activeColor)";
-                    } else if (this.selected.includes(index)) {
-                        li.style.backgroundColor = "var(--selectedColor)";
-                    }
+                    if (this.active === index) li.style.backgroundColor = "var(--activeColor)";
+                    else if (this.selected.includes(index)) li.style.backgroundColor = "var(--selectedColor)";
                 } else {
-                    if (this.active === item) {
-                        li.style.backgroundColor = "var(--activeColor)";
-                    } else if (this.selected.includes(item)) {
-                        li.style.backgroundColor = "var(--selectedColor)";
-                    }
+                    if (this.active === item) li.style.backgroundColor = "var(--activeColor)";
+                    else if (this.selected.includes(item)) li.style.backgroundColor = "var(--selectedColor)";
                 }
                 if (!data.notUseActiveAndSelect) {
                     li.addEventListener("click", (e) => {
@@ -130,25 +121,33 @@ export class ListTag extends CustomTag {
                         listUpdate();
                     })
                 }
-                let child = [];
+                let element = null;
+                const key = newKeys[index];
                 if (isPrimitive) {
-                    if (!lastItems.includes(item)) { // 新規追加
-                        child = jTag.createFromChildren(li, this, data.liStruct, {normal: items, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
-                        tags.set(index, child);
-                    } else {
-                        JTag.tagAppendChildren(li, tags.get(index));
+                    if (key) {
+                        if (keys.has(key)) { // 既存のタグ
+                            JTag.tagAppendChildren(li, keys.get(key));
+                        } else {
+                            element = jTag.createFromStructures(li, this, [data.liStruct], {normal: items, special: {index: index, list: items, source: source}}, flag);
+                            keys.set(key, element);
+                        }
+                    } else { // キーがない
+                        element = jTag.createFromStructures(li, this, [data.liStruct], {normal: items, special: {index: index, list: items, source: source}}, flag);
                     }
                 } else {
-                    if (!lastItems.includes(item)) { // 新規追加
-                        child = jTag.createFromChildren(li, this, data.liStruct, {normal: item, special: {index: index, list: items, searchTarget: searchTarget}}, flag);
-                        tags.set(item, child);
-                    } else {
-                        JTag.tagAppendChildren(li, tags.get(item));
+                    if (key) {
+                        if (keys.has(key)) { // 既存のタグ
+                            JTag.tagAppendChildren(li, keys.get(key));
+                        } else {
+                            element = jTag.createFromStructures(li, this, [data.liStruct], {normal: item, special: {index: index, list: items, source: source}}, flag);
+                            keys.set(key, element);
+                        }
+                    } else { // キーがない
+                        element = jTag.createFromStructures(li, this, [data.liStruct], {normal: item, special: {index: index, list: items, source: source}}, flag);
                     }
                 }
-                this.children.push(...child);
+                this.children.push(element);
             });
-            lastItems = [...items];
         }
         this.dataBlocks = [useEffect.set({o: items, g: jTag.groupID}, listUpdate)];
         listUpdate();

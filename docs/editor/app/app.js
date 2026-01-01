@@ -90,10 +90,10 @@ class AppOptions {
                         max: [100, 100]
                     },
                     vertices: [
-                        {base: [0,0], uv: [0,1]},
-                        {base: [100,0], uv: [1,1]},
-                        {base: [100,100], uv: [1,0]},
-                        {base: [0,100], uv: [0,0]},
+                        {base: [0,0], texCoord: [0,1]},
+                        {base: [100,0], texCoord: [1,1]},
+                        {base: [100,100], texCoord: [1,0]},
+                        {base: [0,100], texCoord: [0,0]},
                     ],
                     meshes: [
                         {indexs: [0,1,2]},

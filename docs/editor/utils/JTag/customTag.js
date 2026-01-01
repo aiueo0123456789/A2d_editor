@@ -1,6 +1,5 @@
 import { isFunction } from "../utility.js";
 import { useEffect } from "../ui/util.js";
-import { createID } from "../idGenerator.js";
 
 export class CustomTag {
     constructor(isSetLabel = true) {
@@ -9,7 +8,7 @@ export class CustomTag {
         this.isRemoved = false;
         this.dataBlocks = [];
         this.notRemoveList = [];
-        this.id = createID();
+        this.id = "";
     }
 
     remove() {

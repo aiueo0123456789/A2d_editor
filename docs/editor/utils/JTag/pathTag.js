@@ -6,7 +6,7 @@ import { app } from "../../../main.js";
 import { createID } from "../idGenerator.js";
 
 export class PathTag extends CustomTag {
-    constructor(/** @type {JTag} */jTag,/** @type {HTMLElement}} */t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */jTag,/** @type {HTMLElement}} */t,parent,source,child,flag) {
         super();
         if (parent instanceof PathTag) { // 親がpathTagの場合特殊
             this.element = parent.element;
@@ -29,17 +29,17 @@ export class PathTag extends CustomTag {
             this.children.length = 0;
             const keep = createTag(null, "div", {style: "width: 0px; height: 0px;"});
             if (child.children) {
-                const o = jTag.getParameter(searchTarget, child.sourceObject, 2);
+                const o = jTag.getParameter(source, child.sourceObject, 2);
                 if (o) {
                     if (isFunction(o)) {
-                        this.children = jTag.createFromChildren(keep, this, child.children, {normal: o(), special: {}}, myFlag);
+                        this.children = jTag.createFromStructures(keep, this, child.children, {normal: o(), special: {}}, myFlag);
                     } else if (o instanceof ParameterReference) {
                         // console.warn("伝播できません", o)
                         if ("errorChildren" in child) {
-                            this.children = jTag.createFromChildren(keep, this, child.errorChildren, {normal: {}, special: {}}, myFlag);
+                            this.children = jTag.createFromStructures(keep, this, child.errorChildren, {normal: {}, special: {}}, myFlag);
                         }
                     } else {
-                        this.children = jTag.createFromChildren(keep, this, child.children, {normal: o, special: {}}, myFlag);
+                        this.children = jTag.createFromStructures(keep, this, child.children, {normal: o, special: {}}, myFlag);
                     }
                 }
             }
@@ -50,7 +50,7 @@ export class PathTag extends CustomTag {
         }
         const setUpdateEventTarget = (updateEventTarget) => {
             if (updateEventTarget.path) {
-                this.dataBlocks = [jTag.setUpdateEventByPath(searchTarget, updateEventTarget.path, childrenReset, flag)];
+                this.dataBlocks = [jTag.setUpdateEventByPath(source, updateEventTarget.path, childrenReset, flag)];
             } else { // 文字列に対応
                 this.dataBlocks = [useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag},childrenReset)];
             }

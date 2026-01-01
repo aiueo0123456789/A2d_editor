@@ -1,7 +1,7 @@
 import Camera;
 import GraphicMeshAllocation;
 
-struct UVOffset {
+struct TexCoordOffset {
     offset: vec2<f32>,
     scaleOffset: vec2<f32>
 }
@@ -14,8 +14,8 @@ struct VisualSettings {
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
 @group(2) @binding(0) var<storage, read> verticesPosition: array<vec2<f32>>;
-@group(2) @binding(1) var<storage, read> verticesUV: array<vec2<f32>>;
-@group(2) @binding(2) var<storage, read> uvOffsets: array<UVOffset>;
+@group(2) @binding(1) var<storage, read> verticesTexCoord: array<vec2<f32>>;
+@group(2) @binding(2) var<storage, read> texCoordOffsets: array<TexCoordOffset>;
 @group(2) @binding(3) var<storage, read> alphas: array<f32>;
 @group(3) @binding(0) var<uniform> graphicMeshAllocation: GraphicMeshAllocation;
 

@@ -1,7 +1,7 @@
 import { CustomTag } from "./customTag.js";
 
 export class CanvasTag extends CustomTag {
-    constructor(jTag,t,parent,searchTarget,child,flag) {
+    constructor(jTag,t,parent,source,child,flag) {
         super();
         this.element = document.createElement("div");
         this.element.style.width = "100%";
@@ -13,10 +13,10 @@ export class CanvasTag extends CustomTag {
         this.canvas.style.backgroundColor = child.color ? child.color : "rgba(0, 0, 0, 0)";
         this.element.append(this.canvas);
         const update = () => {
-            child.draw(this.canvas, searchTarget);
+            child.draw(this.canvas, source);
             requestAnimationFrame(update);
         }
-        child.init(this.canvas, searchTarget);
+        child.init(this.canvas, source);
         update()
     }
 }

@@ -35,6 +35,14 @@ body {
     min-width: 0;
 }
 
+p {
+    display: flex;
+    /* 横中央 */
+    /* justify-content: center; */
+    /* 縦中央 */
+    align-items: center;
+}
+
 .minLimitClear * {
     min-width: auto;
     min-height: auto;

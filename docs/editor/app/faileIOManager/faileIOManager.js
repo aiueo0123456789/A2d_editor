@@ -1,6 +1,7 @@
 import { Application } from "../app.js";
 import { changeParameter, isFunction } from "../../utils/utility.js";
 import { GPU } from "../../utils/webGPU.js";
+import { useEffect } from "../../utils/ui/util.js";
 const { ZipWriter, BlobWriter, BlobReader, TextReader, ZipReader, TextWriter } = zip;
 
 // 入力を受け取って指示を出す
@@ -11,18 +12,13 @@ export class FaileIOManager {
 
     // ロード
     async loadFile(files, dataType) {
+        useEffect.stop();
         this.app.updateStop("load");
         this.app.scene.reset();
         const loadingModalID = this.app.ui.createLodingModal("ロード");
         this.app.ui.updateLoadingModal(loadingModalID,0,"読み込み開始");
         console.log(files)
-        if (dataType == "ww") { // psフォルダのアップロードの場合
-            for (const data of files.data.textures) {
-                this.app.scene.objects.createObjectAndSetUp(data);
-            }
-            for (const data of files.data.graphicMeshs) {
-            }
-        } else if (dataType == "psd") {
+        if (dataType == "psd") {
             let jsonData = null;
             const texturesMap = {};
             for (const file of files) {
@@ -39,6 +35,7 @@ export class FaileIOManager {
                 texture.texture = texturesMap[texture.id];
             }
 
+            this.app.ui.updateLoadingModal(loadingModalID,50, "テクスチャの読み込み完了");
             console.log(jsonData)
             const objectTypes = ["maskTextures", "textures", "graphicMeshs"];
             for (const objectType of objectTypes) {
@@ -103,6 +100,8 @@ export class FaileIOManager {
         // managerForDOMs.allUpdate();
         this.app.ui.removeLodingModal(loadingModalID);
         this.app.updateStopCancel("load");
+        useEffect.play();
+        useEffect.allUpdate();
     }
 
     // セーブ

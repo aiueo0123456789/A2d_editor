@@ -10,7 +10,7 @@ export class Area {
         this.target.classList.add("area");
 
         this.header = document.createElement("div");
-        this.header.classList.add("header");
+        this.header.classList.add("areaHeader");
 
         this.jTag = new JTag();
         /** @type {HTMLElement} */
@@ -22,7 +22,7 @@ export class Area {
         // this.select = new SelectTag(null, this.header, createArrayFromHashKeys(useClassFromAreaType), {initValue: type});
 
         this.main = document.createElement("div");
-        this.main.classList.add("main");
+        this.main.classList.add("areaBody");
         this.target.append(this.header, this.main);
         this.uiModel = null;
 

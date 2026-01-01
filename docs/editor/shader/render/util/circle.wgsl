@@ -16,7 +16,7 @@ struct AffectedForZoom {
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
 }
 
 const pointData = array<vec2<f32>, 4>(
@@ -48,7 +48,7 @@ fn vmain(
         0,
         1.0
         );
-    output.uv = (point * raidus * isAffectedForZoom.raidus + point * strokeWidth * isAffectedForZoom.stroke) * camera.zoom + (point * raidus * (1.0 - isAffectedForZoom.raidus) + point * strokeWidth * (1.0 - isAffectedForZoom.stroke));
+    output.texCoord = (point * raidus * isAffectedForZoom.raidus + point * strokeWidth * isAffectedForZoom.stroke) * camera.zoom + (point * raidus * (1.0 - isAffectedForZoom.raidus) + point * strokeWidth * (1.0 - isAffectedForZoom.stroke));
     return output;
 }
 
@@ -59,10 +59,10 @@ struct FragmentOutput {
 // フラグメントシェーダー
 @fragment
 fn fmain(
-    @location(0) uv: vec2<f32>,
+    @location(0) texCoord: vec2<f32>,
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    let dist = length(uv);
+    let dist = length(texCoord);
     let fixRadius = (raidus * isAffectedForZoom.raidus) * camera.zoom + (raidus * (1.0 - isAffectedForZoom.raidus));
     let fixStrokeWidth = (strokeWidth * isAffectedForZoom.stroke) * camera.zoom + (strokeWidth * (1.0 - isAffectedForZoom.stroke));
     let sumRadius = fixRadius + fixStrokeWidth;

@@ -5,7 +5,7 @@ import { CustomTag } from "./customTag.js";
 import { createTag, removeHTMLElementInObject } from "../ui/util.js";
 
 export class ButtonTag extends CustomTag {
-    constructor(/** @type {JTag} */jTag,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
         super();
         /** @type {HTMLElement} */
         this.element = createTag(t, "div");
@@ -22,7 +22,7 @@ export class ButtonTag extends CustomTag {
         }
         if (isFunction(child.onClick)) {
             this.element.addEventListener("click", () => {
-                child.onClick(searchTarget);
+                child.onClick(source);
             })
         }
     }

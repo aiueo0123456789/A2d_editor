@@ -8,7 +8,8 @@ import { MathVec2 } from '../../../../utils/mathVec.js';
 import { useEffect } from '../../../../utils/ui/util.js';
 import { app } from '../../../../../main.js';
 
-const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
+const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wa");
+// const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
 const renderParticlePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/particleVertex.wgsl"), [], "2d", "s", "wl");
 const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t");
 

@@ -88,7 +88,7 @@ export class CreateMeshCommand {
                 meshes: bmesh.meshes.map(mesh => [bmesh.getVertexIndexByVertex(mesh.vertices[0]), bmesh.getVertexIndexByVertex(mesh.vertices[1]), bmesh.getVertexIndexByVertex(mesh.vertices[2])]),
                 manualEdges: bmesh.manualEdges.map(edge => [bmesh.getVertexIndexByVertex(edge.vertices[0]), bmesh.getVertexIndexByVertex(edge.vertices[1])]),
                 autoEdges: bmesh.autoEdges.map(vertex => bmesh.getVertexIndexByVertex(vertex)),
-                vertices: bmesh.vertices.map(vertex => {return {co: [...vertex.co], uv: [...vertex.uv]}}),
+                vertices: bmesh.vertices.map(vertex => {return {co: [...vertex.co], texCoord: [...vertex.texCoord]}}),
             };
             this.imageBoundingBoxs[bmesh.id] = bmesh.imageBoundingBox;
         }
@@ -100,7 +100,7 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             const result = await createEdgeFromTexture(bmesh.texture.texture, this.pixelDensity, this.scale, 5, "bottomLeft");
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
-            bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), manualEdges: [], autoEdges: result.edges});
+            bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), texCoord: vertex.texCoord}}), manualEdges: [], autoEdges: result.edges});
         }
         return {consumed: true};
     }
@@ -111,7 +111,7 @@ export class CreateMeshCommand {
         for (const bmesh of this.bmeshs) {
             const result = await createEdgeFromTexture(bmesh.texture.texture, this.pixelDensity, this.scale, 5, "bottomLeft");
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
-            bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), uv: vertex.uv}}), manualEdges: [], autoEdges: result.edges});
+            bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), texCoord: vertex.texCoord}}), manualEdges: [], autoEdges: result.edges});
         }
     }
 

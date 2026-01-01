@@ -1,4 +1,5 @@
 import { app } from "../../../main.js";
+import { createID } from "../../utils/idGenerator.js";
 import { UnfixedReference } from "../../utils/objects/util.js";
 import { copyToArray, pushToArray } from "../../utils/utility.js";
 import { KeyframeBlock } from "./keyframeBlock.js";
@@ -6,6 +7,7 @@ import { KeyframeBlock } from "./keyframeBlock.js";
 export class KeyframeBlockManager {
     constructor(data = {object: null, parameters: null}) {
         this.type = "キーフレームブロックマネージャー";
+        this.id = data.id ? data.id : createID();
         this.object = data.object;
         /** @type {Array} */
         this.parameters = data.parameters;
@@ -41,6 +43,7 @@ export class KeyframeBlockManager {
     getSaveData() {
         return {
             type: this.type,
+            id: this.id,
             parameters: this.parameters,
             keyframeBlocks: this.keyframeBlocks.map(keyframeBlock => keyframeBlock.id)
         };

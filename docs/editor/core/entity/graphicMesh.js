@@ -35,7 +35,7 @@ export class GraphicMesh extends ObjectBase {
         this.allVertices = [];
         this.allShapeKeys = []; // 変形データ
         this.allShapeKeyWeights = []; // 重み
-        this.allUVs = [];
+        this.allTexCoords = [];
         this.allWeightBlocks = [];
         this.allMeshes = [];
 
@@ -56,7 +56,7 @@ export class GraphicMesh extends ObjectBase {
         this.zIndex = data.zIndex;
         GPU.writeBuffer(this.zIndexBuffer, new Float32Array([1 / (this.zIndex + 1)]));
         copyToArray(this.allVertices, data.vertices.flat());
-        copyToArray(this.allUVs, data.uv.flat());
+        copyToArray(this.allTexCoords, data.texCoords.flat());
         copyToArray(this.allMeshes, data.meshes.flat());
         copyToArray(this.allWeightBlocks, data.weightBlocks.flat());
         copyToArray(this.shapeKeyMetaDatas, data.shapeKeyMetaDatas.map(shapeKeyMetaData => this.createShapeKeyMetaData(shapeKeyMetaData.name, shapeKeyMetaData.index, shapeKeyMetaData.id)));
@@ -171,7 +171,7 @@ export class GraphicMesh extends ObjectBase {
             baseTransformIsLock: this.baseTransformIsLock,
             zIndex: this.zIndex,
             vertices: await this.runtimeData.baseVertices.getObjectData(this),
-            uv: await this.runtimeData.uv.getObjectData(this),
+            texCoords: await this.runtimeData.texCoords.getObjectData(this),
             weightBlocks: await this.runtimeData.weightBlocks.getObjectData(this),
             meshes: await this.runtimeData.meshes.getObjectData(this),
             shapeKeys: await this.runtimeData.shapeKeys.getObjectData(this),

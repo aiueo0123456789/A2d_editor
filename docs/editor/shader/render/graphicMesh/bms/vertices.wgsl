@@ -8,7 +8,7 @@ struct VisualSettings {
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(1) @binding(0) var<uniform> visualSetting: VisualSettings;
 @group(2) @binding(0) var<storage, read> verticesCoordinates: array<vec2<f32>>;
-@group(2) @binding(1) var<storage, read> verticesUVs: array<vec2<f32>>;
+@group(2) @binding(1) var<storage, read> verticesTexCoords: array<vec2<f32>>;
 @group(2) @binding(2) var<storage, read> meshLoops: array<u32>;
 @group(2) @binding(3) var<storage, read> vertexSelected: array<u32>;
 @group(2) @binding(4) var<uniform> zIndex: f32;
@@ -54,7 +54,7 @@ fn fmain(
     @location(0) color: vec4<f32>,
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    // if (uv.x < 0.0 || uv.x > 1.0 || uv.y < 0.0 || uv.y > 1.0) {
+    // if (texCoord.x < 0.0 || texCoord.x > 1.0 || texCoord.y < 0.0 || texCoord.y > 1.0) {
     //     discard ;
     // }
     output.color = color;

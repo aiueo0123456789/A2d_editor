@@ -70,6 +70,15 @@ export class UseEffect {
         this.groups = new Map();
         this.ids = new Map();
         this.flags = new Map();
+        this.isPlay = true;
+    }
+
+    stop() {
+        this.isPlay = false;
+    }
+
+    play() {
+        this.isPlay = true;
     }
 
     get(IDs) {
@@ -146,7 +155,6 @@ export class UseEffect {
         // /** @type {Array} */
         // const f = getFn(this.flags,IDs.f);
         const deleteDatas = o.filter(item => g.includes(item)).filter(item => i.includes(item)).filter(item => f.includes(item));
-        console.log(this.objects);
         this.objects.forEach((list, object) => {
             const newList = list.filter(data => !deleteDatas.includes(data));
             if (newList.length == 0) this.objects.delete(object);
@@ -219,12 +227,14 @@ export class UseEffect {
     }
 
     update(IDs) {
+        if (!this.isPlay) return ;
         // console.log(this);
         const dataBlocks = this.get(IDs);
         this.submitFn(dataBlocks);
     }
 
     allUpdate() {
+        if (!this.isPlay) return ;
         const dataBlocks = this.get({});
         this.submitFn(dataBlocks);
     }

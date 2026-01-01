@@ -43,7 +43,8 @@ const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.
 
 const devMaskTexturePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft")], await loadFile("./editor/shader/render/devMaskTexture.wgsl"), [], "2d", "s");
 const renderGridPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts")], await fetch('./editor/shader/render/grid.wgsl').then(x => x.text()), [], "2d", "s");
-const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
+// const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wl");
+const renderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Vu_Ft")], await loadFile("./editor/shader/render/main.wgsl"), [["u"]], "2d", "t", "wa");
 const renderParticlePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/particleVertex.wgsl"), [], "2d", "s", "wl");
 const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t");
 

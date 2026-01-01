@@ -2,19 +2,22 @@ import { IsString } from "../utility.js";
 import { JTag } from "./JTag.js";
 import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
+import { InputCheckboxTag } from "./inputCheckboxTag.js";
 
 export class SectionTag extends CustomTag {
-    constructor(/** @type {JTag} */  jTag,t,parent,searchTarget,child,flag) {
+    constructor(/** @type {JTag} */  jTag,t,parent,source,child,flag) {
         super();
         this.element = createTag(t, "div", {class: child?.options?.min ? "minSection" : "sectionOrPanel"});
         this.header = createTag(this.element, "div", {class: "sectionOrPanel-header"});
 
-        this.arrow = createTag(this.header, "span", {class: "downArrow"});
+        const visibleCheck = new InputCheckboxTag(null,this.header,this,{}, {tagType: "input", type: "checkbox", look: {check: "right2", uncheck: "down2", size: "70%"}},"defo");
+        visibleCheck.checkbox.setAttribute('disabled', true);
+        // this.arrow = createTag(this.header, "span", {class: "downArrow"});
         this.sectionName = createTag(this.header, "p");
         if (IsString(child.name)) {
             this.sectionName.textContent = child.name;
         } else {
-            this.sectionName.textContent = jTag.getParameter(searchTarget, child.name.path);
+            this.sectionName.textContent = jTag.getParameter(source, child.name.path);
         }
 
         this.mainContainer = createTag(this.element, "div", {class: "sectionOrPanel-mainContainer"});
@@ -33,8 +36,9 @@ export class SectionTag extends CustomTag {
                 this.mainContainer.style.height = "0px";
             }
             this.mainContainer.classList.toggle('close');
-            this.arrow.classList.toggle('arrow');
-            this.arrow.classList.toggle('downArrow');
+            visibleCheck.checkbox.checked = !visibleCheck.checkbox.checked;
+            // this.arrow.classList.toggle('arrow');
+            // this.arrow.classList.toggle('downArrow');
         });
         this.mainContainer.addEventListener("transitionend", (e) => {
             console.log("transition 終了:", e.propertyName);
@@ -44,7 +48,7 @@ export class SectionTag extends CustomTag {
         });
         this.children = [];
         if (child.children) {
-            this.children = jTag.createFromChildren(this.main, this, child.children, searchTarget, flag);
+            this.children = jTag.createFromStructures(this.main, this, child.children, source, flag);
         }
     }
 }
