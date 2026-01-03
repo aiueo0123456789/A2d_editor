@@ -19,7 +19,7 @@ export class Area_Inspector {
                                 {tagType: "input", label: "名前", value: "/name", type: "text"},
                                 {tagType: "select", label: "親",
                                     value: (value) => {
-                                        app.operator.appendCommand(new ChangeParentCommand([app.context.activeObject], app.scene.objects.getObjectFromID(value)));
+                                        app.operator.appendCommand(new ChangeParentCommand([app.context.activeObject], app.scene.objects.getObjectByID(value)));
                                         app.operator.execute();
                                     },
                                     sourceObject: () => {
@@ -32,7 +32,7 @@ export class Area_Inspector {
                                 {tagType: "input", label: "編集", type: "checkbox", checked: "/editRock", look: {check: "rock", uncheck: "unrock"}},
                                 {tagType: "select", label: "テクスチャ",
                                     value: (value) => {
-                                        app.operator.appendCommand(new ChangeParameterCommand(app.context.activeObject, "texture", app.scene.objects.getObjectFromID(value), (o,p,v) => {o.changeTexture(v)}));
+                                        app.operator.appendCommand(new ChangeParameterCommand(app.context.activeObject, "texture", app.scene.objects.getObjectByID(value), (o,p,v) => {o.changeTexture(v)}));
                                         app.operator.execute();
                                     },
                                     sourceObject: () => {
@@ -45,7 +45,7 @@ export class Area_Inspector {
                                 ]},
                                 {tagType: "select", label: "マスク",
                                     value: (value) => {
-                                        app.context.activeObject.changeClippingMask(app.scene.objects.getObjectFromID(value));
+                                        app.context.activeObject.changeClippingMask(app.scene.objects.getObjectByID(value));
                                     },
                                     sourceObject: () => {
                                         return app.scene.objects.maskTextures.map(texture => {return {name: texture.name, id: texture.id}});
@@ -54,7 +54,7 @@ export class Area_Inspector {
                                 },
                                 {tagType: "select", label: "レンダリング",
                                     value: (value) => {
-                                        app.context.activeObject.changeRenderingTarget(app.scene.objects.getObjectFromID(value));
+                                        app.context.activeObject.changeRenderingTarget(app.scene.objects.getObjectByID(value));
                                     },
                                     sourceObject: () => {
                                         return [{name: "", id: null}].concat(app.scene.objects.maskTextures.map(texture => {return {name: texture.name, id: texture.id}}));
@@ -70,7 +70,7 @@ export class Area_Inspector {
                                         {tagType: "input", label: "名前", value: "/name", type: "text"},
                                         {tagType: "select", label: "親",
                                             value: (value) => {
-                                                app.operator.appendCommand(new ChangeParentCommand([app.context.activeObject], app.scene.objects.getObjectFromID(value)));
+                                                app.operator.appendCommand(new ChangeParentCommand([app.context.activeObject], app.scene.objects.getObjectByID(value)));
                                                 app.operator.execute();
                                             },
                                             sourceObject: () => {
@@ -173,7 +173,7 @@ export class Area_Inspector {
                         ]
                     }
                 ]},
-                {tagType: "section", name: "詳細設定", children: [
+                {tagType: "section", name: "詳細情報", children: [
 
                 ]}
             ],

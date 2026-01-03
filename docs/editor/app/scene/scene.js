@@ -13,11 +13,12 @@ import { Camera } from '../../core/entity/camera.js';
 import { DeleteObjectCommand } from '../../commands/object/object.js';
 import { Texture } from '../../core/entity/texture.js';
 import { MaskTexture } from '../../core/entity/maskTexture.js';
-import { UnfixedReference } from '../../utils/objects/util.js';
+import { NameAndTypeAndID, UnfixedReference, UnfixedReferenceForLayer } from '../../utils/objects/util.js';
 import { EditDatas } from '../../core/edit/editData.js';
 import { KeyframeBlock } from '../../core/entity/keyframeBlock.js';
 import { BArmatureAnimation } from '../../core/edit/objects/BArmatureAnimation.js';
 import { BlendShape } from '../../core/entity/blendShape.js';
+import { app } from '../../../main.js';
 
 const parallelAnimationApplyPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/graphicMesh/parent.wgsl"));
 const treeAnimationApplyPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Cu"), GPU.getGroupLayout("Csrw_Csr_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/bezierModifier/parent.wgsl"));
@@ -222,11 +223,7 @@ class Objects {
         }
     }
 
-    createEmptyObject() {
-        return ;
-    }
-
-    createObjectAndSetUp(data) {
+    createAndAppendObject(data) {
         return this.appendObject(this.createObject(data));
     }
 
@@ -250,7 +247,7 @@ class Objects {
         else if (objectType == "シェイプキー") return this.shapeKeys;
     }
 
-    getObjectFromID(id) {
+    getObjectByID(id) {
         if (!id) return null;
         const foundObject = this.allObject.filter(object => object.id == id);
         if (foundObject.length == 0) return new UnfixedReference(id);
@@ -279,21 +276,58 @@ class Objects {
     }
 }
 
+export class Layer extends NameAndTypeAndID {
+    constructor(data) {
+        super(data.name, "レイヤー", data.id);
+    }
+
+    get children() {
+        return app.scene.objects.allObject.filter(object => object.layer == this)
+    }
+}
+
+class Layers {
+    constructor() {
+        /** @type {Layer[]} */
+        this.layers = [];
+    }
+
+    createLayer(data) {
+        return new Layer(data);
+    }
+
+    appendLayer(layer) {
+        pushToArray(this.layers, layer);
+    }
+
+    createAndAppendLayer(data) {
+        this.appendLayer(this.createLayer(data));
+    }
+
+    getLayerByID(id) {
+        if (!id) return null;
+        const foundObject = this.layers.filter(layer => layer.id == id);
+        if (foundObject.length == 0) return new UnfixedReferenceForLayer(id);
+        else return foundObject[0];
+    }
+}
+
 // オブジェクトの保持・設定
 export class Scene {
     constructor(/** @type {Application} */ app) {
         this.app = app;
         this.objects = new Objects(this);
-        // this.objects.createObjectAndSetUp({type: "パラメーターマネージャー"});
+        this.layers = new Layers();
+        // this.objects.createAndAppendObject({type: "パラメーターマネージャー"});
 
         this.renderingOrder = [];
 
         // フレーム
         this.isPlaying = false;
         this.isReversePlaying = false;
-        this.frame_speed = 1.0;
+        this.frame_speed = 24; // FPS
         this.frame_start = 0;
-        this.frame_end = 10;
+        this.frame_end = this.frame_speed * 10; // 10秒
         this.frame_current = 0;
         this.beforeFrame = this.frame_current;
 
@@ -332,7 +366,7 @@ export class Scene {
         // this.objects.appendObject(script);
 
         if (true) { // 白のマスクテクスチャ
-            const baseMaskTexture = this.objects.createObjectAndSetUp({name: "base", type: "マスクテクスチャ", id: "baseMaskTexture"});
+            const baseMaskTexture = this.objects.createAndAppendObject({name: "base", type: "マスクテクスチャ", id: "baseMaskTexture"});
         }
     }
 
@@ -420,12 +454,12 @@ export class Scene {
         return result;
     }
 
-    frameUpdate(dt) {
+    frameUpdate() {
         if (this.isPlaying) {
-            this.frame_current += dt * this.frame_speed;
+            this.frame_current += 1;
             useEffect.update({o: "タイムライン-canvas"});
         } else if (this.isReversePlaying) {
-            this.frame_current -= dt * this.frame_speed;
+            this.frame_current -= 1;
             useEffect.update({o: "タイムライン-canvas"});
         }
         if (this.beforeFrame != this.frame_current) {

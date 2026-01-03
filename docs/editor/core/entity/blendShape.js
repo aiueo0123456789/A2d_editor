@@ -49,7 +49,7 @@ export class BlendShape {
         /** @type {ShapeKeyMetaData[]} */
         this.shapeKeys = data.shapeKeys.map(shapeKey => {
             if (shapeKey instanceof ShapeKeyMetaData) return shapeKey;
-            else return app.scene.objects.getObjectFromID(shapeKey);
+            else return app.scene.objects.getObjectByID(shapeKey);
         })
         this.dimension = data.dimension;
         this.value = createArrayNAndFill(this.dimension, 0);
@@ -71,7 +71,7 @@ export class BlendShape {
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.value,
                 parameters: createArrayN(this.dimension),
-                keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}))
+                keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createAndAppendObject({type: "キーフレームブロック"}))
             });
         }
 

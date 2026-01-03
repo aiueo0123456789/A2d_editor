@@ -4,6 +4,7 @@ import { CustomTag } from "./customTag.js";
 import { createTag, useEffect } from "../ui/util.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";
 import { createID } from "../idGenerator.js";
+import { SelectTag } from "./selectTag.js";
 
 /**
  * 検索の仕方
@@ -52,6 +53,7 @@ export class OutlinerTag extends CustomTag {
         super();
         const options = child.options;
         const isSourceFunction = isFunction(child.withObject);
+        const useMode = "mode" in options;
         const withObject = child.withObject;
         const structures = child.structures;
         let loopTarget = child.loopTarget;
@@ -65,7 +67,19 @@ export class OutlinerTag extends CustomTag {
         let searchFilter = "";
 
         this.element = createTag(t, "div", {style: "display: grid; width: 100%; height: 100%; gridTemplateRows: auto auto 1fr;"});
-        const searchBox = createTag(this.element, "div", {class: "searchBox"});
+
+        if (useMode) {
+            this.mode = options.mode;
+            this.header = createTag(this.element, "div", {style: "display: grid; width: 100%; height: fit-content; gridTemplateColumns: auto 1fr;"});
+            const heightCenter = createTag(this.header, "div", {class: "heightCenter"});
+            const modeSelect = new SelectTag(jTag, heightCenter, this, source, {sourceObject: options.modes, options: {initValue: options.mode}, value: (value) => {
+                this.mode = value;
+                outlinerUpdate();
+            }}, flag);
+        } else {
+            this.header = createTag(this.element, "div", {style: "width: 100%; height: fit-content;"});
+        }
+        const searchBox = createTag(this.header, "div", {class: "searchBox"});
         const input = createTag(searchBox, "input", {style: "fontSize: 120%",value: ""});
         input.addEventListener("input", () => {
             searchFilter = input.value;
@@ -92,7 +106,7 @@ export class OutlinerTag extends CustomTag {
         /** @type {HTMLElement} */
         this.scrollable = createTag(this.scrollableContainer, "div", {class: "scrollable"});
         const array = [];
-        let rootObject = isSourceFunction ? withObject() : jTag.getParameter(source, withObject);
+        let rootObject = null;
         const getAllObject = () => {
             const getLoopChildren = (children, resultObject = []) => {
                 let filterBool_ = false;
@@ -140,7 +154,11 @@ export class OutlinerTag extends CustomTag {
             return getLoopChildren(rootObject).result;
         }
         const outlinerUpdate = () => {
-            rootObject = isSourceFunction ? withObject() : jTag.getParameter(source, withObject);
+            if (useMode) {
+                rootObject = isSourceFunction ? withObject(this.mode) : jTag.getParameter(source, withObject[this.mode]);
+            } else {
+                rootObject = isSourceFunction ? withObject() : jTag.getParameter(source, withObject);
+            }
             array.length = 0;
             const allObject = getAllObject();
             // 削除があった場合対応するDOMを削除

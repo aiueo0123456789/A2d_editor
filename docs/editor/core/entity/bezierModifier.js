@@ -30,7 +30,7 @@ export class BezierModifier extends ObjectBase {
         this.mode = "オブジェクト";
 
         this.autoWeight = "autoWeight" in data ? data.autoWeight : true;
-        this.changeParent(app.scene.objects.getObjectFromID(data.parent));
+        this.changeParent(app.scene.objects.getObjectByID(data.parent));
         copyToArray(this.allVertices, data.vertices.flat());
         copyToArray(this.allWeightBlocks, data.weightBcloks.flat());
         copyToArray(this.shapeKeyMetaDatas, data.shapeKeyMetaDatas.map(shapeKeyMetaData => this.createShapeKeyMetaData(shapeKeyMetaData.name, shapeKeyMetaData.index, shapeKeyMetaData.id)));

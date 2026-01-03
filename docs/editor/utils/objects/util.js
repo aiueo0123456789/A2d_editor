@@ -11,7 +11,18 @@ export class UnfixedReference {
     }
 
     getObject() {
-        return app.scene.objects.getObjectFromID(this.id);
+            return app.scene.objects.getObjectByID(this.id);
+    }
+}
+
+export class UnfixedReferenceForLayer {
+    constructor(id) {
+        this.id = id;
+        this.type = "未解決参照レイヤー";
+    }
+
+    getLayer() {
+        return app.scene.layers.getLayerByID(this.id);
     }
 }
 

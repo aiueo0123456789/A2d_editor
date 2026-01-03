@@ -23,7 +23,7 @@ const targetValueToColor = {
     "1": "rgb(0, 255, 0)",
 }
 
-export class Area_Timeline {
+export class Area_Graph {
     constructor(area) {
         this.dom = area.main;
         this.spaceData = app.appConfig.areasConfig["Timeline"];

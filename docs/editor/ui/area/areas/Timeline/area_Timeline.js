@@ -23,7 +23,7 @@ const targetValueToColor = {
     "1": "rgb(0, 255, 0)",
 }
 
-export class Area_Timeline2 {
+export class Area_Timeline {
     constructor(area) {
         this.dom = area.main;
         /** @type {TimelineSpaceData} */
@@ -61,17 +61,17 @@ export class Area_Timeline2 {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
-                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto auto auto", children: [
+                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto auto auto auto", children: [
                                 {tagType: "padding", size: "10px"},
-                                {tagType: "input", label: "現在", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
-                                {tagType: "input", label: "開始", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
-                                {tagType: "input", label: "終了", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                                {tagType: "input", label: "現在", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500, step: 1},
+                                {tagType: "input", label: "開始", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500, step: 1},
+                                {tagType: "input", label: "終了", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500, step: 1},
+                                {tagType: "input", label: "FPS", name: "FPS", value: "scene/frame_speed", type: "number", max: 60, min: 0, step: 1},
                             ]}
                         ]},
                     ]},
                     {tagType: "grid", axis: "c", child1: [
                         {tagType: "outliner", name: "outliner", id: "overview",
-                            updateEventTarget: "選択物",
                             options: {
                                 arrange: false,
                                 clickEventFn: (event, object) => {
@@ -93,7 +93,6 @@ export class Area_Timeline2 {
                             loopTarget: {
                                 parameter: "type",
                                 loopTargets: {
-                                    // "キーフレームブロックマネージャー": ["blocks"],
                                     others: ["/children"],
                                 }
                             },
@@ -193,8 +192,8 @@ export class Area_Timeline2 {
             if (string) {
                 for (let x = 0; x < this.canvas.width / this.zoom[0]; x += gap[0]) {
                     const wx = this.worldToCanvas([x + leftDown[0] + decimalOffset[0], 0])[0];
-                    line([wx, 0], [wx, 40], 10, "rgb(255,255,255)");
-                    text([wx, 50], `${errorCut(x + leftDown[0] + decimalOffset[0])}`, 70, "rgb(255, 255, 255)", "center", "top");
+                    line([wx, 15 * this.pixelDensity], [wx, 25 * this.pixelDensity], width, "rgb(255,255,255)");
+                    text([wx, 10 * this.pixelDensity], `${errorCut(x + leftDown[0] + decimalOffset[0])}`, 10 * this.pixelDensity, "rgb(156, 156, 156)", "center", "middle");
                 }
             }
         }
@@ -229,7 +228,8 @@ export class Area_Timeline2 {
         })
 
         // gridRender(gap, [0,0], 4, "rgb(72, 72, 72)");
-        gridRender(bigGap, [0,0], 5, "rgb(18, 18, 18)", true);
+        line([0, 25 * this.pixelDensity / 2], [this.canvas.width, 25 * this.pixelDensity / 2], 25 * this.pixelDensity, "rgb(0, 0, 0)");
+        gridRender(bigGap, [0,0], 2, "rgb(0, 0, 0)", true);
 
         if (true) {
             const wx = this.worldToCanvas([app.scene.frame_current,0]);

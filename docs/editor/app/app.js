@@ -4,7 +4,7 @@ import { Operator } from "../operators/commandOperator.js";
 import { Area_Viewer } from "../ui/area/areas/Viewer/area_Viewer.js";
 import { Area_Outliner } from "../ui/area/areas/Outliner/area_Outliner.js";
 import { Area_Inspector } from "../ui/area/areas/Inspector/area_Inspector.js";
-import { Area_Timeline } from "../ui/area/areas/Graph/area_Graph.js";
+import { Area_Graph } from "../ui/area/areas/Graph/area_Graph.js";
 import { ViewerSpaceData } from "../ui/area/areas/Viewer/area_ViewerSpaceData.js";
 import { TimelineSpaceData } from "../ui/area/areas/Graph/area_TimelineSpaceData.js";
 import { InputManager } from "./inputManager/inputManager.js";
@@ -20,7 +20,7 @@ import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/area_NodeEditor.js"
 import { Area_Previewer } from "../ui/area/areas/Previewer/area_Previewer.js";
 import { PreviewerSpaceData } from "../ui/area/areas/Previewer/area_PreviewerSpaceData.js";
 import { WorkSpaces } from "./workSpaces/workSpaces.js";
-import { Area_Timeline2 } from "../ui/area/areas/Timeline/area_Timeline.js";
+import { Area_Timeline } from "../ui/area/areas/Timeline/area_Timeline.js";
 import { UI } from "./ui/ui.js";
 import { Context } from "./context/context.js";
 import { Area_BlendShape } from "../ui/area/areas/BlendShapes/area_BlendShape.js";
@@ -38,8 +38,8 @@ export const useClassFromAreaType = {
     "Viewer": {area: Area_Viewer, areaConfig: ViewerSpaceData},
     "Outliner": {area: Area_Outliner, areaConfig: OutlinerSpaceData},
     "Inspector": {area: Area_Inspector, areaConfig: ViewerSpaceData},
+    "Graph": {area: Area_Graph, areaConfig: TimelineSpaceData},
     "Timeline": {area: Area_Timeline, areaConfig: TimelineSpaceData},
-    "Timeline2": {area: Area_Timeline2, areaConfig: TimelineSpaceData},
     "Property": {area: Area_Property, areaConfig: TimelineSpaceData},
     "NodeEditor": {area: Area_NodeEditor, areaConfig: NodeEditorSpaceData},
     "Previewer": {area: Area_Previewer, areaConfig: PreviewerSpaceData},
@@ -346,6 +346,7 @@ export class Application { // 全てをまとめる
 
         this.isUpdateStop = false;
         this.updateStopKeyword = "";
+        this.lastCalledTime = Date.now();
     }
 
     updateStop(keyword) {
@@ -382,7 +383,10 @@ export class Application { // 全てをまとめる
         // 表示順番の再計算
         this.scene.updateRenderingOrder();
         // 単位: 秒
-        this.scene.frameUpdate(1 / 60);
+        if (Date.now() - this.lastCalledTime > 1 / this.scene.frame_speed * 1000) { // 1(s) / FPS * 1000ms以上経過していたら
+            this.scene.frameUpdate();
+            this.lastCalledTime = Date.now();
+        }
         this.scene.update();
         // エリアの更新
         this.workSpaces.activeWorkSpaces.update();

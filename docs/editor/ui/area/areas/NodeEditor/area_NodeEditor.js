@@ -16,7 +16,7 @@ export class Area_NodeEditor {
                             {tagType: "select", label: "tool",
                                 value: (value) => {
                                     console.log("書き換え")
-                                    changeParameter(this.areaConfig, "sourceCode", app.scene.objects.getObjectFromID(value));
+                                    changeParameter(this.areaConfig, "sourceCode", app.scene.objects.getObjectByID(value));
                                 },
                                 sourceObject: () => {
                                     return app.scene.objects.scripts.map(script => {return {name: script.name, id: script.id}});

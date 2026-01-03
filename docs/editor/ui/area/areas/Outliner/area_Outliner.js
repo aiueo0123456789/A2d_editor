@@ -1,4 +1,5 @@
 import { app } from "../../../../../main.js";
+import { Layer } from "../../../../app/scene/scene.js";
 
 export class Area_Outliner {
     constructor(area) {
@@ -7,11 +8,21 @@ export class Area_Outliner {
         this.struct = {
             inputObject: {"context": app.context, "scene": app.scene, "areaConfig": app.appConfig.areasConfig["Outliner"]},
             DOM: [
-                {tagType: "outliner", name: "outliner", options: {arrange: true, clickEventFn: (event, object) => {
+                {tagType: "outliner", name: "outliner", options: {
+                    modes: ["scene", "layer"],
+                    mode: "scene",
+                    arrange: true,
+                    clickEventFn: (event, object) => {
+                        event.stopPropagation();
                         if (app.context.currentMode == "オブジェクト") {
-                            app.context.setSelectedObject(object, app.input.keysDown["Ctrl"]);
-                            app.context.setActiveObject(object);
-                            event.stopPropagation();
+                            if (object instanceof Layer) {
+                                for (const child of object.children) {
+                                    app.context.setSelectedObject(child, true);
+                                }
+                            } else {
+                                app.context.setSelectedObject(object, app.input.keysDown["Ctrl"]);
+                                app.context.setActiveObject(object);
+                            }
                         }
                     }, rangeonSelectFn: (event, array, startIndex, endIndex) => {
                         if (app.context.currentMode == "オブジェクト") {
@@ -23,7 +34,7 @@ export class Area_Outliner {
                             app.context.setActiveObject(array[endIndex]);
                         }
                     },
-                    activeSource: "context/activeObject", selectSource: "context/selectedObjects"}, withObject: "scene/objects/rootObjects", updateEventTarget: "親変更", loopTarget: "/children", structures: [
+                    activeSource: "context/activeObject", selectSource: "context/selectedObjects"}, withObject: {"scene": "scene/objects/rootObjects", "layer": "scene/layers/layers"}, updateEventTarget: "親変更", loopTarget: "/children", structures: [
                         {
                             tagType: "if",
                             formula: {source: "/", conditions: "in", value: "name"},
@@ -32,8 +43,9 @@ export class Area_Outliner {
                                     tagType: "if",
                                     formula: {source: "/", conditions: "in", value: "zIndex"},
                                     true: [
-                                        {tagType: "gridBox", axis: "c", allocation: "auto 50% 1fr auto 20%", children: [
-                                            {tagType: "icon", src: {path: "/type"}},
+                                        {tagType: "gridBox", axis: "c", allocation: "auto 50% 1fr auto 20%", children: [ // グラフィックメッシュ
+                                            // {tagType: "icon", src: {path: "/type"}},
+                                            {tagType: "texture", sourceTexture: "/texture/texture", width: "15px", height: "15px"},
                                             {tagType: "dblClickInput", value: "/name"},
                                             {tagType: "padding", size: "10px"},
                                             {tagType: "input", type: "checkbox", checked: "/visible", look: {check: "display", uncheck: "hide"}},

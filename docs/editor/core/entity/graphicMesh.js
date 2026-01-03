@@ -1,4 +1,4 @@
-import { ObjectBase, sharedDestroy, UnfixedReference } from "../../utils/objects/util.js";
+import { ObjectBase, sharedDestroy, UnfixedReference, UnfixedReferenceForLayer } from "../../utils/objects/util.js";
 import { changeParameter, copyToArray, range } from "../../utils/utility.js";
 import { GPU } from "../../utils/webGPU.js";
 import { useEffect } from "../../utils/ui/util.js";
@@ -52,7 +52,11 @@ export class GraphicMesh extends ObjectBase {
         this.objectDataGroup = GPU.createGroup(GPU.getGroupLayout("Vu"), [this.objectDataBuffer]);
 
         this.autoWeight = "autoWeight" in data ? data.autoWeight : true;
-        this.changeParent(app.scene.objects.getObjectFromID(data.parent));
+
+        this.layer = null;
+
+        this.changeParent(app.scene.objects.getObjectByID(data.parent));
+        this.changeLayer(app.scene.layers.getLayerByID(data.layer));
         this.zIndex = data.zIndex;
         GPU.writeBuffer(this.zIndexBuffer, new Float32Array([1 / (this.zIndex + 1)]));
         copyToArray(this.allVertices, data.vertices.flat());
@@ -61,14 +65,14 @@ export class GraphicMesh extends ObjectBase {
         copyToArray(this.allWeightBlocks, data.weightBlocks.flat());
         copyToArray(this.shapeKeyMetaDatas, data.shapeKeyMetaDatas.map(shapeKeyMetaData => this.createShapeKeyMetaData(shapeKeyMetaData.name, shapeKeyMetaData.index, shapeKeyMetaData.id)));
         copyToArray(this.allShapeKeys, data.shapeKeys.flat());
-        this.changeTexture(app.scene.objects.getObjectFromID(data.texture));
+        this.changeTexture(app.scene.objects.getObjectByID(data.texture));
         if (data.renderingTarget) {
-            this.changeRenderingTarget(app.scene.objects.getObjectFromID(data.renderingTarget));
+            this.changeRenderingTarget(app.scene.objects.getObjectByID(data.renderingTarget));
         }
         if (data.clippingMask) {
-            this.changeClippingMask(app.scene.objects.getObjectFromID(data.clippingMask));
+            this.changeClippingMask(app.scene.objects.getObjectByID(data.clippingMask));
         } else {
-            this.changeClippingMask(app.scene.objects.getObjectFromID("baseMaskTexture"));
+            this.changeClippingMask(app.scene.objects.getObjectByID("baseMaskTexture"));
         }
         this.setGroup();
 
@@ -105,6 +109,9 @@ export class GraphicMesh extends ObjectBase {
         if (this.clippingMask instanceof UnfixedReference) {
             this.changeClippingMask(this.clippingMask.getObject());
         }
+        if (this.layer instanceof UnfixedReferenceForLayer) {
+            this.changeLayer(this.layer.getLayer());
+        }
     }
 
     get verticesNum() {
@@ -129,7 +136,8 @@ export class GraphicMesh extends ObjectBase {
         this.parent = "";
     }
 
-    init(data) {
+    changeLayer(layer) {
+        changeParameter(this, "layer", layer);
     }
 
     changeTexture(texture) {
@@ -166,6 +174,7 @@ export class GraphicMesh extends ObjectBase {
             name: this.name,
             id: this.id,
             parent: this.parent ? this.parent.id : null,
+            layer: this.layer ? this.layer.id : null,
             type: this.type,
             autoWeight: this.autoWeight,
             baseTransformIsLock: this.baseTransformIsLock,

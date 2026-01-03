@@ -18,7 +18,7 @@ export class Area_Property {
                 {tagType: "section", name: "アニメーション", children: [
                     {tagType: "input", label: "開始", value: "scene/frame_start", type: "number", min: 0, max: 500, step: 1, custom: {visual: "range"}},
                     {tagType: "input", label: "終了", value: "scene/frame_end", type: "number", min: 0, max: 500, step: 1, custom: {visual: "range"}},
-                    {tagType: "input", label: "再生速度", value: "scene/frame_speed", type: "number", min: 0, max: 10, step: 0.1, custom: {visual: "range"}},
+                    {tagType: "input", label: "FPS", value: "scene/frame_speed", type: "number", min: 0, max: 60, step: 1, custom: {visual: "range"}},
                 ]},
                 {tagType: "section", name: "マスク", children: [
                     {tagType: "list", label: "マスク", onAppend: () => {

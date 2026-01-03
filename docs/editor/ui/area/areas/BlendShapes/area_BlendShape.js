@@ -27,7 +27,7 @@ export class Area_BlendShape {
                         {tagType: "gridBox", axis: "c", allocation: "auto 1fr auto", children: [
                             {tagType: "select", label: "",
                                 value: (value) => {
-                                    changeParameter(this.areaConfig, "activeBlendShape", app.scene.objects.getObjectFromID(value));
+                                    changeParameter(this.areaConfig, "activeBlendShape", app.scene.objects.getObjectByID(value));
                                 },
                                 sourceObject: () => {
                                     return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});

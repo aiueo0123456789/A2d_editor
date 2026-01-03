@@ -70,7 +70,7 @@ export class WorkSpaces {
                     },
                     child2: {
                         type: "area",
-                        areaType: "Timeline2"
+                        areaType: "Timeline"
                     }
                 },
                 child2: {
@@ -119,7 +119,7 @@ export class WorkSpaces {
                     },
                     child2: {
                         type: "area",
-                        areaType: "Timeline"
+                        areaType: "Graph"
                     }
                 },
                 child2: {
@@ -147,7 +147,7 @@ export class WorkSpaces {
                     },
                     child2: {
                         type: "area",
-                        areaType: "Timeline2"
+                        areaType: "Timeline"
                     }
                 },
                 child2: {
@@ -167,8 +167,16 @@ export class WorkSpaces {
                 type: "grid",
                 axis: "c",
                 child1: {
-                    type: "area",
-                    areaType: "Previewer"
+                    type: "grid",
+                    axis: "r",
+                    child1: {
+                        type: "area",
+                        areaType: "Previewer"
+                    },
+                    child2: {
+                        type: "area",
+                        areaType: "Timeline"
+                    }
                 },
                 child2: {
                     type: "area",

@@ -119,7 +119,7 @@ export class Armature extends ObjectBase {
 
         this.mode = "オブジェクト";
 
-        this.changeParent(app.scene.objects.getObjectFromID(data.parent));
+        this.changeParent(app.scene.objects.getObjectByID(data.parent));
         console.log(data);
 
         // メタデータの作成
@@ -145,7 +145,7 @@ export class Armature extends ObjectBase {
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.allAnimations,
                 parameters: createArrayN(this.allAnimations.length),
-                keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"}))
+                keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createAndAppendObject({type: "キーフレームブロック"}))
             });
         }
         console.log(this)

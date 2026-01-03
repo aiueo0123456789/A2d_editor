@@ -123,35 +123,37 @@ input .no-access {
 
 .searchBox {
     width: 100%;
-    height: fit-content;
+    height: 25px;
     position: relative; /* 疑似要素の基準 */
+    padding: 2.5px;
 }
 .searchBox::before {
     content: "";
-    width: 7px;  /* 円のサイズ */
-    height: 7px;
+    width: 10px;  /* 円のサイズ */
+    height: 10px;
     border: 1px solid rgb(202, 202, 202);  /* 円の枠線 */
     border-radius: 50%;      /* 丸にする */
     position: absolute;
-    top: 50%;
+    top: 12px;
     left: 6px;
     transform: translateY(-50%);
 }
 .searchBox::after {
     content: "";
-    width: 4px;
+    width: 6px;
     height: 1px;
     background: rgb(202, 202, 202);
     position: absolute;
-    top: 11px;
-    left: 11px;
+    top: 16px;
+    left: 14px;
     transform: rotate(45deg);
 }
 .searchBox input {
     width: 100%;
-    height: 15px;
+    height: 20px;
     /* padding: 5px 0 5px 2em; */
     padding-left: 22px;
+    border-radius: 10px;
 }
 
 .dblClickInput {
@@ -458,7 +460,7 @@ label {
 
 .resizer-h {
     position: absolute;
-    bottom: 2px;
+    bottom: 0px;
     left: 50%;
     transform: translateX(-50%);
     align-items: center;
@@ -496,11 +498,8 @@ label {
     width: 100%;
     height: 100%;
     overflow: hidden;
-}
-
-.minList .scrollable {
-    background-color: var(--inputColor);
     border-radius: 4px;
+    background-color: var(--inputColor);
 }
 
 .square_btn {
@@ -528,7 +527,6 @@ label {
 .square_btn::after {
     transform: translate(-50%,-50%) rotate(-45deg);
 }
-
 
 li {
     list-style: none;

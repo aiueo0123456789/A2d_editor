@@ -14,7 +14,7 @@ export class KeyframeBlockManager {
         /** @type {KeyframeBlock[]} */
         this.keyframeBlocks = data.keyframeBlocks.map(keyframeBlock => {
             if (keyframeBlock instanceof KeyframeBlock) return keyframeBlock;
-            else return app.scene.objects.getObjectFromID(keyframeBlock);
+            else return app.scene.objects.getObjectByID(keyframeBlock);
         });
     }
 
@@ -29,7 +29,7 @@ export class KeyframeBlockManager {
         copyToArray(this.keyframeBlocks, keyframeBlocks);
     }
 
-    appendParameter(parameter, keyframeBlcok = app.scene.objects.createObjectAndSetUp({type: "キーフレームブロック"})) {
+    appendParameter(parameter, keyframeBlcok = app.scene.objects.createAndAppendObject({type: "キーフレームブロック"})) {
         pushToArray(this.parameters, parameter);
         pushToArray(this.keyframeBlocks, keyframeBlcok);
     }

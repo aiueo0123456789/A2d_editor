@@ -1,5 +1,3 @@
-import { ResizerForDOM } from "./resizer.js";
-import { TranslaterForDOM } from "./tranlater.js";
 import { isPlainObject } from "../utility.js";
 import { UseEffect } from "../useEffect.js";
 
@@ -58,82 +56,6 @@ export function createMinButton(target, text) {
     return button;
 }
 
-export function createMinList(target, listName, onAppend, onDelete) {
-    const listNameTag = document.createElement("p");
-    listNameTag.textContent = listName;
-    const container = document.createElement("div");
-    container.classList.add("flex");
-    container.style.gap = "10px";
-
-    const actionButtons = document.createElement("div");
-    actionButtons.style.width = "20px";
-
-    const appendButton = createMinButton(actionButtons, "+");
-    const deleteButton = createMinButton(actionButtons, "-");
-    const listContainer = document.createElement("div");
-    listContainer.classList.add("minList");
-    listContainer.style.height = "200px";
-    new ResizerForDOM(listContainer, "h", 100, 600);
-    const list = document.createElement("div");
-    list.classList.add("scrollable");
-    list.style.padding = "2px";
-    list.style.gap = "2px";
-    listContainer.append(list);
-
-    container.append(listContainer, actionButtons)
-    target.append(listNameTag);
-    target.append(container);
-    return {container: container, listContainer: listContainer, list: list, appendButton: appendButton, deleteButton: deleteButton};
-}
-
-export function createSection(target, sectionName,/** @type {HTMLElement} */ section, className = "section") {
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.style.display = "none";
-    checkbox.checked = true;
-    const label = document.createElement("label");
-    const span = document.createElement("span");
-    span.classList.add("arrow");
-    label.append(checkbox,span);
-
-    const headerDiv = document.createElement("div");
-    headerDiv.classList.add("flex")
-
-    const sectionNameP = document.createElement("p");
-    sectionNameP.textContent = sectionName;
-
-    headerDiv.append(label, sectionNameP);
-
-    const containerDiv = document.createElement("div");
-    containerDiv.classList.add(className);
-    containerDiv.setAttribute("name", sectionName);
-
-    containerDiv.append(headerDiv, section);
-
-    let lastHeight = "fit-content";
-    checkbox.addEventListener("change", () => {
-        if (section.classList.contains('close')) {
-            // 開く
-            section.style.height = lastHeight;
-        } else {
-            // 閉じる
-            lastHeight = section.scrollHeight + "px";
-            section.style.height = lastHeight;
-            section.offsetHeight;
-            section.style.height = "0px";
-        }
-        section.classList.toggle('close');
-    });
-    section.addEventListener("transitionend", (e) => {
-        console.log("transition 終了:", e.propertyName);
-        if (!section.classList.contains('close')) {
-            section.style.height = "fit-content";
-        }
-    });
-    target.append(containerDiv);
-    return containerDiv;
-}
-
 // チェック
 export function createChecks(target, checks) {
     const div = createTag(target, "div", {class: "flex"});
@@ -169,31 +91,6 @@ export function createChecks(target, checks) {
         }
     })
     return result;
-}
-
-function createCheckbox(type = "custom-checkbox", text = "") {
-    const checkbox = document.createElement("input");
-    checkbox.type = "checkbox";
-    checkbox.style.display = "none";
-    const label = document.createElement("label");
-    label.classList.add("box");
-    label.setAttribute("name", "checkbox");
-    const span = document.createElement("span");
-    if (type == "button-checkbox") {
-        const textTag = document.createElement("p");
-        textTag.textContent = `${text}`;
-        textTag.classList.add("button-checkbox-text");
-        span.append(textTag);
-    }
-    if (type == "eye-icon") {
-        const pupil = document.createElement("span");
-        pupil.classList.add("eye-icon-pupil");
-        span.append(pupil);
-    }
-    span.classList.add(type);
-    label.append(checkbox,span);
-    label.inputDOM = checkbox;
-    return label;
 }
 
 // ラジオ

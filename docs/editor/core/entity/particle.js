@@ -103,7 +103,7 @@ export class Particle extends ObjectBase {
 
     resolvePhase() {
         if (IsString(this.updatePipeline)) {
-            this.updatePipeline = app.scene.objects.getObjectFromID(this.updatePipeline);
+            this.updatePipeline = app.scene.objects.getObjectByID(this.updatePipeline);
         }
     }
 

@@ -40,11 +40,14 @@ export class FaileIOManager {
             const objectTypes = ["maskTextures", "textures", "graphicMeshs"];
             for (const objectType of objectTypes) {
                 for (const objectData of jsonData.scene.objects[objectType]) {
-                    this.app.scene.objects.createObjectAndSetUp(objectData);
+                    this.app.scene.objects.createAndAppendObject(objectData);
                 }
                 this.app.ui.updateLoadingModal(loadingModalID,50 + (40 * (objectTypes.indexOf(objectType) / objectTypes.length)), `${objectType}のデータをセット`);
             }
             this.app.ui.updateLoadingModal(loadingModalID,90, "オブジェクトのセット完了");
+            for (const layerData of jsonData.scene.layers) {
+                this.app.scene.layers.createAndAppendLayer(layerData);
+            }
             // オブジェクト同士の参照を解決
             for (const object of this.app.scene.objects.allObject) {
                 if (isFunction(object.resolvePhase)) object.resolvePhase();
@@ -81,7 +84,7 @@ export class FaileIOManager {
             const objectTypes = ["maskTextures", "textures", "scripts", "particles", "bezierModifiers", "armatures", "graphicMeshs", "blendShapes", "keyframeBlocks", "parameterManagers"];
             for (const objectType of objectTypes) {
                 for (const objectData of jsonData.scene.objects[objectType]) {
-                    this.app.scene.objects.createObjectAndSetUp(objectData);
+                    this.app.scene.objects.createAndAppendObject(objectData);
                 }
                 this.app.ui.updateLoadingModal(loadingModalID,50 + (40 * (objectTypes.indexOf(objectType) / objectTypes.length)), `${objectType}のデータをセット`);
             }
