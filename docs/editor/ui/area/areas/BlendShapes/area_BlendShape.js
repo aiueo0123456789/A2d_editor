@@ -2,8 +2,8 @@ import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/inputManager/inputManager.js";
 import { CreateObjectCommand } from "../../../../commands/object/object.js";
 import { ChangeParameterCommand } from "../../../../commands/utile/utile.js";
-import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
-import { ToolsBarOperator } from "../../../../operators/toolsBarOperator.js";
+import { ModalOperator } from "../../../../operators/modalOperator.js";
+import { SideBarOperator } from "../../../../operators/sideBarOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { calculateLocalMousePosition, changeParameter, copyToArray } from "../../../../utils/utility.js";
 import { Area_BlendShapeSpaceData } from "./area_BlendShapeSpaceData.js";
@@ -51,9 +51,9 @@ export class Area_BlendShape {
         this.jTag = area.jTag;
         this.jTag.create(area.main, this.struct);
 
-        this.sideBarOperator = new ToolsBarOperator(this.jTag.getDOMFromID("main").element, {});
+        this.sideBarOperator = new SideBarOperator(this.jTag.getDOMFromID("main").element, {});
         this.sideBarOperator.changeShelfes({"BlendShap": BlendShapePanel, "BlendShapePointPanel": BlendShapePointPanel});
-        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("main").element, {});
+        this.modalOperator = new ModalOperator();
 
         this.box = this.jTag.getDOMFromID("canvasContainer").element;
         /** @type {HTMLCanvasElement} */

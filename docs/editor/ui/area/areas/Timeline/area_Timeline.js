@@ -1,7 +1,7 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/inputManager/inputManager.js";
 import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
-import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
+import { AdjustPanelOperator } from "../../../../operators/adjustPanelOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { OutlinerTag } from "../../../../utils/JTag/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
@@ -70,7 +70,7 @@ export class Area_Timeline {
                             ]}
                         ]},
                     ]},
-                    {tagType: "grid", axis: "c", child1: [
+                    {tagType: "grid", axis: "c", template: "30%", child1: [
                         {tagType: "outliner", name: "outliner", id: "overview",
                             options: {
                                 arrange: false,
@@ -132,7 +132,7 @@ export class Area_Timeline {
         this.jTag = area.jTag;
         this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInTimeline, "s": KeyframeResize, "x": KeyDelete});
+        this.toolPanelOperator = new AdjustPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInTimeline, "s": KeyframeResize, "x": KeyDelete});
 
         /** @type {OutlinerTag} */
         this.overview = this.jTag.getDOMFromID("overview");

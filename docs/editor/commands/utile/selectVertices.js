@@ -6,7 +6,7 @@ import { BMesh } from "../../core/edit/objects/BMesh.js";
 import { BMeshShapeKey } from "../../core/edit/objects/BMeshShapeKey.js";
 import { useEffect } from "../../utils/ui/util.js";
 
-export class SelectOnlyVertexCommand {
+export class SelectVerticesCommand {
     constructor(selectData,multiple) {
         this.multiple = multiple;
         this.editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey || editData instanceof BBezier || editData instanceof BBezierShapeKey || editData instanceof BArmature); // オブジェクトモードに移行する場合は前のモードで使っていた編集用オブジェクトを保持

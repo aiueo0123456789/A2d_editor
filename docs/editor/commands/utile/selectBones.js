@@ -54,7 +54,7 @@ import { useEffect } from "../../utils/ui/util.js";
 //         })
 //     }
 // }
-export class SelectOnlyBoneCommand {
+export class SelectBonesCommand {
     constructor(selectData, multiple) {
         this.multiple = multiple;
         this.editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BArmatureAnimation || editData instanceof BArmature);

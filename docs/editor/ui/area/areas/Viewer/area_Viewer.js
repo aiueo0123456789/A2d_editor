@@ -1,29 +1,19 @@
 import { ConvertCoordinate } from '../../../../utils/convertCoordinate.js';
 import { resizeObserver } from '../../../../utils/ui/resizeObserver.js';
-import { TranslateModal } from '../../../tools/TranslateTool.js';
-import { RotateModal } from '../../../tools/RotateTool.js';
-import { ResizeModal } from '../../../tools/ResizeTool.js';
-import { ExtrudeMove } from '../../../tools/ExtrudeMove.js';
-import { ParentPickModal } from '../../../tools/ParentPick.js';
-import { DeleteTool } from '../../../tools/Delete.js';
-import { WeightPaintModal } from '../../../tools/WeightPaintTool.js';
-import { ToolsBarOperator } from '../../../../operators/toolsBarOperator.js';
-import { EdgeJoinTool } from '../../../tools/EdgeJoin.js';
-import { AppendVertexTool } from '../../../tools/AppendVertex.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
-import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, loadFile } from '../../../../utils/utility.js';
+import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, loadFile, range } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/entity/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
 import { ViewerSpaceData } from './area_ViewerSpaceData.js';
-import { ToolPanelOperator } from '../../../../operators/toolPanelOperator.js';
+import { AdjustPanelOperator } from '../../../../operators/adjustPanelOperator.js';
 import { CreateMeshTool } from '../../../tools/CreateMesh.js';
 import { Particle } from '../../../../core/entity/particle.js';
 import { app } from '../../../../../main.js';
-import { SelectOnlyVertexCommand } from '../../../../commands/utile/selectVertices.js';
+import { SelectVerticesCommand } from '../../../../commands/utile/selectVertices.js';
 import { useEffect } from '../../../../utils/ui/util.js';
 import { BBezier } from '../../../../core/edit/objects/BBezier.js';
-import { SelectOnlyBoneCommand } from '../../../../commands/utile/selectBones.js';
+import { SelectBonesCommand } from '../../../../commands/utile/selectBones.js';
 import { KeyframeInsertModal } from '../../../tools/keyframeInsert.js';
 import { ActiveVertexPanel } from './toolBar/panel/vertex.js';
 import { ActiveBonePanelFromBA, ActiveBonePanelFromBAA } from './toolBar/panel/bone.js';
@@ -37,6 +27,12 @@ import { BBezierShapeKey } from '../../../../core/edit/objects/BBezierShapeKey.j
 import { BMeshShapeKey } from '../../../../core/edit/objects/BMeshShapeKey.js';
 import { BMesh } from '../../../../core/edit/objects/BMesh.js';
 import { SelectOnlyEdgeCommand } from '../../../../commands/utile/selectEdge.js';
+import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from '../../../../commands/object/object.js';
+import { ModalOperator } from '../../../../operators/modalOperator.js';
+import { TranslateModal } from '../../../modals/translate.js';
+import { SideBarOperator } from '../../../../operators/sideBarOperator.js';
+import { RotateModal } from '../../../modals/rotate.js';
+import { ExtrudeMoveModal } from '../../../modals/extrudeMove.js';
 
 const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
 const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/mix.wgsl"), [], "2d", "s");
@@ -76,16 +72,6 @@ const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.g
 const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s");
 
 const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vu_VFu_Fu_VFu_Fu_VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s");
-
-const useingToolPanelInMode = {
-    "メッシュ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertexTool, "m": CreateMeshTool},
-    "ベジェ編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "x": DeleteTool, "j": EdgeJoinTool, "v": AppendVertexTool, "m": CreateMeshTool},
-    "ボーン編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "e": ExtrudeMove, "x": DeleteTool},
-    "ボーンアニメーション編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},
-    "メッシュシェイプキー編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},
-    "ベジェシェイプキー編集": {"g": TranslateModal, "r": RotateModal, "s": ResizeModal, "i": KeyframeInsertModal},
-    "オブジェクト": {"p": ParentPickModal},
-};
 
 const useingSideBarPanelInMode = {
     "メッシュ編集": {
@@ -218,15 +204,80 @@ export class Area_Viewer {
                     ]},
                     {tagType: "box", id: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
                         {tagType: "html", tag: "canvas", id: "renderingCanvas", style: "width: 100%; height: 100%; position: absolute;"},
-                    ]},
+                        {tagType: "html", tag: "div", id: "adjustPanel", style: "width: 100%; height: 100%; position: absolute; pointerEvents: none;"},
+                    ], contextmenu: () => {
+                        if (app.context.currentMode == "オブジェクト") {
+                            return [
+                                {label: "オブジェクトを追加", children: [
+                                    {label: "グラフィックメッシュ", children: [
+                                        {label: "normal", eventFn: () => {
+                                            const command = new CreateObjectCommand(app.options.getPrimitiveData("グラフィックメッシュ", "normal"));
+                                            app.operator.appendCommand(command);
+                                            app.operator.execute();
+                                        }},
+                                        {label: "body", eventFn: () => {
+                                            const command = new CreateObjectCommand(app.options.getPrimitiveData("グラフィックメッシュ", "body"));
+                                            app.operator.appendCommand(command);
+                                            app.operator.execute();
+                                        }},
+                                    ]},
+                                    {label: "ベジェモディファイア", children: [
+                                        {label: "normal", eventFn: () => {
+                                            const command = new CreateObjectCommand(app.options.getPrimitiveData("ベジェモディファイア", "normal"));
+                                            app.operator.appendCommand(command);
+                                            app.operator.execute();
+                                        }},
+                                        {label: "body", eventFn: () => {
+                                            const command = new CreateObjectCommand(app.options.getPrimitiveData("ベジェモディファイア", "body"));
+                                            app.operator.appendCommand(command);
+                                            app.operator.execute();
+                                        }},
+                                    ]},
+                                    {label: "アーマチュア", children: [
+                                        {label: "normal", eventFn: () => {
+                                            app.operator.appendCommand(new CreateObjectCommand(app.options.getPrimitiveData("アーマチュア", "normal")));
+                                            app.operator.execute();
+                                        }},
+                                        {label: "body", eventFn: () => {
+                                            const command = new CreateObjectCommand(app.options.getPrimitiveData("アーマチュア", "body"));
+                                            app.operator.appendCommand(command);
+                                            app.operator.execute();
+                                        }},
+                                    ]},
+                                ]},
+                                {label: "メッシュの生成", eventFn: () => {
+                                    app.activeArea.uiModel.modalOperator.setModal(CreateMeshTool, app.activeArea.uiModel.inputs);
+                                }},
+                                {label: "削除", children: [
+                                    {label: "選択物", eventFn: () => {
+                                        const command = new DeleteObjectCommand(app.context.selectedObjects);
+                                        app.operator.appendCommand(command);
+                                        app.operator.execute();
+                                    }},
+                                ]},
+                                {label: "複製", eventFn: () => {
+                                    app.operator.appendCommand(new CopyObjectCommand(app.context.activeObject));
+                                    app.operator.execute();
+                                }}
+                            ];
+                        } else if (app.context.currentMode == "メッシュ編集") {
+                            return [
+                                {label: "全て選択", eventFn: () => {
+                                    app.operator.appendCommand(new SelectVerticesCommand(this.getVerticesAll(), false));
+                                    app.operator.execute();
+                                }},
+                            ];
+                        }
+                    }},
                 ]}
             ]
         }
 
         this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.sideBarOperator = new ToolsBarOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
-        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
+        this.sideBarOperator = new SideBarOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
+        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel");
+        this.modalOperator = new ModalOperator();
 
         this.canvas = this.jTag.getDOMFromID("renderingCanvas");
         this.canvasRect = this.canvas.getBoundingClientRect();
@@ -236,7 +287,7 @@ export class Area_Viewer {
         this.convertCoordinate = new ConvertCoordinate(this.canvas,this.camera);
 
         // this.mouseState = {client: [0,0], click: false, rightClick: false, hold: false, holdFrameCount: 0, clickPosition: [0,0], clickPositionForGPU:[0,0], position: [0,0], lastPosition: [0,0], positionForGPU: [0,0], lastPositionForGPU: [0,0], movementForGPU: [0,0]};
-        this.inputs = {click: [0,0], position: [0,0], movement: [0,0], clickPosition: [0,0], lastPosition: [0,0]};
+        this.inputs = {click: [0,0], position: [0,0], movement: [0,0], clickPosition: [0,0], lastPosition: [0,0], keysDown: {}, keysPush: {}};
 
         this.canvas.addEventListener("contextmenu", (event) => {
             event.preventDefault();
@@ -251,76 +302,29 @@ export class Area_Viewer {
         });
 
         const modeChangeEvent = () => {
-            this.toolPanelOperator.changePanels(useingToolPanelInMode[app.context.currentMode]);
             this.sideBarOperator.changeShelfes(useingSideBarPanelInMode[app.context.currentMode]);
         }
         useEffect.set({o: app.context, i: "currentMode"}, modeChangeEvent)
         modeChangeEvent();
     }
 
-    async update() {
-        this.renderer.rendering();
-    }
-
-    toolsUpdate() {
-    }
-
-    async keyInput(/** @type {InputManager} */ inputManager) {
-        this.inputs.keysDown = inputManager.keysDown;
-        this.inputs.keysPush = inputManager.keysPush;
-        let consumed = await this.toolPanelOperator.keyInput(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+    getShortcuts() {
         const context = app.context;
         if (context.activeObject) {
-            if (context.activeObject.type == "グラフィックメッシュ") {
-                if (inputManager.consumeKeys(["Tab"])) {
-                    if (context.currentMode == "オブジェクト") {
-                        if (inputManager.consumeKeys(["a"])) {
-                            context.setModeForSelected("メッシュシェイプキー編集");
-                        } else if (inputManager.consumeKeys(["w"])) {
-                            context.setModeForSelected("メッシュウェイト編集");
-                        } else {
-                            context.setModeForSelected("メッシュ編集");
-                        }
-                    } else {
-                        context.setModeForSelected("オブジェクト");
-                    }
-                } else if (inputManager.consumeKeys(["f"])) {
-                    for (const object of app.context.selectedObjects) {
-                        app.scene.editData.getEditObjectByObject(object).appendEdge();
-                    }
-                }
-            } else if (context.activeObject.type == "アーマチュア") {
-                if (inputManager.consumeKeys(["Tab"])) {
-                    if (context.currentMode == "オブジェクト") {
-                        if (inputManager.consumeKeys(["a"])) {
-                            context.setModeForSelected("ボーンアニメーション編集");
-                        } else {
-                            context.setModeForSelected("ボーン編集");
-                        }
-                    } else {
-                        context.setModeForSelected("オブジェクト");
-                        this.toolPanelOperator.changePanels({"p": ParentPickModal});
-                    }
-                }
-            } else if (context.activeObject.type == "ベジェモディファイア") {
-                if (inputManager.consumeKeys(["Tab"])) {
-                    if (context.currentMode == "オブジェクト") {
-                        if (inputManager.consumeKeys(["a"])) {
-                            context.setModeForSelected("ベジェシェイプキー編集");
-                        } else if (inputManager.consumeKeys(["w"])) {
-                            context.setModeForSelected("ベジェウェイト編集");
-                            this.toolPanelOperator.changePanels({});
-                        } else {
-                            context.setModeForSelected("ベジェ編集");
-                        }
-                    } else {
-                        context.setModeForSelected("オブジェクト");
-                        this.toolPanelOperator.changePanels({"p": ParentPickModal});
-                    }
-                }
+            if (context.currentMode == "メッシュ編集") {
+                if (this.inputs.keysDown["g"]) return TranslateModal;
+                if (this.inputs.keysDown["r"]) return RotateModal;
+            }
+            if (context.currentMode == "ボーン編集") {
+                if (this.inputs.keysDown["g"]) return TranslateModal;
+                if (this.inputs.keysDown["r"]) return RotateModal;
+                if (this.inputs.keysDown["e"]) return ExtrudeMoveModal;
             }
         }
+    }
+
+    async update() {
+        this.renderer.rendering();
     }
 
     getBonesRayCast(point) {
@@ -341,6 +345,15 @@ export class Area_Viewer {
         if (selectBoneIncludesObjectID != -1 && selectIndex != -1) {
             result[selectBoneIncludesObjectID] = [selectIndex];
         }
+        return result;
+    }
+
+    getVerticesAll() {
+        const editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey || editData instanceof BBezier || editData instanceof BBezierShapeKey || editData instanceof BArmature);
+        const result = {};
+        editObjects.forEach(editObject => {
+            result[editObject.id] = range(0, editObject.verticesNum);
+        })
         return result;
     }
 
@@ -425,13 +438,72 @@ export class Area_Viewer {
         return result;
     }
 
+    async keyInput(/** @type {InputManager} */ inputManager) {
+        this.inputs.keysDown = inputManager.keysDown;
+        this.inputs.keysPush = inputManager.keysPush;
+        let consumed = this.modalOperator.keyInput(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
+        if (consumed) return ;
+        if (this.getShortcuts()) {
+            this.modalOperator.start(this.getShortcuts());
+            return ;
+        }
+        const context = app.context;
+        if (context.activeObject) {
+            if (context.activeObject.type == "グラフィックメッシュ") {
+                if (inputManager.consumeKeys(["Tab"])) {
+                    if (context.currentMode == "オブジェクト") {
+                        if (inputManager.consumeKeys(["a"])) {
+                            context.setModeForSelected("メッシュシェイプキー編集");
+                        } else if (inputManager.consumeKeys(["w"])) {
+                            context.setModeForSelected("メッシュウェイト編集");
+                        } else {
+                            context.setModeForSelected("メッシュ編集");
+                        }
+                    } else {
+                        context.setModeForSelected("オブジェクト");
+                    }
+                } else if (inputManager.consumeKeys(["f"])) {
+                    for (const object of app.context.selectedObjects) {
+                        app.scene.editData.getEditObjectByObject(object).appendEdge();
+                    }
+                }
+            } else if (context.activeObject.type == "アーマチュア") {
+                if (inputManager.consumeKeys(["Tab"])) {
+                    if (context.currentMode == "オブジェクト") {
+                        if (inputManager.consumeKeys(["a"])) {
+                            context.setModeForSelected("ボーンアニメーション編集");
+                        } else {
+                            context.setModeForSelected("ボーン編集");
+                        }
+                    } else {
+                        context.setModeForSelected("オブジェクト");
+                    }
+                }
+            } else if (context.activeObject.type == "ベジェモディファイア") {
+                if (inputManager.consumeKeys(["Tab"])) {
+                    if (context.currentMode == "オブジェクト") {
+                        if (inputManager.consumeKeys(["a"])) {
+                            context.setModeForSelected("ベジェシェイプキー編集");
+                        } else if (inputManager.consumeKeys(["w"])) {
+                            context.setModeForSelected("ベジェウェイト編集");
+                        } else {
+                            context.setModeForSelected("ベジェ編集");
+                        }
+                    } else {
+                        context.setModeForSelected("オブジェクト");
+                    }
+                }
+            }
+        }
+    }
+
     async mousedown(/** @type {InputManager} */ inputManager) {
         const local = this.convertCoordinate.screenPosFromGPUPos(MathVec2.flipY(calculateLocalMousePosition(this.canvas, inputManager.position), this.canvas.offsetHeight)); // canvasないのlocal座標へ
         this.inputs.click = true;
         this.inputs.clickPosition = local;
         this.inputs.position = local;
 
-        let consumed = await this.toolPanelOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
+        let consumed = this.modalOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
         if (consumed) return ;
 
         const context = app.context;
@@ -444,42 +516,38 @@ export class Area_Viewer {
             if (inputManager.keysDown["2"]) {
                 app.operator.appendCommand(new SelectOnlyEdgeCommand(this.getEdgesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             } else {
-                app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+                app.operator.appendCommand(new SelectVerticesCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             }
             app.operator.execute();
         } else if (context.currentMode == "ボーン編集") {
             // 頂点選択
             if (isEmpty(this.getVerticesRayCast(this.inputs.position))) {
-                app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+                app.operator.appendCommand(new SelectBonesCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             } else {
-                app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+                app.operator.appendCommand(new SelectVerticesCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             }
             app.operator.execute();
         } else if (context.currentMode == "ベジェ編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectVerticesCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "メッシュシェイプキー編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectVerticesCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "ベジェシェイプキー編集") {
-            app.operator.appendCommand(new SelectOnlyVertexCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectVerticesCommand(this.getVerticesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "ボーンアニメーション編集") {
-            app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
+            app.operator.appendCommand(new SelectBonesCommand(this.getBonesRayCast(this.inputs.position), !inputManager.keysDown["Shift"]));
             app.operator.execute();
         } else if (context.currentMode == "メッシュウェイト編集") {
             if (inputManager.consumeKeys(["Shift"])) {
-                app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), false));
+                app.operator.appendCommand(new SelectBonesCommand(this.getBonesRayCast(this.inputs.position), false));
                 app.operator.execute();
-            } else {
-                this.toolPanelOperator.setPanel(WeightPaintModal, this.inputs);
             }
         } else if (context.currentMode == "ベジェウェイト編集") {
             if (inputManager.consumeKeys(["Shift"])) {
-                app.operator.appendCommand(new SelectOnlyBoneCommand(this.getBonesRayCast(this.inputs.position), false));
+                app.operator.appendCommand(new SelectBonesCommand(this.getBonesRayCast(this.inputs.position), false));
                 app.operator.execute();
-            } else {
-                this.toolPanelOperator.setPanel(WeightPaintModal, this.inputs);
             }
         }
     }
@@ -489,11 +557,11 @@ export class Area_Viewer {
         MathVec2.sub(this.inputs.movement, local, this.inputs.position);
         this.inputs.position = local;
 
-        let consumed = await this.toolPanelOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
+        let consumed = this.modalOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
         if (consumed) return ;
     }
     async mouseup(inputManager) {
-        let consumed = await this.toolPanelOperator.mouseup(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
+        let consumed = this.modalOperator.mouseup(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
         if (consumed) return ;
     }
 

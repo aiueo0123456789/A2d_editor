@@ -1,7 +1,7 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/inputManager/inputManager.js";
 import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
-import { ToolPanelOperator } from "../../../../operators/toolPanelOperator.js";
+import { AdjustPanelOperator } from "../../../../operators/adjustPanelOperator.js";
 import { createID } from "../../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
@@ -135,7 +135,7 @@ export class Area_Graph {
         this.jTag = area.jTag;
         this.jTag.create(area.main, this.struct, {padding: false});
 
-        this.toolPanelOperator = new ToolPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
+        this.toolPanelOperator = new AdjustPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
 
         /** @type {OutlinerTag} */
         this.overview = this.jTag.getDOMFromID("overview");

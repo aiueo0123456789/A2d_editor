@@ -16,7 +16,7 @@ function clamp(min,max,value) {
 const resizerWidth = 3;
 
 export class AutoGrid {
-    constructor(id, t, axis, initWidthOrHeight) {
+    constructor(id, t, axis, template) {
         this.id = id;
         this.t = t;
         this.container = document.createElement("div");
@@ -44,10 +44,10 @@ export class AutoGrid {
 
             if (axis === "c") {
                 resizerDiv.style.cursor = "col-resize";
-                if (!initWidthOrHeight || initWidthOrHeight == "1fr") {
+                if (!template || template == "1fr") {
                     this.container.style.gridTemplateColumns = `1fr ${resizerWidth}px 1fr`;
                 } else {
-                    this.container.style.gridTemplateColumns = `${initWidthOrHeight}% ${resizerWidth}px 1fr`;
+                    this.container.style.gridTemplateColumns = `${template} ${resizerWidth}px 1fr`;
                 }
                 resizerDiv.addEventListener("mousedown", (e) => {
                     e.stopPropagation();
@@ -75,10 +75,10 @@ export class AutoGrid {
                 });
             } else {
                 resizerDiv.style.cursor = "row-resize";
-                if (!initWidthOrHeight || initWidthOrHeight == "1fr") {
+                if (!template || template == "1fr") {
                     this.container.style.gridTemplateRows = `1fr ${resizerWidth}px 1fr`;
                 } else {
-                    this.container.style.gridTemplateRows = `${initWidthOrHeight}% ${resizerWidth}px 1fr`;
+                    this.container.style.gridTemplateRows = `${template} ${resizerWidth}px 1fr`;
                 }
                 resizerDiv.addEventListener("mousedown", (e) => {
                     e.stopPropagation();
@@ -116,6 +116,6 @@ export class AutoGrid {
     }
 }
 
-export function createGrid(t, axis, ratio = "1fr") {
-    return new AutoGrid(createID(), t, axis, ratio);
+export function createGrid(t, axis, template = "1fr") {
+    return new AutoGrid(createID(), t, axis, template);
 }

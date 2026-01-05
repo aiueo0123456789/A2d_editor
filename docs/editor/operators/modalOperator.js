@@ -1,0 +1,61 @@
+import { InputManager } from "../app/inputManager/inputManager.js";
+import { isFunction } from "../utils/utility.js";
+
+/**
+ * modalの戻り値で終了などを管理する
+ * RUNNING: 継続
+ * FINISHED: 完了
+ * CANCELLED: 破棄
+ */
+export class ModalOperator {
+    constructor() {
+        this.nowModal = null;
+    }
+
+    finish() {
+        this.nowModal = null;
+    }
+
+    util(modalResult) {
+        if (modalResult == "RUNNING") ;
+        else if (modalResult == "FINISHED") this.finish();
+        else if (modalResult == "CANCELLED") {
+            this.finish();
+            console.warn("モーダルが破棄されました")
+        }
+    }
+
+    start(modalInstance) {
+        this.nowModal = new modalInstance();
+    }
+
+    keyInput(/** @type {InputManager} */inputManager) {
+        if (!this.nowModal) return false;
+        if (isFunction(this.nowModal.keyInput)) this.util(this.nowModal.keyInput(inputManager));
+        return true;
+    }
+
+    mousemove(/** @type {InputManager} */inputManager) {
+        if (!this.nowModal) return false;
+        if (isFunction(this.nowModal.mousemove)) this.util(this.nowModal.mousemove(inputManager));
+        return true;
+    }
+
+    mousedown(/** @type {InputManager} */inputManager) {
+        if (!this.nowModal) return false;
+        if (isFunction(this.nowModal.mousedown)) this.util(this.nowModal.mousedown(inputManager));
+        return true;
+    }
+
+    mouseup(/** @type {InputManager} */inputManager) {
+        if (!this.nowModal) return false;
+        if (isFunction(this.nowModal.mouseup)) this.util(this.nowModal.mouseup(inputManager));
+        return true;
+    }
+
+    wheel(/** @type {InputManager} */inputManager) {
+        if (!this.nowModal) return false;
+        if (isFunction(this.nowModal.wheel)) this.util(this.nowModal.wheel(inputManager));
+        return true;
+    }
+}

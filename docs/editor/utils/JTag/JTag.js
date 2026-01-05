@@ -164,7 +164,7 @@ const tagCreater = {
         return element;
     },
     "grid": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        let element = createGrid(t, child.axis);
+        let element = createGrid(t, child.axis, child.template ? child.template : "1fr");
         jTag.createFromStructures(element.child1, null, child.child1, source, flag);
         jTag.createFromStructures(element.child2, null, child.child2, source, flag);
         return element;
@@ -572,6 +572,13 @@ export class JTag {
                             const span = createTag(label, "span");
                             span.textContent = structure.labelIn;
                             label.append(setTarget);
+                        }
+                        if (structure.contextmenu) {
+                            setTarget.addEventListener("contextmenu", (e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                app.contextmenu.showContextmenu([e.clientX,e.clientY], isFunction(structure.contextmenu) ? structure.contextmenu() : structure.contextmenu);
+                            })
                         }
                     }
                 }

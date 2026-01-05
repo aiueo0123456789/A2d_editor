@@ -8,13 +8,10 @@ export class ContextmenuOperator {
         this.app = app;
         this.creator = new JTag();
         /** @type {HTMLElement} */
-        this.dom = app.ui.jTag.getDOMFromID("contextmenu");
+        this.dom = this.app.ui.jTag.getDOMFromID("contextmenu");
     }
 
-    showContextmenu(position) {
-        const area = this.app.activeArea;
-        const mode = this.app.appConfig.areasConfig[area.type].mode;
-        const menuItems = this.app.appConfig.getContextmenuItems(area.type, mode);
+    showContextmenu(position, structure) {
         this.dom.replaceChildren();
         const createItemTag = (object, parent, depth) => {
             /** @type {HTMLElement} */
@@ -28,7 +25,7 @@ export class ContextmenuOperator {
             children.className = "submenu";
             return children;
         }
-        looper(menuItems, "children", createItemTag, this.dom);
+        looper(structure, "children", createItemTag, this.dom);
         this.dom.style.left = `${position[0]}px`;
         this.dom.style.top = `${position[1]}px`;
         this.dom.classList.remove("hidden");
@@ -40,13 +37,6 @@ export class ContextmenuOperator {
                 document.removeEventListener("click", hiddenFn); // ドキュメントからイベントリスナーを削除
             }
         }
-
         document.addEventListener('click', hiddenFn);
-    }
-
-    handlemenuSelection(selectedItem) {
-        if (selectedItem && selectedItem.action) {
-            this.app.operators.execute(selectedItem.action);
-        }
     }
 }

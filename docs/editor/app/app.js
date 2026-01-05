@@ -27,6 +27,7 @@ import { Area_BlendShape } from "../ui/area/areas/BlendShapes/area_BlendShape.js
 import { Area_BlendShapeSpaceData } from "../ui/area/areas/BlendShapes/area_BlendShapeSpaceData.js";
 import { BezierModifier } from "../core/entity/bezierModifier.js";
 import { GraphicMesh } from "../core/entity/graphicMesh.js";
+import { Area } from "../ui/area/Area.js";
 
 const allLanguageData = await loadFile("./config/language/language.json");
 const calculateMeshParentWeightByBone = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu")], await loadFile("./editor/shader/compute/objectUtil/setWeight/mesh/byBone.wgsl"));
@@ -212,83 +213,6 @@ class AppConfig {
         for (const keyName in useClassFromAreaType) {
             this.areasConfig[keyName] = new useClassFromAreaType[keyName]["areaConfig"]();
         }
-
-        this.contextmenusItems = {}
-    }
-
-    setContextmenuItems() {
-        this.contextmenusItems = {
-            "Viewer": {
-                "オブジェクト": [
-                    {label: "オブジェクトを追加", children: [
-                        {label: "グラフィックメッシュ", children: [
-                            {label: "normal", eventFn: () => {
-                                const command = new CreateObjectCommand(this.app.options.getPrimitiveData("グラフィックメッシュ", "normal"));
-                                this.app.operator.appendCommand(command);
-                                this.app.operator.execute();
-                            }},
-                            {label: "body", eventFn: () => {
-                                const command = new CreateObjectCommand(this.app.options.getPrimitiveData("グラフィックメッシュ", "body"));
-                                this.app.operator.appendCommand(command);
-                                this.app.operator.execute();
-                            }},
-                        ]},
-                        {label: "ベジェモディファイア", children: [
-                            {label: "normal", eventFn: () => {
-                                const command = new CreateObjectCommand(this.app.options.getPrimitiveData("ベジェモディファイア", "normal"));
-                                this.app.operator.appendCommand(command);
-                                this.app.operator.execute();
-                            }},
-                            {label: "body", eventFn: () => {
-                                const command = new CreateObjectCommand(this.app.options.getPrimitiveData("ベジェモディファイア", "body"));
-                                this.app.operator.appendCommand(command);
-                                this.app.operator.execute();
-                            }},
-                        ]},
-                        {label: "アーマチュア", children: [
-                            {label: "normal", eventFn: () => {
-                                this.app.operator.appendCommand(new CreateObjectCommand(this.app.options.getPrimitiveData("アーマチュア", "normal")));
-                                this.app.operator.execute();
-                            }},
-                            {label: "body", eventFn: () => {
-                                const command = new CreateObjectCommand(this.app.options.getPrimitiveData("アーマチュア", "body"));
-                                this.app.operator.appendCommand(command);
-                                this.app.operator.execute();
-                            }},
-                        ]},
-                    ]},
-                    {label: "メッシュの生成", eventFn: async () => {
-                        this.app.activeArea.uiModel.modalOperator.setModal(CreateMeshTool, this.app.activeArea.uiModel.inputs);
-                    }},
-                    {label: "削除", children: [
-                        {label: "選択物", eventFn: () => {
-                            const command = new DeleteObjectCommand(this.app.context.selectedObjects);
-                            this.app.operator.appendCommand(command);
-                            this.app.operator.execute();
-                        }},
-                    ]},
-                    {label: "複製", eventFn: async () => {
-                        this.app.operator.appendCommand(new CopyObjectCommand(this.app.context.activeObject));
-                        this.app.operator.execute();
-                    }}
-                ],
-                // "メッシュ編集": [
-                //     {label: "test"},
-                // ],
-            },
-            "Outliner": {
-                "オブジェクト": [
-                    {label: "オブジェクトを追加", children: [
-                        {label: "グラフィックメッシュ"},
-                    ]},
-                    {label: "test"},
-                ]
-            }
-        }
-    }
-
-    getContextmenuItems(type, mode) {
-        return this.contextmenusItems[type][mode];
     }
 }
 
@@ -334,8 +258,8 @@ export class Application { // 全てをまとめる
         this.ui = new UI(this);
         this.scene = new Scene(this);
         this.context = new Context(this);
-        this.appConfig.setContextmenuItems();
 
+        /** @type {Area} */
         this.activeArea = null;
         this.workSpaces = new WorkSpaces(this);
         this.fileIO = new FaileIOManager(this);

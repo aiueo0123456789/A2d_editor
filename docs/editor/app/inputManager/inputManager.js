@@ -108,10 +108,10 @@ export class InputManager {
         document.addEventListener("keyup",(eveet) => {
             this.keysDown[eveet.key] = false;
         });
-        document.addEventListener("contextmenu", (eveet) => {
-            app.contextmenu.showContextmenu([eveet.clientX,eveet.clientY]);
-            eveet.stopPropagation();
-        })
+        // document.addEventListener("contextmenu", (eveet) => {
+        //     app.contextmenu.showContextmenu([eveet.clientX,eveet.clientY]);
+        //     eveet.stopPropagation();
+        // })
     }
 
     consumeKeys(keys) {

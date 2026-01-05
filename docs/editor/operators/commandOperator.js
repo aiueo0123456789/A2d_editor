@@ -1,3 +1,4 @@
+import { Application } from "../app/app.js";
 import { createID } from "../utils/idGenerator.js";
 import { useEffect } from "../utils/ui/util.js";
 import { isFunction } from "../utils/utility.js";
@@ -45,7 +46,7 @@ class CommandStack {
 
 // コマンド関係の管理
 export class Operator {
-    constructor(app) {
+    constructor(/** @type {Application} */ app) {
         this.app = app;
         this.stack = new CommandStack(this);
         this.commands = [];
@@ -78,10 +79,13 @@ export class Operator {
             if (result.error) {
                 this.errorLog.push(result.error);
                 console.error("コマンド実行時のエラー", result, command)
+                this.app.ui.adjustPanelOperator.hide();
                 noError = false;
             } else if (result.consumed) {
+                this.app.ui.adjustPanelOperator.show(command);
                 commandsToStack.push(command);
             } else {
+                this.app.ui.adjustPanelOperator.hide();
                 console.warn("差分が検出できなかった可能性があります", result, command)
                 noError = false;
             }

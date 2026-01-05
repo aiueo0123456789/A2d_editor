@@ -2,13 +2,13 @@ import { createTag, setClass } from "../utils/ui/util.js";
 import { JTag } from "../utils/JTag/JTag.js";
 import { createID } from "../utils/idGenerator.js";
 
-export class ToolsBarOperator {
-    constructor(/** @type {HTMLElement} */dom, shelfes) {
+export class SideBarOperator {
+    constructor(/** @type {HTMLElement} */t, shelfes) {
         this.shelfes = shelfes;
         this.id = createID();
         this.jTag = new JTag();
         /** @type {HTMLElement} */
-        this.dom = createTag(dom, "div", {style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: grid; gridTemplateColumns: 1fr auto;"});
+        this.dom = createTag(t, "div", {style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: grid; gridTemplateColumns: 1fr auto;"});
         /** @type {HTMLElement} */
         this.domForMain = createTag(this.dom, "div", {style: "width: 100%; height: 100%; pointerEvents: none; overflow-y: auto;"});
         /** @type {HTMLElement} */

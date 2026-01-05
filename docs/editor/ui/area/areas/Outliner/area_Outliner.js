@@ -8,7 +8,8 @@ export class Area_Outliner {
         this.struct = {
             inputObject: {"context": app.context, "scene": app.scene, "areaConfig": app.appConfig.areasConfig["Outliner"]},
             DOM: [
-                {tagType: "outliner", name: "outliner", options: {
+                {
+                    tagType: "outliner", name: "outliner", options: {
                     modes: ["scene", "layer"],
                     mode: "scene",
                     arrange: true,
@@ -16,6 +17,8 @@ export class Area_Outliner {
                         event.stopPropagation();
                         if (app.context.currentMode == "オブジェクト") {
                             if (object instanceof Layer) {
+                                app.context.setSelectedObject(null, false);
+                                app.context.setActiveObject(object.children[0]);
                                 for (const child of object.children) {
                                     app.context.setSelectedObject(child, true);
                                 }
@@ -68,7 +71,14 @@ export class Area_Outliner {
                                 ]},
                             ]
                         }
-                ]},
+                    ],
+                    contextmenu: [
+                        {label: "テスト", children: [
+                            {label: "テスト-テスト2", children: []},
+                        ]},
+                        {label: "テスト2", children: []},
+                    ],
+                },
             ],
             utility: {
                 "testTest": {}
