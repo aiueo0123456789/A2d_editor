@@ -44,7 +44,7 @@ class KeyframeTransformCommand {
                 }
             })
         }
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

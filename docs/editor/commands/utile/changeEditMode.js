@@ -30,7 +30,7 @@ export class ChangeEditModeCommand {
             }
         })
         useEffect.update({o: "changeEditMode"});
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

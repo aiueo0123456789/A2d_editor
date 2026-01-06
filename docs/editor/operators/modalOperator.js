@@ -29,33 +29,33 @@ export class ModalOperator {
         this.nowModal = new modalInstance();
     }
 
-    keyInput(/** @type {InputManager} */inputManager) {
+    async keyInput(/** @type {InputManager} */inputManager) {
         if (!this.nowModal) return false;
-        if (isFunction(this.nowModal.keyInput)) this.util(this.nowModal.keyInput(inputManager));
+        if (isFunction(this.nowModal.keyInput)) this.util(await this.nowModal.keyInput(inputManager));
         return true;
     }
 
-    mousemove(/** @type {InputManager} */inputManager) {
+    async mousemove(/** @type {InputManager} */inputManager) {
         if (!this.nowModal) return false;
-        if (isFunction(this.nowModal.mousemove)) this.util(this.nowModal.mousemove(inputManager));
+        if (isFunction(this.nowModal.mousemove)) this.util(await this.nowModal.mousemove(inputManager));
         return true;
     }
 
-    mousedown(/** @type {InputManager} */inputManager) {
+    async mousedown(/** @type {InputManager} */inputManager) {
         if (!this.nowModal) return false;
-        if (isFunction(this.nowModal.mousedown)) this.util(this.nowModal.mousedown(inputManager));
+        if (isFunction(this.nowModal.mousedown)) this.util(await this.nowModal.mousedown(inputManager));
         return true;
     }
 
-    mouseup(/** @type {InputManager} */inputManager) {
+    async mouseup(/** @type {InputManager} */inputManager) {
         if (!this.nowModal) return false;
-        if (isFunction(this.nowModal.mouseup)) this.util(this.nowModal.mouseup(inputManager));
+        if (isFunction(this.nowModal.mouseup)) this.util(await this.nowModal.mouseup(inputManager));
         return true;
     }
 
-    wheel(/** @type {InputManager} */inputManager) {
+    async wheel(/** @type {InputManager} */inputManager) {
         if (!this.nowModal) return false;
-        if (isFunction(this.nowModal.wheel)) this.util(this.nowModal.wheel(inputManager));
+        if (isFunction(this.nowModal.wheel)) this.util(await this.nowModal.wheel(inputManager));
         return true;
     }
 }

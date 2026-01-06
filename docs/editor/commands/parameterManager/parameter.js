@@ -9,7 +9,7 @@ export class AppendParameterInParameterManager {
 
     execute() {
         pushToArray(this.parameterManager.parameters, this.newParameter);
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -26,7 +26,7 @@ export class DeleteParameterInParameterManager {
 
     execute() {
         this.deleteIndex = indexOfSplice(this.parameterManager.parameters, this.deleteParameter);
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

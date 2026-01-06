@@ -36,7 +36,7 @@ import { useEffect } from "../../utils/ui/util.js";
 //             }
 //         })
 //         managerForDOMs.update({o: "ボーン選択"});
-//         return {consumed: true};
+//         return "FINISHED";
 //     }
 
 //     undo() {
@@ -77,7 +77,7 @@ export class SelectBonesCommand {
             }
         })
         useEffect.update({o: "ボーン選択"});
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

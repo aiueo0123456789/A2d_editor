@@ -38,7 +38,7 @@ export class BoneExtrudeMoveCommand {
             this.createDatasInEditObject[editObject.id].forEach(data => MathVec2.add(data.bone.tailVertex.co, data.baseCo, this.value));
             editObject.updateGPUData();
         });
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     redo() {
@@ -82,7 +82,7 @@ export class BoneDeleteCommand {
             this.deleteDatasInEditObject[editObject.id].forEach(data => indexOfSplice(editObject.bones, data.bone));
             editObject.updateGPUData();
         });
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

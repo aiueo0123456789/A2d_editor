@@ -11,6 +11,8 @@ import { KeyframeResize } from "../../../tools/KeyframeResize.js";
 import { KeyframeTranslateInTimeline } from "../../../tools/KeyframeTranslate.js";
 import { TimelineSpaceData } from "../Graph/area_TimelineSpaceData.js";
 import { createID } from "../../../../utils/idGenerator.js";
+import { ModalOperator } from "../../../../operators/modalOperator.js";
+import { TranslateModal } from "../../../modals/translate.js";
 
 const targetValueToColor = {
     "x": "rgb(0, 0, 255)",
@@ -89,7 +91,7 @@ export class Area_Timeline {
                                 activeSource: {object: "context", parameter: "activeObject"}, selectSource: {object: "context/selectedObjects"}
                             },
                             withObject: "spaceData/outlineData",
-                            updateEventTarget: ["頂点選択","ボーン選択","オブジェクト選択"],
+                            updateEventTarget: ["頂点選択","ボーン選択","オブジェクト選択","キーフレームブロックマネージャー追加"],
                             loopTarget: {
                                 parameter: "type",
                                 loopTargets: {
@@ -130,9 +132,10 @@ export class Area_Timeline {
         };
 
         this.jTag = area.jTag;
-        this.jTag.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct);
 
-        this.toolPanelOperator = new AdjustPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInTimeline, "s": KeyframeResize, "x": KeyDelete});
+        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel"); // これがadjustPanelが作られるタグ
+        this.modalOperator = new ModalOperator();
 
         /** @type {OutlinerTag} */
         this.overview = this.jTag.getDOMFromID("overview");
@@ -142,7 +145,7 @@ export class Area_Timeline {
 
         this.canvasSize = [this.canvas.width,this.canvas.height];
 
-        this.inputs = {click: [0,0], position: [0,0], movement: [0,0], clickPosition: [0,0], lastPosition: [0,0]};
+        this.inputs = {click: [0,0], position: [0,0], movement: [0,0], clickPosition: [0,0], lastPosition: [0,0], keysDown: {}, keysPush: {}};
 
         this.pixelDensity = 5;
 
@@ -224,7 +227,7 @@ export class Area_Timeline {
         this.spaceData.outlineKefyframeData.forEach((keyframeBlock, index) => {
             const displayHeight = this.getKeyFrameBlockDisplayTop(keyframeBlock.pathID);
             // line([0, displayHeight], [o.canvasSize[0], displayHeight], 15 * o.pixelDensity - 1 * o.pixelDensity, targetValueToColor[keyframeBlock.parameter]);
-            // line([0, displayHeight], [this.canvasSize[0], displayHeight], 15 * this.pixelDensity - 1 * this.pixelDensity, "rgb(65, 65, 65)");
+            line([0, displayHeight], [this.canvasSize[0], displayHeight], 15 * this.pixelDensity - 1 * this.pixelDensity, "rgb(65, 65, 65)");
         })
 
         // gridRender(gap, [0,0], 4, "rgb(72, 72, 72)");
@@ -305,17 +308,25 @@ export class Area_Timeline {
         return this.clipToCanvas(this.worldToClip(p));
     }
 
+    getShortcuts() {
+        if (this.inputs.keysDown["g"]) {
+            return TranslateModal;
+        }
+    }
+
     async keyInput(/** @type {InputManager} */inputManager) {
-        let consumed = await this.toolPanelOperator.keyInput(inputManager); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.keyInput(inputManager)) return ;
+        if (this.getShortcuts()) {
+            this.modalOperator.start(this.getShortcuts());
+            return ;
+        }
     }
 
     async mousedown(inputManager) {
         const mouseLocalPoint = calculateLocalMousePosition(this.canvas, inputManager.position, this.pixelDensity);
         const world = this.canvasToWorld(mouseLocalPoint);
         this.inputs.position = world;
-        let consumed = await this.toolPanelOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.mousedown(this.inputs)) return ;
         if (true) { // 最短のキーフレーム
             let selectKeyframes = [];
             let minDist = 15 * 5;
@@ -329,10 +340,13 @@ export class Area_Timeline {
                     }
                 }
             }
-            if (app.operator.appendCommand(new SelectKeyframesCommand(selectKeyframes, !inputManager.keysDown["Shift"]))) {
-                if (app.operator.execute()) return ;
+            if (selectKeyframes.length) {
+                if (app.operator.appendCommand(new SelectKeyframesCommand(selectKeyframes, !inputManager.keysDown["Shift"]))) {
+                    if (app.operator.execute()) return ; // うまくいったら止める
+                }
             }
         }
+        console.log("kそあこdかおwd")
         if (Math.abs(world[0] - app.scene.frame_current) < 1) { // フレームバーを選択したか
             this.frameBarDrag = true;
         }
@@ -350,17 +364,18 @@ export class Area_Timeline {
             return ;
         }
 
-        let consumed = await this.toolPanelOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.mousemove(this.inputs)) return ;
     }
-    mouseup(inputManager) {
+    async mouseup(inputManager) {
+        if (await this.modalOperator.mouseup(this.inputs)) return ;
         if (this.frameBarDrag) {
             this.frameBarDrag = false;
             document.body.style.cursor = "default";
         }
     }
 
-    wheel(inputManager) {
+    async wheel(inputManager) {
+        if (await this.modalOperator.wheel(this.inputs)) return ;
         if (app.input.keysDown["Alt"]) {
             this.zoom[0] -= inputManager.wheelDelta[0] / 25;
             this.zoom[0] = Math.max(0.1,this.zoom[0]);

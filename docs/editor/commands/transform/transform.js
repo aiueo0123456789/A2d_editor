@@ -194,7 +194,7 @@ class TransformCommand {
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             }
         }
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

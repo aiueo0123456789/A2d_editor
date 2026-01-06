@@ -14,7 +14,6 @@
     width: 100%;
     height: fit-content;
     overflow-x: auto;
-    /* background-color: var(--subColor); */
 }
 
 .ui_container_0 {
@@ -27,7 +26,6 @@
     display: flex;
     flex-flow: column;
     border-radius: 0px;
-    /* background-color: var(--backColor); */
 }
 .ui_container_0 > *{
     flex-shrink: 0;
@@ -170,6 +168,7 @@ canvas {
     overflow-y: hidden;
     gap: 5px;
     transition: height 0.3s ease;
+    background-color: var(--subColor);
 }
 
 .shelfe {
@@ -184,7 +183,6 @@ canvas {
     gap: 3px;
 }
 .shelfe .shelfeTitle {
-    /* background-color: #686868; */
     padding: 3px;
 }
 

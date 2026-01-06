@@ -28,7 +28,7 @@ export class KeyframeInsertInSelectedElementCommand {
                 keyframeBlock.addKeyframe(this.createdKeyframes[boneIndex][keyframeIndex]);
             });
         });
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -50,7 +50,7 @@ export class KeyframeInsertInKeyframeCommand {
 
     execute() {
         this.keyframeBlock.addKeyframe(this.newKey);
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

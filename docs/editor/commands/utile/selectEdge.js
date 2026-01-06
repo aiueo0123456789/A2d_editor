@@ -32,7 +32,7 @@ export class SelectOnlyEdgeCommand {
             }
         })
         useEffect.update({o: "頂点選択"});
-        return {consumed: hasDiff};
+        return {state: hasDiff ? "FINISHED" : "CANCELLED"};
     }
 
     undo() {

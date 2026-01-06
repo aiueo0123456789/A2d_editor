@@ -45,6 +45,10 @@ class CommandStack {
 }
 
 // コマンド関係の管理
+/**
+ * FINISHED: 完了
+ * CANCELLED: 破棄
+ */
 export class Operator {
     constructor(/** @type {Application} */ app) {
         this.app = app;
@@ -76,15 +80,16 @@ export class Operator {
         while (this.commands.length != 0) {
             const command = this.commands.shift();
             const result = await command.execute();
-            if (result.error) {
-                this.errorLog.push(result.error);
+            const resultState = result.state;
+            if (resultState == "ERROR") {
+                this.errorLog.push(result.message);
                 console.error("コマンド実行時のエラー", result, command)
                 this.app.ui.adjustPanelOperator.hide();
                 noError = false;
-            } else if (result.consumed) {
+            } else if (resultState == "FINISHED") {
                 this.app.ui.adjustPanelOperator.show(command);
                 commandsToStack.push(command);
-            } else {
+            } else if (resultState == "CANCELLED") {
                 this.app.ui.adjustPanelOperator.hide();
                 console.warn("差分が検出できなかった可能性があります", result, command)
                 noError = false;

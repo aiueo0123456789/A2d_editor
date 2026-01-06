@@ -13,7 +13,7 @@ export class DeleteShapeKeyInBlendShapeCommand {
 
     execute() {
         this.insertIndex = indexOfSplice(this.blendShape.shapeKeys, this.shapeKey);
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -30,7 +30,7 @@ export class AppendShapeKeyInBlendShapeCommand {
     execute() {
         pushToArray(this.blendShape.shapeKeys, this.shapeKey);
         this.blendShape.points.forEach(point => point.weights.push(0));
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -51,7 +51,7 @@ export class AppendBlendShapePointCommand {
     execute() {
         pushToArray(this.blendShape.points, this.newPoint);
         this.blendShape.updateTriangle();
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -73,7 +73,7 @@ export class CreateShapeKeyCommand {
 
     execute() {
         pushToArray(this.editObject.shapeKeys, this.newShapeKey);
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -92,7 +92,7 @@ export class DeleteShapeKeyCommand {
     execute() {
         console.log(this)
         this.deleteData.sort((a,b) => b.index - a.index).forEach(data => indexRemoveToArray(this.editObject.shapeKeys, data.index));
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

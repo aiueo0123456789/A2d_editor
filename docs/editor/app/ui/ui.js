@@ -17,46 +17,45 @@ export class UI {
             {
                 inputObject: {"app": app},
                 DOM: [
-                    {tagType: "html", id: "contextmenu", class: "contextmenu hidden", tag: "ul"},
-                    {tagType: "html", id: "custom-menu-items", class: "custom-menu-items hidden", tag: "ul"},
-                    {tagType: "html", id: "custom-select-items", class: "custom-select-items hidden", tag: "ul"},
-                    {tagType: "html", id: "parameterManagerSelecter", class: "custom-select-items hidden", tag: "ul"},
-                    {tagType: "html", id: "loadingModalsContainer", class: "loadingModalsContainer hidden", tag: "ul"},
-                    {tagType: "div", id: "headMenubar", class: "menubar", children: [
-                        {tagType: "input", label: "projectName", value: "app/appConfig/projectName", type: "text"},
-                        {tagType: "menu", title: "file", struct: [
-                            {label: "clean", children: [], onClick: () => {
-                                app.scene.objects.clean();
-                            }},
-                            {label: "export", icon: "export", children: [], onClick: () => {
-                                app.fileIO.save();
-                            }},
-                            {label: "import", icon: "import", children: [
-                                {label: "zip", children: [], type: "file", onClick: (event) => {
-                                    app.fileIO.loadFile(event.target.files[0], "open-btn");
+                    {tagType: "html", type: "div", class: "all", children: [
+                        {tagType: "html", id: "contextmenu", class: "contextmenu hidden", tag: "ul"},
+                        {tagType: "html", id: "custom-menu-items", class: "custom-menu-items hidden", tag: "ul"},
+                        {tagType: "html", id: "custom-select-items", class: "custom-select-items hidden", tag: "ul"},
+                        {tagType: "html", id: "parameterManagerSelecter", class: "custom-select-items hidden", tag: "ul"},
+                        {tagType: "html", id: "loadingModalsContainer", class: "loadingModalsContainer hidden", tag: "ul"},
+                        {tagType: "div", id: "headMenubar", class: "menubar", children: [
+                            {tagType: "input", label: "projectName", value: "app/appConfig/projectName", type: "text"},
+                            {tagType: "menu", title: "file", struct: [
+                                {label: "clean", children: [], onClick: () => {
+                                    app.scene.objects.clean();
                                 }},
-                                {label: "ww", children: [], type: "file", webkitdirectory: true, onClick: (event) => {
-                                    app.fileIO.loadFile(event.target.files, "psd");
+                                {label: "export", icon: "export", children: [], onClick: () => {
+                                    app.fileIO.save();
+                                }},
+                                {label: "import", icon: "import", children: [
+                                    {label: "zip", children: [], type: "file", onClick: (event) => {
+                                        app.fileIO.loadFile(event.target.files[0], "open-btn");
+                                    }},
+                                    {label: "ww", children: [], type: "file", webkitdirectory: true, onClick: (event) => {
+                                        app.fileIO.loadFile(event.target.files, "psd");
+                                    }},
+                                ]},
+                            ]},
+                            {tagType: "menu", title: "edit", struct: [
+                                {label: "setting", icon: "setting", children: [], onClick: () => {
                                 }},
                             ]},
+                            {tagType: "html", id: "workSpaces", style: "width: 100%; display: flex; gap: 10px; alignItems: center; overflowX: auto;", tag: "div"},
                         ]},
-                        {tagType: "menu", title: "edit", struct: [
-                            {label: "setting", icon: "setting", children: [], onClick: () => {
-                            }},
-                        ]},
-                        {tagType: "html", id: "workSpaces", style: "width: 100%; display: flex; gap: 10px; alignItems: center; overflowX: auto;", tag: "div"},
-                    ]},
-                    {tagType: "html", id: "main", class: "main", tag: "div"},
-                    {tagType: "div", id: "headMenubar", class: "menubar", children: [
-                        // {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/jsHeapByteSizeLimit"},
-                        {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/totalJSHeapByteSize"},
-                        {tagType: "input", label: "DOMs", value: "app/appPerformance/domCount", type: "number"},
+                        {tagType: "html", id: "main", class: "main", tag: "div"},
+                        {tagType: "div", id: "headMenubar", class: "menubar", children: [
+                            // {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/jsHeapByteSizeLimit"},
+                            {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/totalJSHeapByteSize"},
+                            {tagType: "input", label: "DOMs", value: "app/appPerformance/domCount", type: "number"},
+                        ]}
                     ]}
                 ]
             },
-            {
-                class: "all",
-            }
         );
         this.header = this.jTag.getDOMFromID("headMenubar");
 

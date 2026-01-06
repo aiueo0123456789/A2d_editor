@@ -43,6 +43,6 @@ export class Area_NodeEditor {
         };
 
         this.jTag = area.jTag;
-        this.jTag.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct);
     }
 }

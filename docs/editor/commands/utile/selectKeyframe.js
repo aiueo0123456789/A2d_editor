@@ -30,7 +30,8 @@ export class SelectKeyframesCommand {
                 selectData.keyframe.selectedRightHandle = true;
             }
         });
-        return {consumed: this.targetKeyframe.map(keyframe => [keyframe.selectedPoint, keyframe.selectedLeftHandle, keyframe.selectedRightHandle]).filter((bools, index) => bools[0] != this.originalSelectData[index][0] || bools[1] != this.originalSelectData[index][1] || bools[2] != this.originalSelectData[index][2]).length > 0};
+        const hasDiff = this.targetKeyframe.map(keyframe => [keyframe.selectedPoint, keyframe.selectedLeftHandle, keyframe.selectedRightHandle]).filter((bools, index) => bools[0] != this.originalSelectData[index][0] || bools[1] != this.originalSelectData[index][1] || bools[2] != this.originalSelectData[index][2]).length > 0;
+        return {state: hasDiff ? "FINISHED" : "CANCELLED"};
     }
 
     undo() {

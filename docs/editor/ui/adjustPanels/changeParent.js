@@ -6,10 +6,7 @@ export class AdjustPanel_ChangeParent {
     constructor(/** @type {ChangeParentCommand} */ command) {
         this.command = command;
         this.values = [
-            [...command.value],
-            command.useProportional,
-            command.proportionalType,
-            command.proportionalSize,
+            command.newParent
         ];
         this.uiModel = {
             inputObject: {"value": this.values},
@@ -22,7 +19,7 @@ export class AdjustPanel_ChangeParent {
 
         useEffect.set({o: this.values, i: "&all"}, () => {
             this.command.undo();
-            this.command.update();
+            this.command.update(this.values[0]);
             this.command.execute();
         });
     }

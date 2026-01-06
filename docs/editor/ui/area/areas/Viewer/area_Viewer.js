@@ -27,12 +27,13 @@ import { BBezierShapeKey } from '../../../../core/edit/objects/BBezierShapeKey.j
 import { BMeshShapeKey } from '../../../../core/edit/objects/BMeshShapeKey.js';
 import { BMesh } from '../../../../core/edit/objects/BMesh.js';
 import { SelectOnlyEdgeCommand } from '../../../../commands/utile/selectEdge.js';
-import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from '../../../../commands/object/object.js';
+import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand, JoinObjectCommand } from '../../../../commands/object/object.js';
 import { ModalOperator } from '../../../../operators/modalOperator.js';
 import { TranslateModal } from '../../../modals/translate.js';
 import { SideBarOperator } from '../../../../operators/sideBarOperator.js';
 import { RotateModal } from '../../../modals/rotate.js';
 import { ExtrudeMoveModal } from '../../../modals/extrudeMove.js';
+import { ChangeParentModal } from '../../../modals/changeParent.js';
 
 const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
 const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/mix.wgsl"), [], "2d", "s");
@@ -273,10 +274,10 @@ export class Area_Viewer {
             ]
         }
 
-        this.jTag.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct);
 
         this.sideBarOperator = new SideBarOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
-        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel");
+        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel"); // これがadjustPanelが作られるタグ
         this.modalOperator = new ModalOperator();
 
         this.canvas = this.jTag.getDOMFromID("renderingCanvas");
@@ -306,21 +307,6 @@ export class Area_Viewer {
         }
         useEffect.set({o: app.context, i: "currentMode"}, modeChangeEvent)
         modeChangeEvent();
-    }
-
-    getShortcuts() {
-        const context = app.context;
-        if (context.activeObject) {
-            if (context.currentMode == "メッシュ編集") {
-                if (this.inputs.keysDown["g"]) return TranslateModal;
-                if (this.inputs.keysDown["r"]) return RotateModal;
-            }
-            if (context.currentMode == "ボーン編集") {
-                if (this.inputs.keysDown["g"]) return TranslateModal;
-                if (this.inputs.keysDown["r"]) return RotateModal;
-                if (this.inputs.keysDown["e"]) return ExtrudeMoveModal;
-            }
-        }
     }
 
     async update() {
@@ -438,17 +424,49 @@ export class Area_Viewer {
         return result;
     }
 
+    getShortcuts() {
+        const context = app.context;
+        if (context.activeObject) {
+            if (context.currentMode == "オブジェクト") {
+                if (this.inputs.keysDown["p"]) return ChangeParentModal;
+            }
+            if (context.currentMode == "メッシュ編集") {
+                if (this.inputs.keysDown["g"]) return TranslateModal;
+                if (this.inputs.keysDown["r"]) return RotateModal;
+            }
+            if (context.currentMode == "ボーン編集") {
+                if (this.inputs.keysDown["g"]) return TranslateModal;
+                if (this.inputs.keysDown["r"]) return RotateModal;
+                if (this.inputs.keysDown["e"]) return ExtrudeMoveModal;
+            }
+            if (context.currentMode == "ベジェ編集") {
+                if (this.inputs.keysDown["g"]) return TranslateModal;
+                if (this.inputs.keysDown["r"]) return RotateModal;
+                if (this.inputs.keysDown["e"]) return ExtrudeMoveModal;
+            }
+            if (context.currentMode == "ベジェシェイプキー編集") {
+                if (this.inputs.keysDown["g"]) return TranslateModal;
+                if (this.inputs.keysDown["r"]) return RotateModal;
+            }
+        }
+    }
+
     async keyInput(/** @type {InputManager} */ inputManager) {
         this.inputs.keysDown = inputManager.keysDown;
         this.inputs.keysPush = inputManager.keysPush;
-        let consumed = this.modalOperator.keyInput(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.keyInput(this.inputs)) return ;
         if (this.getShortcuts()) {
             this.modalOperator.start(this.getShortcuts());
             return ;
         }
         const context = app.context;
         if (context.activeObject) {
+            if (context.currentMode == "オブジェクト") {
+                if (inputManager.consumeKeys(["j"])) {
+                    app.operator.appendCommand(new JoinObjectCommand(context.activeObject, context.selectedObjects.filter(object => object != context.activeObject)));
+                    app.operator.execute();
+                }
+            }
             if (context.activeObject.type == "グラフィックメッシュ") {
                 if (inputManager.consumeKeys(["Tab"])) {
                     if (context.currentMode == "オブジェクト") {
@@ -503,8 +521,7 @@ export class Area_Viewer {
         this.inputs.clickPosition = local;
         this.inputs.position = local;
 
-        let consumed = this.modalOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.mousedown(this.inputs)) return ;
 
         const context = app.context;
         if (context.currentMode == "オブジェクト") {
@@ -557,15 +574,14 @@ export class Area_Viewer {
         MathVec2.sub(this.inputs.movement, local, this.inputs.position);
         this.inputs.position = local;
 
-        let consumed = this.modalOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.mousemove(this.inputs)) return ;
     }
     async mouseup(inputManager) {
-        let consumed = this.modalOperator.mouseup(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.modalOperator.mouseup(this.inputs)) return ;
     }
 
-    wheel(inputManager) {
+    async wheel(inputManager) {
+        if (await this.modalOperator.wheel(this.inputs)) return ;
         if (app.input.keysDown["Alt"]) {
             this.camera.zoom += inputManager.wheelDelta[1] / 200;
             this.camera.zoom = Math.max(Math.min(this.camera.zoom,this.camera.zoomMax),this.camera.zoomMin);

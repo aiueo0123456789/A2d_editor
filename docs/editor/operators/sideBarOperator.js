@@ -39,7 +39,7 @@ export class SideBarOperator {
             if (!panel.jTag) {
                 panel.jTag = new JTag();
             }
-            panel.jTag.shelfeCreate(this.domForMain, panel.struct);
+            panel.jTag.create(this.domForMain, panel.struct);
         }
     }
 }

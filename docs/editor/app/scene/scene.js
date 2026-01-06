@@ -272,6 +272,7 @@ class Objects {
             object.runtimeData.update(object);
         }
         pushToArray(this.searchArrayFromType(object.type), object);
+        useEffect.update({o: "キーフレームブロックマネージャー追加"});
         return object;
     }
 }

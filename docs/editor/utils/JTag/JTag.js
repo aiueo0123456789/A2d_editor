@@ -595,34 +595,16 @@ export class JTag {
         return myChildrenTag;
     }
 
-    create(/** @type {HTMLElement} */target, struct, options = {heightCN: false, padding: true}) {
+    create(/** @type {HTMLElement} */target, struct) {
         this.remove();
         this.dom = target;
         this.globalSource = struct.inputObject; // グローバル参照
 
-        const t = createTag(target, "div");
+        // const t = createTag(target, "div");
 
-        if (options.off) {
-            t.style.height = "100%";
-            t.style.width = "100%";
-        } else if (options.class) {
-            t.classList.add(options.class);
-        } else if (options?.heightCN) {
-            t.classList.add("ui_container_1");
-        } else if (options?.padding) {
-            t.classList.add("ui_container_0");
-        } else {
-            t.style.height = "100%";
-            t.style.width = "100%";
-        }
-        this.createFromStructures(t, null,struct.DOM, {normal: struct.inputObject, special: {}});
-    }
-
-    shelfeCreate(/** @type {HTMLElement} */target, struct) {
-        this.remove();
-        this.dom = target;
-        this.globalSource = struct.inputObject; // グローバル参照
-        this.createFromStructures(target, null,struct.DOM, {normal: struct.inputObject, special: {}});
+        // t.style.height = "100%";
+        // t.style.width = "100%";
+        this.createFromStructures(this.dom, null,struct.DOM, {normal: struct.inputObject, special: {}});
     }
 
     getDOMFromID(id) {

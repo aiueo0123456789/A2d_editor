@@ -133,7 +133,7 @@ export class Area_Graph {
         };
 
         this.jTag = area.jTag;
-        this.jTag.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct);
 
         this.toolPanelOperator = new AdjustPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
 
@@ -326,8 +326,7 @@ export class Area_Graph {
     }
 
     async keyInput(/** @type {InputManager} */inputManager) {
-        let consumed = await this.toolPanelOperator.keyInput(inputManager); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.toolPanelOperator.keyInput(inputManager)) return ;
         if (inputManager.consumeKeys(["a"])) {
             for (const key of this.spaceData.getAllKeyframe) {
                 key.pointSelected = true;
@@ -339,8 +338,7 @@ export class Area_Graph {
         const mouseLocalPoint = calculateLocalMousePosition(this.canvas, inputManager.position, this.pixelDensity);
         const world = this.canvasToWorld(mouseLocalPoint);
         this.inputs.position = world;
-        let consumed = await this.toolPanelOperator.mousedown(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
-        if (consumed) return ;
+        if (await this.toolPanelOperator.mousedown(this.inputs)) return ;
         if (true) { // 最短のキーフレーム
             let selectKeyframes = [];
             let minDist = 15 * 5;
@@ -392,9 +390,8 @@ export class Area_Graph {
             return ;
         }
 
-        let consumed = await this.toolPanelOperator.mousemove(this.inputs); // モーダルオペレータがアクションをおこしたら処理を停止
         useEffect.update({o: "タイムライン-canvas", g: this.groupID});
-        if (consumed) return ;
+        if (await this.toolPanelOperator.mousemove(this.inputs)) return ;
     }
     mouseup(inputManager) {
         if (this.frameBarDrag) {

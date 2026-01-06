@@ -14,7 +14,7 @@ export class SetActiveObjectsCommand {
             this.object.selected = true;
         }
         useEffect.update({o: "アクティブオブジェクト"});
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -43,7 +43,7 @@ export class SelectObjectsCommand {
             this.targetObject.selected = true;
         }
         useEffect.update({o: "オブジェクト選択"});
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

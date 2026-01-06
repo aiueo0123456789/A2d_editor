@@ -100,7 +100,7 @@ export class WeightPaintCommand {
             }
         }
         this.editObject.updateGPUData();
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {

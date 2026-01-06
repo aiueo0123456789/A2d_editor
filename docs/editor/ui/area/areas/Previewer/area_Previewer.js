@@ -37,7 +37,7 @@ export class Area_Previewer {
             ]
         }
 
-        this.jTag.create(area.main, this.struct, {padding: false});
+        this.jTag.create(area.main, this.struct);
 
         this.box = this.jTag.getDOMFromID("canvasContainer").element;
         this.canvas = this.jTag.getDOMFromID("renderingCanvas");

@@ -27,7 +27,7 @@ export class ChangeParameterCommand {
         } else {
             changeParameter(this.object, this.parameter, this.value);
         }
-        return {consumed: this.originalValue !== this.value};
+        return {state: this.originalValue !== this.value ? "FINISHED" : "CANCELLED"};
     }
 
     undo() {

@@ -38,7 +38,7 @@ export class DeleteVerticesCommand {
             editObject.vertices = editObject.vertices.filter(vert => !this.deleteVertices[editObject.id].includes(vert));
             editObject.updateGPUData();
         }
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     redo() {
@@ -102,7 +102,7 @@ export class CreateMeshCommand {
             const meshData = cutSilhouetteOutTriangle(result.vertices.map(vertex => vertex.co), createMeshByCBT(result.vertices.map(vertex => vertex.co), result.edges), result.edges); // メッシュの作成とシルエットの外の三角形を削除
             bmesh.setMeshData({meshes: meshData, manualEdges: [], vertices: result.vertices.map(vertex => {return {co: MathVec2.addR(vertex.co, this.imageBoundingBoxs[bmesh.id].min), texCoord: vertex.texCoord}}), manualEdges: [], autoEdges: result.edges});
         }
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     async update(pixelDensity, scale) {
@@ -136,7 +136,7 @@ export class AppendVertexCommand {
             pushToArray(bmesh.vertices, this.createDatasInEditObject[bmesh.id])
             bmesh.updateGPUData();
         });
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -166,7 +166,7 @@ export class AppendEdgeCommand {
             bmesh.setMeshData({meshes: meshData});
             bmesh.updateGPUData();
         });
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
@@ -199,7 +199,7 @@ export class DeleteEdgeCommand {
             bmesh.setMeshData({meshes: meshData});
             bmesh.updateGPUData();
         });
-        return {consumed: true};
+        return {state: "FINISHED"};
     }
 
     undo() {
