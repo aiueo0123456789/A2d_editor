@@ -54,7 +54,7 @@ export class Operator {
         this.app = app;
         this.stack = new CommandStack(this);
         this.commands = [];
-        this.errorLog = [];
+        this.logs = [];
     }
 
     appendCommand(command) {
@@ -70,8 +70,8 @@ export class Operator {
     }
 
     appendErrorLog(log) {
-        this.errorLog.push({text: log});
-        useEffect.update({o: this.errorLog});
+        this.logs.push({text: log});
+        useEffect.update({o: this.logs});
     }
 
     async execute() {
@@ -82,7 +82,7 @@ export class Operator {
             const result = await command.execute();
             const resultState = result.state;
             if (resultState == "ERROR") {
-                this.errorLog.push(result.message);
+                this.logs.push(result.message);
                 console.error("コマンド実行時のエラー", result, command)
                 this.app.ui.adjustPanelOperator.hide();
                 noError = false;

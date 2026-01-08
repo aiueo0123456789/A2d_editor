@@ -27,6 +27,24 @@ export class ViewerSpaceData {
             decaySize: 50,
         }
 
+        this.selectabilityAndVisbility = {
+            graphicMesh: {
+                visible: true,
+                select: true,
+            },
+            armature: {
+                visible: true,
+                select: true,
+            },
+            bezierModifier: {
+                visible: true,
+                select: true,
+            }
+        };
+
+        this.overlays = {
+        };
+
         this.visualSettings = {
             mesh: {
                 vertexSize: 10,

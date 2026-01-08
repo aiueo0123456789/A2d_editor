@@ -167,7 +167,10 @@ export class Area_Viewer {
                                         ]},
                                     ]},
                                 ]},
-                                {tagType: "checks", icon: "test", options: {textContent: "test"}, withObjects: [{text: "graphicMesh", path: "o/visibleObjects/graphicMesh"},{text: "armature", path: "o/visibleObjects/armature"},{text: "bezierModifier", path: "o/visibleObjects/bezierModifier"}]},
+                                // {tagType: "checks", icon: "test", options: {textContent: "test"}, withObjects: [{text: "graphicMesh", path: "o/visibleObjects/graphicMesh"},{text: "armature", path: "o/visibleObjects/armature"},{text: "bezierModifier", path: "o/visibleObjects/bezierModifier"}]},
+                                {tagType: "foldedBox", children: [
+                                    {tagType: "input", label: "値", value: "areasConfig/weightPaintMetaData/weightValue", type: "number", min: 0, max: 1, step: 0.01},
+                                ]},
                             ]},
                             {tagType: "padding", size: "10px"},
                             {tagType: "path", sourceObject: "context", updateEventTarget: {path: "context/%currentMode"}, children: [

@@ -30,6 +30,7 @@ import { DualListboxTag } from "./dualListbox.js";
 import { ParameterManagerTag } from "./parameterManagerTag.js";
 import { ChecksTag } from "./checksTag.js";
 import { createID } from "../idGenerator.js";
+import { FoldedBoxTag } from "./foldedBoxTag.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
@@ -251,6 +252,9 @@ const tagCreater = {
     },
     "parameterManager": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new ParameterManagerTag(jTag,t,parent,source,child,flag);
+    },
+    "foldedBox": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        return new FoldedBoxTag(jTag,t,parent,source,child,flag);
     },
 }
 
