@@ -20,6 +20,8 @@ class TransformCommand {
         this.proportionalType = proportionalType;
         this.proportionalSize = proportionalSize;
 
+        this.pivotPoint = [0,0];
+
         if (this.editObjects[0] instanceof BMesh) this.isBMesh = true;
         else if (this.editObjects[0] instanceof BArmature) this.isBArmature = true;
         else if (this.editObjects[0] instanceof BBezier) this.isBBezier = true;
@@ -135,7 +137,7 @@ class TransformCommand {
         } else if (this instanceof ResizeCommand) {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
-                    MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
+                    MathVec2.mix(vertex.co, this.originalVerticesCoordinates[index], MathVec2.addR(this.pivotPoint, MathVec2.mulR(MathVec2.subR(this.originalVerticesCoordinates[index], this.pivotPoint), this.value)), this.weights[index]);
                     useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -180,6 +182,18 @@ class TransformCommand {
                 this.editObjects.forEach(editObject => editObject.updateGPUData());
             }
         } else if (this instanceof ResizeCommand) {
+            if (this.processType == "vertex") {
+                this.targetVertices.forEach((vertex, index) => {
+                    MathVec2.mix(vertex.co, this.originalVerticesCoordinates[index], MathVec2.addR(this.pivotPoint, MathVec2.mulR(MathVec2.subR(this.originalVerticesCoordinates[index], this.pivotPoint), this.value)), this.weights[index]);
+                    useEffect.update({o: vertex.co});
+                });
+                this.editObjects.forEach(editObject => editObject.updateGPUData());
+            } else if (this.processType == "bone") {
+                this.targetBones.forEach((bone, index) => {
+                    Armature.addBoneData(bone.animationLocalBoneData, this.originalBones[index], {sx: this.value[0], sy: this.value[1]});
+                });
+                this.editObjects.forEach(editObject => editObject.updateGPUData());
+            }
         } else if (this instanceof RotateCommand) {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {

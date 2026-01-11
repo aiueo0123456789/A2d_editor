@@ -8,8 +8,12 @@ export class ActiveEdgePanel {
                 {tagType: "div", class: "sideBar-shelfe", children: [
                     {tagType: "panel", name: "辺", children: [
                         {tagType: "path", sourceObject: "scene/editData/editObjects/{context/activeObject/id}/activeEdge", updateEventTarget: "辺選択", children: [
-                            {tagType: "input", label: "x", value: "/co/0", type: "number"},
-                            {tagType: "input", label: "y", value: "/co/1", type: "number"},
+                            {tagType: "label", text: "x", children: [
+                                {tagType: "input", value: "/co/0", type: "number"},
+                            ]},
+                            {tagType: "label", text: "y", children: [
+                                {tagType: "input", value: "/co/1", type: "number"},
+                            ]}
                         ]},
                     ]}
                 ]}

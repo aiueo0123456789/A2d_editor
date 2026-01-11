@@ -18,8 +18,7 @@ import { InputTextTag } from "./inputTextTag.js";
 import { InputColorTag } from "./inputColorTag.js";
 import { InputFileTag } from "./inputFileTag.js";
 import { InputNumberTag } from "./inputNumberTag.js";
-import { ButtonTag } from "./buttonTag.js";
-import { SectionTag } from "./sectionTag.js";
+import { OperatorButtonTag } from "./operatorButtonTag.js";
 import { LabelTag } from "./labelTag.js";
 import { GridBoxTag } from "./gridBoxTag.js";
 import { DblClickInput } from "./dblclickInput.js";
@@ -30,7 +29,8 @@ import { DualListboxTag } from "./dualListbox.js";
 import { ParameterManagerTag } from "./parameterManagerTag.js";
 import { ChecksTag } from "./checksTag.js";
 import { createID } from "../idGenerator.js";
-import { FoldedBoxTag } from "./foldedBoxTag.js";
+import { PopoverMenuTag } from "./popoverMenuTag.js";
+import { IconTag } from "./iconTag.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
@@ -91,8 +91,8 @@ const tagCreater = {
         }
         return element;
     },
-    "button": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        return new ButtonTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
+    "operatorButton": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        return new OperatorButtonTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
     },
     "buttons": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         createGroupButton(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
@@ -130,9 +130,6 @@ const tagCreater = {
         }
         return element;
     },
-    "section": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        return new SectionTag(jTag,t,parent,source,child,flag);
-    },
     "panel": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new PanelTag(jTag,t,parent,source,child,flag);
     },
@@ -144,15 +141,7 @@ const tagCreater = {
         return element;
     },
     "icon": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        const container = createTag(t, "div");
-        container.classList.add("icon");
-        const img = createTag(container, "img");
-        let src = child.src;
-        if (src.path) {
-            src = jTag.getParameter(source, src.path);
-        }
-        img.src = app.ui.getImgURLFromImgName(src);
-        return container;
+        return new IconTag(jTag,t,parent,source,child,flag);
     },
     "flexBox": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         let element = createTag(t, "div");
@@ -253,9 +242,12 @@ const tagCreater = {
     "parameterManager": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new ParameterManagerTag(jTag,t,parent,source,child,flag);
     },
-    "foldedBox": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        return new FoldedBoxTag(jTag,t,parent,source,child,flag);
+    "popoverMenu": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        return new PopoverMenuTag(jTag,t,parent,source,child,flag);
     },
+    "label": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        return new LabelTag(jTag,t,parent,source,child,flag);
+    }
 }
 
 export class ParameterReference {
@@ -570,7 +562,7 @@ export class JTag {
                             element.id = structure.id;
                             this.keyRef.set(id, element);
                         }
-                        if (structure.label) element = new LabelTag(setTarget, structure.label);
+                        // if (structure.label) element = new LabelTag(setTarget, structure.label);
                         if (structure.labelIn) {
                             const label = createTag(t, "label");
                             const span = createTag(label, "span");

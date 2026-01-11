@@ -25,7 +25,7 @@ export class Area_BlendShape {
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option", name: "情報", children: [
                         {tagType: "gridBox", axis: "c", allocation: "auto 1fr auto", children: [
-                            {tagType: "select", label: "",
+                            {tagType: "select",
                                 value: (value) => {
                                     changeParameter(this.areaConfig, "activeBlendShape", app.scene.objects.getObjectByID(value));
                                 },
@@ -33,7 +33,7 @@ export class Area_BlendShape {
                                     return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});
                                 }, options: {initValue: ""}
                             },
-                            {tagType: "button", textContent: "追加", onClick: () => {
+                            {tagType: "operatorButton", label: "Add", onClick: () => {
                                 app.operator.appendCommand(new CreateObjectCommand({type: "ブレンドシェイプ", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], shapeKeys: []}));
                                 app.operator.execute();
                             }},

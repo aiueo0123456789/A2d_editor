@@ -13,16 +13,18 @@ export class Area_NodeEditor {
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option", name: "情報", children: [
                         {tagType: "gridBox", axis: "c", allocation: "auto 1fr auto", children: [
-                            {tagType: "select", label: "tool",
-                                value: (value) => {
-                                    console.log("書き換え")
-                                    changeParameter(this.areaConfig, "sourceCode", app.scene.objects.getObjectByID(value));
+                            {tagType: "label", text: "tool", children: [
+                                {tagType: "select",
+                                    value: (value) => {
+                                        console.log("書き換え")
+                                        changeParameter(this.areaConfig, "sourceCode", app.scene.objects.getObjectByID(value));
+                                    },
+                                    sourceObject: () => {
+                                        return app.scene.objects.scripts.map(script => {return {name: script.name, id: script.id}});
+                                    }, options: {initValue: ""}
                                 },
-                                sourceObject: () => {
-                                    return app.scene.objects.scripts.map(script => {return {name: script.name, id: script.id}});
-                                }, options: {initValue: ""}
-                            },
-                            {tagType: "button", textContent: "追加", onClick: () => {
+                            ]},
+                            {tagType: "operatorButton", label: "Add", onClick: () => {
                                 app.operator.appendCommand(new CreateObjectCommand({
                                     type: "スクリプト",
                                     name: "名称未設定",

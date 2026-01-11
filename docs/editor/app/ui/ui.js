@@ -19,14 +19,16 @@ export class UI {
                 DOM: [
                     {tagType: "html", type: "div", class: "all", children: [
                         {tagType: "html", id: "contextmenu", class: "contextmenu hidden", tag: "ul"},
-                        {tagType: "html", id: "custom-menu-items", class: "custom-menu-items hidden", tag: "ul"},
+                        {tagType: "html", id: "popupMenu-items", class: "popupMenu-items hidden", tag: "ul"},
                         {tagType: "html", id: "custom-select-items", class: "custom-select-items hidden", tag: "ul"},
                         {tagType: "html", id: "parameterManagerSelecter", class: "custom-select-items hidden", tag: "ul"},
-                        {tagType: "html", id: "foldedBoxContainer", class: "folded-box-container", tag: "div"},
+                        {tagType: "html", id: "popoverMenusContainer", class: "popoverMenusContainer", tag: "div"},
                         {tagType: "html", id: "loadingModalsContainer", class: "loadingModalsContainer hidden", tag: "ul"},
                         {tagType: "div", id: "headMenubar", class: "menubar", children: [
-                            {tagType: "input", label: "projectName", value: "app/appConfig/projectName", type: "text"},
-                            {tagType: "menu", title: "file", struct: [
+                            {tagType: "label", text: "projectName", children: [
+                                {tagType: "input", value: "app/appConfig/projectName", type: "text"},
+                            ]},
+                            {tagType: "menu", title: "File", struct: [
                                 {label: "clean", children: [], onClick: () => {
                                     app.scene.objects.clean();
                                 }},
@@ -42,7 +44,7 @@ export class UI {
                                     }},
                                 ]},
                             ]},
-                            {tagType: "menu", title: "edit", struct: [
+                            {tagType: "menu", title: "Edit", struct: [
                                 {label: "setting", icon: "setting", children: [], onClick: () => {
                                 }},
                             ]},
@@ -50,9 +52,12 @@ export class UI {
                         ]},
                         {tagType: "html", id: "main", class: "main", tag: "div"},
                         {tagType: "div", id: "headMenubar", class: "menubar", children: [
-                            // {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/jsHeapByteSizeLimit"},
-                            {tagType: "meter", label: "メモリ", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/totalJSHeapByteSize"},
-                            {tagType: "input", label: "DOMs", value: "app/appPerformance/domCount", type: "number"},
+                            {tagType: "label", text: "メモリ", children: [
+                                {tagType: "meter", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/totalJSHeapByteSize"},
+                            ]},
+                            {tagType: "label", text: "タグ数", children: [
+                                {tagType: "input", value: "app/appPerformance/domCount", type: "number"},
+                            ]}
                         ]}
                     ]}
                 ]

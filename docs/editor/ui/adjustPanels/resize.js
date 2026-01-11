@@ -1,9 +1,9 @@
 import { useEffect } from "../../utils/ui/util.js";
-import { TranslateCommand } from "../../commands/transform/transform.js";
+import { ResizeCommand } from "../../commands/transform/transform.js";
 
-export class AdjustPanel_Translate {
-    static commandInstance = TranslateCommand;
-    constructor(/** @type {TranslateCommand} */ command) {
+export class AdjustPanel_Resize {
+    static commandInstance = ResizeCommand;
+    constructor(/** @type {ResizeCommand} */ command) {
         this.command = command;
         this.values = [
             command.value[0],
@@ -16,7 +16,7 @@ export class AdjustPanel_Translate {
             inputObject: {"values": this.values},
             DOM: [
                 {tagType: "div", class: "shelfe", children: [
-                    {tagType: "title", text: "translate", class: "shelfeTitle"},
+                    {tagType: "title", text: "resize", class: "shelfeTitle"},
                     {tagType: "label", text: "x", children: [
                         {tagType: "input", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
                     ]},

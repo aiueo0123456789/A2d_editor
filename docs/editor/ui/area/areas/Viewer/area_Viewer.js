@@ -6,15 +6,12 @@ import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/entity/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
 import { ViewerSpaceData } from './area_ViewerSpaceData.js';
-import { AdjustPanelOperator } from '../../../../operators/adjustPanelOperator.js';
-import { CreateMeshTool } from '../../../tools/CreateMesh.js';
 import { Particle } from '../../../../core/entity/particle.js';
 import { app } from '../../../../../main.js';
 import { SelectVerticesCommand } from '../../../../commands/utile/selectVertices.js';
 import { useEffect } from '../../../../utils/ui/util.js';
 import { BBezier } from '../../../../core/edit/objects/BBezier.js';
 import { SelectBonesCommand } from '../../../../commands/utile/selectBones.js';
-import { KeyframeInsertModal } from '../../../tools/keyframeInsert.js';
 import { ActiveVertexPanel } from './toolBar/panel/vertex.js';
 import { ActiveBonePanelFromBA, ActiveBonePanelFromBAA } from './toolBar/panel/bone.js';
 import { ActiveMeshPanel } from './toolBar/panel/mesh.js';
@@ -34,6 +31,8 @@ import { SideBarOperator } from '../../../../operators/sideBarOperator.js';
 import { RotateModal } from '../../../modals/rotate.js';
 import { ExtrudeMoveModal } from '../../../modals/extrudeMove.js';
 import { ChangeParentModal } from '../../../modals/changeParent.js';
+import { ResizeModal } from '../../../modals/resize.js';
+import { WeightPaintModal } from '../../../modals/weightpaint.js';
 
 const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
 const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/mix.wgsl"), [], "2d", "s");
@@ -168,39 +167,52 @@ export class Area_Viewer {
                                     ]},
                                 ]},
                                 // {tagType: "checks", icon: "test", options: {textContent: "test"}, withObjects: [{text: "graphicMesh", path: "o/visibleObjects/graphicMesh"},{text: "armature", path: "o/visibleObjects/armature"},{text: "bezierModifier", path: "o/visibleObjects/bezierModifier"}]},
-                                {tagType: "foldedBox", children: [
-                                    {tagType: "input", label: "値", value: "areasConfig/weightPaintMetaData/weightValue", type: "number", min: 0, max: 1, step: 0.01},
+                                {tagType: "popoverMenu", icon: "setting", children: [
+                                    {tagType: "label", text: "graphicMesh", children: [
+                                        {tagType: "input", type: "checkbox", checked: "areasConfig/selectabilityAndVisbility/graphicMesh/visible", look: {check: "check", uncheck: "uncheck"}},
+                                        {tagType: "input", type: "checkbox", checked: "areasConfig/selectabilityAndVisbility/graphicMesh/select", look: {check: "check", uncheck: "uncheck"}},
+                                    ]},
+                                    {tagType: "label", text: "armature", children: [
+                                        {tagType: "input", type: "checkbox", checked: "areasConfig/selectabilityAndVisbility/armature/visible", look: {check: "check", uncheck: "uncheck"}},
+                                        {tagType: "input", type: "checkbox", checked: "areasConfig/selectabilityAndVisbility/armature/select", look: {check: "check", uncheck: "uncheck"}},
+                                    ]},
+                                    {tagType: "label", text: "bezierModifier", children: [
+                                        {tagType: "input", type: "checkbox", checked: "areasConfig/selectabilityAndVisbility/bezierModifier/visible", look: {check: "check", uncheck: "uncheck"}},
+                                        {tagType: "input", type: "checkbox", checked: "areasConfig/selectabilityAndVisbility/bezierModifier/select", look: {check: "check", uncheck: "uncheck"}},
+                                    ]},
+                                ]},
+                                {tagType: "popoverMenu", label: "選択", children: [
                                 ]},
                             ]},
                             {tagType: "padding", size: "10px"},
                             {tagType: "path", sourceObject: "context", updateEventTarget: {path: "context/%currentMode"}, children: [
                                 {tagType: "if", formula: {source: "/currentMode", conditions: "==", value: "メッシュウェイト編集"},
                                 true: [
-                                    {tagType: "flexBox", interval: "10px", children: [
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "input", label: "値", value: "areasConfig/weightPaintMetaData/weightValue", type: "number", min: 0, max: 1, step: 0.01},
+                                    {tagType: "popoverMenu", label: "weightPaintMetaData", children: [
+                                        {tagType: "label", text: "weight", children: [
+                                            {tagType: "input", value: "areasConfig/weightPaintMetaData/weightValue", type: "number", min: 0, max: 1, step: 0.01},
                                         ]},
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "input", label: "範囲", value: "areasConfig/weightPaintMetaData/decaySize", type: "number", min: 0, max: 1000, step: 0.01},
+                                        {tagType: "label", text: "decaySize", children: [
+                                            {tagType: "input", value: "areasConfig/weightPaintMetaData/decaySize", type: "number", min: 0, max: 1000, step: 0.01},
                                         ]},
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "select", label: "範囲", value: "areasConfig/weightPaintMetaData/decayType", sourceObject: ["ミックス","最大","最小"], options: {initValue: {path: "areasConfig/weightPaintMetaData/decayType"}}},
+                                        {tagType: "label", text: "decayType", children: [
+                                            {tagType: "select", value: "areasConfig/weightPaintMetaData/decayType", sourceObject: ["ミックス","最大","最小"], options: {initValue: {path: "areasConfig/weightPaintMetaData/decayType"}}},
                                         ]},
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "select", label: "種類", value: "areasConfig/weightPaintMetaData/bezierType", sourceObject: [0,1], options: {initValue: "0"}},
-                                        ]}
+                                        {tagType: "label", text: "bezierType", children: [
+                                            {tagType: "select", value: "areasConfig/weightPaintMetaData/bezierType", sourceObject: [0,1], options: {initValue: "0"}},
+                                        ]},
                                     ]},
                                 ], false: [
-                                    {tagType: "flexBox", interval: "10px", children: [
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "input", label: "プロポーショナル編集", type: "checkbox", checked: "areasConfig/proportionalMetaData/use", look: {check: "check", uncheck: "uncheck"}},
+                                    {tagType: "popoverMenu", label: "proportionalMetaData", children: [
+                                        {tagType: "label", text: "use", children: [
+                                            {tagType: "input", type: "checkbox", checked: "areasConfig/proportionalMetaData/use", look: {check: "check", uncheck: "uncheck"}},
                                         ]},
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "select", label: "種類", value: "areasConfig/proportionalMetaData/type", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "areasConfig/proportionalMetaData/type"}}},
+                                        {tagType: "label", text: "type", children: [
+                                            {tagType: "select", value: "areasConfig/proportionalMetaData/type", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "areasConfig/proportionalMetaData/type"}}},
                                         ]},
-                                        {tagType: "heightCenter", children: [
-                                            {tagType: "input", label: "半径", value: "areasConfig/proportionalMetaData/size", type: "number", min: 0, max: 10000},
-                                        ]}
+                                        {tagType: "label", text: "size", children: [
+                                            {tagType: "input", value: "areasConfig/proportionalMetaData/size", type: "number", min: 0, max: 10000},
+                                        ]},
                                     ]},
                                 ]}
                             ]},
@@ -250,7 +262,6 @@ export class Area_Viewer {
                                     ]},
                                 ]},
                                 {label: "メッシュの生成", eventFn: () => {
-                                    app.activeArea.uiModel.modalOperator.setModal(CreateMeshTool, app.activeArea.uiModel.inputs);
                                 }},
                                 {label: "削除", children: [
                                     {label: "選択物", eventFn: () => {
@@ -431,25 +442,32 @@ export class Area_Viewer {
         const context = app.context;
         if (context.activeObject) {
             if (context.currentMode == "オブジェクト") {
-                if (this.inputs.keysDown["p"]) return ChangeParentModal;
+                if (app.input.consumeKeys(["p"])) return ChangeParentModal;
             }
             if (context.currentMode == "メッシュ編集") {
-                if (this.inputs.keysDown["g"]) return TranslateModal;
-                if (this.inputs.keysDown["r"]) return RotateModal;
+                if (app.input.consumeKeys(["g"])) return TranslateModal;
+                if (app.input.consumeKeys(["s"])) return ResizeModal;
+                if (app.input.consumeKeys(["r"])) return RotateModal;
+            }
+            if (context.currentMode == "メッシュウェイト編集") {
+                if (app.input.click) return WeightPaintModal;
             }
             if (context.currentMode == "ボーン編集") {
-                if (this.inputs.keysDown["g"]) return TranslateModal;
-                if (this.inputs.keysDown["r"]) return RotateModal;
-                if (this.inputs.keysDown["e"]) return ExtrudeMoveModal;
+                if (app.input.consumeKeys(["g"])) return TranslateModal;
+                if (app.input.consumeKeys(["s"])) return ResizeModal;
+                if (app.input.consumeKeys(["r"])) return RotateModal;
+                if (app.input.consumeKeys(["e"])) return ExtrudeMoveModal;
             }
             if (context.currentMode == "ベジェ編集") {
-                if (this.inputs.keysDown["g"]) return TranslateModal;
-                if (this.inputs.keysDown["r"]) return RotateModal;
-                if (this.inputs.keysDown["e"]) return ExtrudeMoveModal;
+                if (app.input.consumeKeys(["g"])) return TranslateModal;
+                if (app.input.consumeKeys(["s"])) return ResizeModal;
+                if (app.input.consumeKeys(["r"])) return RotateModal;
+                if (app.input.consumeKeys(["e"])) return ExtrudeMoveModal;
             }
             if (context.currentMode == "ベジェシェイプキー編集") {
-                if (this.inputs.keysDown["g"]) return TranslateModal;
-                if (this.inputs.keysDown["r"]) return RotateModal;
+                if (app.input.consumeKeys(["g"])) return TranslateModal;
+                if (app.input.consumeKeys(["s"])) return ResizeModal;
+                if (app.input.consumeKeys(["r"])) return RotateModal;
             }
         }
     }
@@ -458,8 +476,9 @@ export class Area_Viewer {
         this.inputs.keysDown = inputManager.keysDown;
         this.inputs.keysPush = inputManager.keysPush;
         if (await this.modalOperator.keyInput(this.inputs)) return ;
-        if (this.getShortcuts()) {
-            this.modalOperator.start(this.getShortcuts());
+        const resultShortcuts = this.getShortcuts();
+        if (resultShortcuts) {
+            this.modalOperator.start(resultShortcuts);
             return ;
         }
         const context = app.context;
@@ -525,6 +544,11 @@ export class Area_Viewer {
         this.inputs.position = local;
 
         if (await this.modalOperator.mousedown(this.inputs)) return ;
+        const resultShortcuts = this.getShortcuts();
+        if (resultShortcuts) {
+            this.modalOperator.start(resultShortcuts);
+            return ;
+        }
 
         const context = app.context;
         if (context.currentMode == "オブジェクト") {
@@ -578,13 +602,28 @@ export class Area_Viewer {
         this.inputs.position = local;
 
         if (await this.modalOperator.mousemove(this.inputs)) return ;
+        const resultShortcuts = this.getShortcuts();
+        if (resultShortcuts) {
+            this.modalOperator.start(resultShortcuts);
+            return ;
+        }
     }
     async mouseup(inputManager) {
         if (await this.modalOperator.mouseup(this.inputs)) return ;
+        const resultShortcuts = this.getShortcuts();
+        if (resultShortcuts) {
+            this.modalOperator.start(resultShortcuts);
+            return ;
+        }
     }
 
     async wheel(inputManager) {
         if (await this.modalOperator.wheel(this.inputs)) return ;
+        const resultShortcuts = this.getShortcuts();
+        if (resultShortcuts) {
+            this.modalOperator.start(resultShortcuts);
+            return ;
+        }
         if (app.input.keysDown["Alt"]) {
             this.camera.zoom += inputManager.wheelDelta[1] / 200;
             this.camera.zoom = Math.max(Math.min(this.camera.zoom,this.camera.zoomMax),this.camera.zoomMin);
@@ -625,7 +664,7 @@ export class Renderer {
         //     // alphaMode: 'premultiplied',
         //     size: [this.canvas.width, this.canvas.height]
         // });
-        // GPU.writeBuffer(this.canvasAspectBuffer, new Float32Array([1 / this.canvas.width, 1 /  this.canvas.height]));
+        // GPU.writeBuffer(this.canvasAspectBuffer, new Float32Array([1 / this.canvas.width, 1 /  this.canvas.height]));v
         this.depthTexture = GPU.createDepthTexture2D([this.canvas.width, this.canvas.height]);
         this.depthTextureView = this.depthTexture.createView();
 

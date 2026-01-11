@@ -13,8 +13,6 @@ import { ContextmenuOperator } from "../operators/contextmenuOperator.js";
 import { OutlinerSpaceData } from "../ui/area/areas/Outliner/area_OutlinerSpaceData.js";
 import { Area_Property } from "../ui/area/areas/Property/area_Property.js";
 import { GPU } from "../utils/webGPU.js";
-import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from "../commands/object/object.js";
-import { CreateMeshTool } from "../ui/tools/CreateMesh.js";
 import { NodeEditorSpaceData } from "../ui/area/areas/NodeEditor/area_NodeEditorSpaceData.js";
 import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/area_NodeEditor.js";
 import { Area_Previewer } from "../ui/area/areas/Previewer/area_Previewer.js";

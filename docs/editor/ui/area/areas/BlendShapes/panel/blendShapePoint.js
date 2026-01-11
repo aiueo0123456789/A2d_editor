@@ -9,8 +9,12 @@ export class BlendShapePointPanel {
                     {tagType: "panel", name: "ブレンドシェイプポイント", children: [
                         {tagType: "path", sourceObject: "areaConfig/activeBlendShape", updateEventTarget: {path: "areaConfig/%activeBlendShape"}, children: [
                             {tagType: "path", sourceObject: "/activePoint", updateEventTarget: {path: "/%activePoint"}, children: [
-                                {tagType: "input", label: "x", value: "/co/0", type: "number"},
-                                {tagType: "input", label: "y", value: "/co/1", type: "number"},
+                                {tagType: "label", text: "x", children: [
+                                    {tagType: "input", value: "/co/0", type: "number"},
+                                ]},
+                                {tagType: "label", text: "y", children: [
+                                    {tagType: "input", value: "/co/1", type: "number"},
+                                ]},
                                 {tagType: "list", label: "重み", src: "/weights", isPrimitive: true, notUseActiveAndSelect: true,
                                 liStruct: {
                                     tagType: "gridBox", id: {path: "areaConfig/activeBlendShape/shapeKeys/{!index}/id"}, axis: "c", allocation: "1fr 1fr", children: [

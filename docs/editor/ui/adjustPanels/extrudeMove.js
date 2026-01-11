@@ -14,8 +14,12 @@ export class AdjustPanel_ExtrudeMove {
             DOM: [
                 {tagType: "div", class: "shelfe", children: [
                     {tagType: "title", text: "extrudeMove", class: "shelfeTitle"},
-                    {tagType: "input", label: "x", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
-                    {tagType: "input", label: "y", value: "values/1", type: "number", min: -1000, max: 1000, useCommand: false},
+                    {tagType: "label", text: "x", children: [
+                        {tagType: "input", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
+                    ]},
+                    {tagType: "label", text: "y", children: [
+                        {tagType: "input", value: "values/1", type: "number", min: -1000, max: 1000, useCommand: false},
+                    ]},
                 ]}
             ]
         };

@@ -1,14 +1,10 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/inputManager/inputManager.js";
 import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
-import { AdjustPanelOperator } from "../../../../operators/adjustPanelOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { OutlinerTag } from "../../../../utils/JTag/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
 import { calculateLocalMousePosition, changeParameter, errorCut } from "../../../../utils/utility.js";
-import { KeyDelete } from "../../../tools/KeyDelete.js";
-import { KeyframeResize } from "../../../tools/KeyframeResize.js";
-import { KeyframeTranslateInTimeline } from "../../../tools/KeyframeTranslate.js";
 import { TimelineSpaceData } from "../Graph/area_TimelineSpaceData.js";
 import { createID } from "../../../../utils/idGenerator.js";
 import { ModalOperator } from "../../../../operators/modalOperator.js";
@@ -54,21 +50,29 @@ export class Area_Timeline {
                                 {tagType: "padding", size: "10px"},
                             ]},
                             {tagType: "box", class: "boxs", children: [
-                                {tagType: "button", icon: "reverseSkip", onClick: () => {
+                                {tagType: "operatorButton", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
                                 }},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isReversePlaying", look: {check: "stop", uncheck: "reverse"}, useCommand: false},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isPlaying", look: {check: "stop", uncheck: "playing"}, useCommand: false},
-                                {tagType: "button", icon: "skip", onClick: () => {
+                                {tagType: "operatorButton", icon: "skip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
                             {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto auto auto auto", children: [
                                 {tagType: "padding", size: "10px"},
-                                {tagType: "input", label: "現在", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500, step: 1},
-                                {tagType: "input", label: "開始", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500, step: 1},
-                                {tagType: "input", label: "終了", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500, step: 1},
-                                {tagType: "input", label: "FPS", name: "FPS", value: "scene/frame_speed", type: "number", max: 60, min: 0, step: 1},
+                                {tagType: "label", text: "current", children: [
+                                    {tagType: "input", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
+                                ]},
+                                {tagType: "label", text: "start", children: [
+                                    {tagType: "input", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
+                                ]},
+                                {tagType: "label", text: "end", children: [
+                                    {tagType: "input", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                                ]},
+                                {tagType: "label", text: "FPS", children: [
+                                    {tagType: "input", name: "frame_end", value: "scene/frame_speed", type: "number", max: 500, min: -500},
+                                ]},
                             ]}
                         ]},
                     ]},

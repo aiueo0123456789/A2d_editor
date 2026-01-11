@@ -6,6 +6,10 @@ export class MathVec2 {
         return new Float32Array(2);
     }
 
+    static mix(t, a,b,raito) {
+        return this.set(t, this.addR(this.scaleR(a,1-raito), this.scaleR(b,raito)));
+    }
+
     static mixR(a,b,raito) {
         return this.addR(this.scaleR(a,1-raito), this.scaleR(b,raito));
     }

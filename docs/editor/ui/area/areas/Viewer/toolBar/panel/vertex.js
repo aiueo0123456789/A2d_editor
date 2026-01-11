@@ -8,8 +8,12 @@ export class ActiveVertexPanel {
                 {tagType: "div", class: "sideBar-shelfe", children: [
                     {tagType: "panel", name: "頂点", children: [
                         {tagType: "path", sourceObject: "scene/editData/editObjects/{context/activeObject/id}/activeVertex", updateEventTarget: "頂点選択", children: [
-                            {tagType: "input", label: "x", value: "/co/0", type: "number"},
-                            {tagType: "input", label: "y", value: "/co/1", type: "number"},
+                            {tagType: "label", text: "x", children: [
+                                {tagType: "input", value: "/co/0", type: "number"},
+                            ]},
+                            {tagType: "label", text: "y", children: [
+                                {tagType: "input", value: "/co/1", type: "number"},
+                            ]},
                         ]},
                     ]}
                 ]}

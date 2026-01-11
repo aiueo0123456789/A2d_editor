@@ -9,17 +9,31 @@ export class BlendShapePanel {
                 {tagType: "div", class: "sideBar-shelfe", children: [
                     {tagType: "panel", name: "ブレンドシェイプ", children: [
                         {tagType: "path", sourceObject: "areaConfig/activeBlendShape", updateEventTarget: {path: "areaConfig/%activeBlendShape"}, children: [
-                            {tagType: "input", label: "名前", value: "/name", type: "text"},
-                            {tagType: "input", label: "minX", value: "/min/0", type: "number"},
-                            {tagType: "input", label: "minY", value: "/min/1", type: "number"},
-                            {tagType: "input", label: "maxX", value: "/max/0", type: "number"},
-                            {tagType: "input", label: "maxY", value: "/max/1", type: "number"},
-                            {tagType: "input", label: "valueX", value: "/value/0", type: "number"},
-                            {tagType: "hasKeyframeCheck", src: "/keyframeBlockManager/keyframeBlocks/0", value: "/value/0"},
-                            {tagType: "input", label: "valueY", value: "/value/1", type: "number"},
-                            {tagType: "hasKeyframeCheck", src: "/keyframeBlockManager/keyframeBlocks/1", value: "/value/1"},
+                            {tagType: "label", text: "name", children: [
+                                {tagType: "input", value: "/name", type: "text"},
+                            ]},
+                            {tagType: "label", text: "minX", children: [
+                                {tagType: "input", value: "/min/0", type: "number"},
+                            ]},
+                            {tagType: "label", text: "minY", children: [
+                                {tagType: "input", value: "/min/1", type: "number"},
+                            ]},
+                            {tagType: "label", text: "maxX", children: [
+                                {tagType: "input", value: "/max/0", type: "number"},
+                            ]},
+                            {tagType: "label", text: "maxY", children: [
+                                {tagType: "input", value: "/max/1", type: "number"},
+                            ]},
+                            {tagType: "label", text: "valueX", children: [
+                                {tagType: "input", value: "/value/0", type: "number"},
+                                {tagType: "hasKeyframeCheck", src: "/keyframeBlockManager/keyframeBlocks/0", value: "/value/0"},
+                            ]},
+                            {tagType: "label", text: "valueY", children: [
+                                {tagType: "input", value: "/value/1", type: "number"},
+                                {tagType: "hasKeyframeCheck", src: "/keyframeBlockManager/keyframeBlocks/1", value: "/value/1"},
+                            ]},
 
-                            {tagType: "button", textContent: "追加", onClick: (object) => {
+                            {tagType: "operatorButton", label: "Add", onClick: (object) => {
                                 app.operator.appendCommand(new AppendBlendShapePointCommand(object.normal));
                                 app.operator.execute();
                             }},

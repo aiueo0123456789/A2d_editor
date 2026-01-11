@@ -21,15 +21,15 @@ body {
     overflow-y: hidden;
     height: 100vh;
     background-color: #000000;
-    font-family: 'Arial', sans-serif;
+    font-family: "Noto Sans JP", 'Arial', sans-serif;
     user-select: none; /* すべてのテキスト選択を無効化 */
     position: relative;
 }
 
 * {
     color: rgb(202, 202, 202);
-    font-size: 97.5%;
-    font-weight: 500;
+    font-size: 98%;
+    font-weight: 300;
     /* text-shadow: 0px 1px 0px rgb(28, 28, 28); */
     min-height: 0;
     min-width: 0;
@@ -104,7 +104,7 @@ input {
     border-radius: 4px;
     padding: 2px;
     box-shadow: 0px 1px 0px rgb(28, 28, 28);
-    height: 15px;
+    height: 20px;
     /* filter: drop-shadow(0px 5px 0px rgba(0, 0, 0, 0.5)); */
 }
 
@@ -228,7 +228,7 @@ input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
     width: 5px; /* つまみの幅 */
-    height: 17px; /* つまみの高さ */
+    height: 20px; /* つまみの高さ */
     background-color: #787878; /* つまみの色 */
     border-radius: 4px; /* つまみを丸く */
     cursor: pointer;
@@ -406,7 +406,7 @@ input[type="file"] {
     grid-column: 3/4;
 }
 
-.section-main .label-input {
+.panel-main .label-input {
     grid-template-columns: 1fr 5px 1fr;
 }
 
@@ -506,7 +506,7 @@ label {
     display: block;
     position: relative;
     width: 15px;
-    height: 15px;
+    height: 20px;
     background: #ffffff00; /* ボタンの背景色 */
 }
 .square_btn:hover {

@@ -16,10 +16,18 @@ export class AdjustPanel_Rotate {
             DOM: [
                 {tagType: "div", class: "shelfe", children: [
                     {tagType: "title", text: "rotate", class: "shelfeTitle"},
-                    {tagType: "input", label: "r", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
-                    {tagType: "input", label: "プロポーショナル編集", type: "checkbox", checked: "values/1", look: {check: "check", uncheck: "uncheck"}, useCommand: false},
-                    {tagType: "select", label: "種類", value: "values/2", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "values/2"}}, useCommand: false},
-                    {tagType: "input", label: "半径", value: "values/3", type: "number", min: 0, max: 10000, useCommand: false, custom: {visual: "range"}},
+                    {tagType: "label", text: "r", children: [
+                        {tagType: "input", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
+                    ]},
+                    {tagType: "label", text: "プロポーショナル編集", children: [
+                        {tagType: "input", type: "checkbox", checked: "values/1", look: {check: "check", uncheck: "uncheck"}, useCommand: false},
+                    ]},
+                    {tagType: "label", text: "種類", children: [
+                        {tagType: "select", value: "values/2", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "values/2"}}, useCommand: false},
+                    ]},
+                    {tagType: "label", text: "半径", children: [
+                        {tagType: "input", value: "values/3", type: "number", min: 0, max: 10000, useCommand: false, custom: {visual: "range"}},
+                    ]},
                 ]}
             ]
         };

@@ -44,10 +44,10 @@ export class WeightPaintCommand {
             this.maxDecays = createArrayNAndFill(this.editObject.verticesNum, 0);
         } else this.error = true;
         console.log(this)
-        this.update(point);
+        this.paint(point);
     }
 
-    update(point) {
+    paint(point) {
         const decays = this.editObject.renderingVerticesCoordinates.map(co => Math.max(0, 1 - (MathVec2.distanceR(point, co) / this.decaySize)));
         decays.forEach((decay, vertexIndex) => {
             if (this.maxDecays[vertexIndex] < decay) this.maxDecays[vertexIndex] = decay;

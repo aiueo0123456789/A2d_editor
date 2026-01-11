@@ -12,10 +12,10 @@ export class MenuTag extends CustomTag {
         this.title = createTag(this.element, "p", {textContent: title});
         setClass(this.title, "nowrap");
         // const listContainer = createTag(container,"ul");
-        this.element.classList.add("custom-menu");
+        this.element.classList.add("popupMenu");
         this.element.addEventListener("click", (e) => {
             const rect = this.element.getBoundingClientRect();
-            const menuItemsContainer = app.ui.jTag.getDOMFromID("custom-menu-items");
+            const menuItemsContainer = app.ui.jTag.getDOMFromID("popupMenu-items");
             function removeFn() {
                 menuItemsContainer.replaceChildren();
                 menuItemsContainer.classList.add("hidden");
@@ -29,7 +29,7 @@ export class MenuTag extends CustomTag {
                 /** @type {HTMLElement} */
                 const li = createTag(parent,"li");
                 const container = createTag(li,"div");
-                container.className = "custom-menu-itemContainer";
+                container.className = "popupMenu-itemContainer";
                 const img = createTag(container, "img");
                 if (object.icon) {
                     img.src = app.ui.getImgURLFromImgName(object.icon);
@@ -56,9 +56,9 @@ export class MenuTag extends CustomTag {
                         event.stopPropagation();
                     })
                 }
-                li.className = "custom-menu-item";
+                li.className = "popupMenu-item";
                 const children = createTag(li, "ul");
-                children.className = "custom-menu-item-submenu";
+                children.className = "popupMenu-item-submenu";
                 return children;
             }
             looper(struct, "children", createItemTag, menuItemsContainer);

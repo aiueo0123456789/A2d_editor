@@ -1,12 +1,14 @@
 import { app } from "../../main.js";
 import { AdjustPanel_ChangeParent } from "../ui/adjustPanels/changeParent.js";
 import { AdjustPanel_ExtrudeMove } from "../ui/adjustPanels/ExtrudeMove.js";
+import { AdjustPanel_Resize } from "../ui/adjustPanels/resize.js";
 import { AdjustPanel_Rotate } from "../ui/adjustPanels/rotate.js";
 import { AdjustPanel_Translate } from "../ui/adjustPanels/Translate.js";
 import { JTag } from "../utils/JTag/JTag.js";
 
 const adjustPanels = [
     AdjustPanel_Translate,
+    AdjustPanel_Resize,
     AdjustPanel_Rotate,
     AdjustPanel_ChangeParent,
     AdjustPanel_ExtrudeMove,

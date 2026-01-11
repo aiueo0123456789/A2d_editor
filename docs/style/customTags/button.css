@@ -1,12 +1,22 @@
-.button {
+.operatorButton {
     display: flex;
-    width: fit-content;
-    height: fit-content;
+    /* width: fit-content; */
+    width: 100%;
+    height: 20px;
+    border-radius: 4px;
+    background-color: #626262;
+    border: 1px solid #424242;
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
 }
-.button img {
+.operatorButton:active{
+    background-color: #3381ae;
+}
+.operatorButton img {
     width: 15px;
     height: 15px;
 }
-.button div {
+.operatorButton p {
     width: fit-content;
 }

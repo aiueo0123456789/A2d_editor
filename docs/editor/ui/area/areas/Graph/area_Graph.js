@@ -7,10 +7,6 @@ import { MathVec2 } from "../../../../utils/mathVec.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
 import { useEffect } from "../../../../utils/ui/util.js";
 import { calculateLocalMousePosition, changeParameter, errorCut, isPointInEllipse } from "../../../../utils/utility.js";
-import { KeyDelete } from "../../../tools/KeyDelete.js";
-import { KeyframeResize } from "../../../tools/KeyframeResize.js";
-import { KeyframeRotate } from "../../../tools/KeyframeRotate.js";
-import { KeyframeTranslateInGraph } from "../../../tools/KeyframeTranslate.js";
 
 const targetValueToColor = {
     "x": "rgb(0, 0, 255)",
@@ -54,20 +50,26 @@ export class Area_Graph {
                                 {tagType: "padding", size: "10px"},
                             ]},
                             {tagType: "box", class: "boxs", children: [
-                                {tagType: "button", icon: "reverseSkip", onClick: () => {
+                                {tagType: "operatorButton", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
                                 }},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isReversePlaying", look: {check: "stop", uncheck: "reverse"}, useCommand: false},
                                 {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isPlaying", look: {check: "stop", uncheck: "playing"}, useCommand: false},
-                                {tagType: "button", icon: "skip", onClick: () => {
+                                {tagType: "operatorButton", icon: "skip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
                             {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto auto auto", children: [
                                 {tagType: "padding", size: "10px"},
-                                {tagType: "input", label: "現在", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
-                                {tagType: "input", label: "開始", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
-                                {tagType: "input", label: "終了", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                                {tagType: "label", text: "current", children: [
+                                    {tagType: "input", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
+                                ]},
+                                {tagType: "label", text: "start", children: [
+                                    {tagType: "input", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
+                                ]},
+                                {tagType: "label", text: "end", children: [
+                                    {tagType: "input", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                                ]}
                             ]}
                         ]},
                     ]},
@@ -135,7 +137,7 @@ export class Area_Graph {
         this.jTag = area.jTag;
         this.jTag.create(area.main, this.struct);
 
-        this.toolPanelOperator = new AdjustPanelOperator(this.jTag.getDOMFromID("canvasContainer").element, {"g": KeyframeTranslateInGraph, "r": KeyframeRotate, "s": KeyframeResize, "x": KeyDelete});
+        this.toolPanelOperator = new AdjustPanelOperator();
 
         /** @type {OutlinerTag} */
         this.overview = this.jTag.getDOMFromID("overview");
