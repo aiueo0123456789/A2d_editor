@@ -5,7 +5,7 @@ export class TextureTag extends CustomTag {
     constructor(jTag,t,parent,source,child,flag) {
         super();
         this.canvas = document.createElement("canvas");
-        this.texture = jTag.getParameter(source, child.sourceTexture);
+        this.texture = jTag.getParameterByPath(source, child.sourceTexture);
         this.canvas.style.width = "100%";
         this.canvas.style.height = "100%";
         this.canvas.style.objectFit = "contain";

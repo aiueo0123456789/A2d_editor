@@ -19,11 +19,11 @@ export class HasKeyframeCheck extends CustomTag {
         this.span.classList.add("hasKeyframeCheck");
         this.element.append(this.checkbox,this.span);
 
-        this.targetKeyframeBlock = jTag.getParameter(source, child.src);
+        this.targetKeyframeBlock = jTag.getParameterByPath(source, child.src);
         this.checkbox.addEventListener("click", () => {
             if (this.targetKeyframeBlock.hasKeyFromFrame(app.scene.frame_current, 0.2)) {
             } else {
-                app.operator.appendCommand(new KeyframeInsertInKeyframeCommand(this.targetKeyframeBlock, app.scene.frame_current, jTag.getParameter(source, child.value)));
+                app.operator.appendCommand(new KeyframeInsertInKeyframeCommand(this.targetKeyframeBlock, app.scene.frame_current, jTag.getParameterByPath(source, child.value)));
                 app.operator.execute();
             }
         });

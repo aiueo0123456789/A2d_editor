@@ -1,0 +1,17 @@
+.group {
+    display: grid;
+    width: 100%;
+    height: 100%;
+}
+
+.group :first-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 0px;
+}
+.group :not(:first-child):not(:last-child) {
+    border-radius: 0px;
+}
+.group :last-child {
+    border-top-left-radius: 0px;
+    border-bottom-left-radius: 0px;
+}

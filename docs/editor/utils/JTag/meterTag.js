@@ -8,8 +8,8 @@ export class MeterTag extends CustomTag {
         this.element = createTag(t, "div", {class: "meter"});
         this.bar = createTag(this.element, "div", {class: "meterBar"});
 
-        let valueSource = jTag.getParameter(source, child.valueSource, 1);
-        let maxSource = jTag.getParameter(source, child.maxSource, 1);
+        let valueSource = jTag.getParameterByPath(source, child.valueSource, 1);
+        let maxSource = jTag.getParameterByPath(source, child.maxSource, 1);
         // 値を関連づけ
         let updateDOMsValue = () => {
             this.bar.style.width = `${valueSource.value / maxSource.value * 100}%`;

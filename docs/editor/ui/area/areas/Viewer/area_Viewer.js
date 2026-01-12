@@ -119,6 +119,7 @@ export class Area_Viewer {
                     {tagType: "option", name: "情報", children: [
                         {tagType: "gridBox", style: "padding: 2px;", class: "minLimitClear", axis: "c", allocation: "auto 1fr auto", children: [
                             {tagType: "flexBox", interval: "10px", children: [
+                                {tagType: "input", type: "radio", value: "", onChange: () => {}, inputs: [{value: "1", look: {check: "check", uncheck: "uncheck"}}, {value: "2", look: {check: "check", uncheck: "uncheck"}}, {value: "3", look: {check: "check", uncheck: "uncheck"}}]},
                                 {tagType: "heightCenter", children: [
                                     {tagType: "path", sourceObject: "context/activeObject", updateEventTarget: {path: "context/%activeObject"}, children: [
                                         {tagType: "if", formula: {source: "/type", conditions: "==", value: "グラフィックメッシュ"},

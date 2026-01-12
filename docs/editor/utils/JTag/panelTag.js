@@ -2,9 +2,10 @@ import { CustomTag } from "./customTag.js";
 import { createTag } from "../ui/util.js";
 import { IsString } from "../utility.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";
+import { JTag } from "./JTag.js";
 
 export class PanelTag extends CustomTag {
-    constructor(jTag,t,parent,source,child,flag) {
+    constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
         super();
         this.element = createTag(t, "div", {class: "panel"});
         this.header = createTag(this.element, "div", {class: "panel-header"});
@@ -13,11 +14,7 @@ export class PanelTag extends CustomTag {
         visibleCheck.checkbox.setAttribute('disabled', true);
         // this.arrow = createTag(this.header, "span", {class: "downArrow"});
         this.panelName = createTag(this.header, "p");
-        if (IsString(child.name)) {
-            this.panelName.textContent = child.name;
-        } else {
-            this.panelName.textContent = jTag.getParameter(source, child.name.path);
-        }
+        this.panelName.textContent = jTag.getParameter(source, child.name);
 
         this.mainContainer = createTag(this.element, "div", {class: "panel-mainContainer"});
         this.main = createTag(this.mainContainer, "div", {class: "panel-main"});

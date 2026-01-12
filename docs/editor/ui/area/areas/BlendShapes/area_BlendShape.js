@@ -24,19 +24,21 @@ export class Area_BlendShape {
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option", name: "情報", children: [
-                        {tagType: "gridBox", axis: "c", allocation: "auto 1fr auto", children: [
-                            {tagType: "select",
-                                value: (value) => {
-                                    changeParameter(this.areaConfig, "activeBlendShape", app.scene.objects.getObjectByID(value));
+                        {tagType: "gridBox", axis: "c", allocation: "auto", children: [
+                            {tagType: "group", template: "100px 50px", children: [
+                                {tagType: "select",
+                                    value: (value) => {
+                                        changeParameter(this.areaConfig, "activeBlendShape", app.scene.objects.getObjectByID(value));
+                                    },
+                                    sourceObject: () => {
+                                        return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});
+                                    }, options: {initValue: ""}
                                 },
-                                sourceObject: () => {
-                                    return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});
-                                }, options: {initValue: ""}
-                            },
-                            {tagType: "operatorButton", label: "Add", onClick: () => {
-                                app.operator.appendCommand(new CreateObjectCommand({type: "ブレンドシェイプ", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], shapeKeys: []}));
-                                app.operator.execute();
-                            }},
+                                {tagType: "operatorButton", label: "Add", onClick: () => {
+                                    app.operator.appendCommand(new CreateObjectCommand({type: "ブレンドシェイプ", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], shapeKeys: []}));
+                                    app.operator.execute();
+                                }},
+                            ]}
                         ]}
                     ]},
                     {tagType: "box", id: "main", style: "width: 100%; height: 100%; position: relative;", children: [

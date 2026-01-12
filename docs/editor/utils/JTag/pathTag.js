@@ -29,7 +29,7 @@ export class PathTag extends CustomTag {
             this.children.length = 0;
             const keep = createTag(null, "div", {style: "width: 0px; height: 0px;"});
             if (child.children) {
-                const o = jTag.getParameter(source, child.sourceObject, 2);
+                const o = jTag.getParameterByPath(source, child.sourceObject, 2);
                 if (o) {
                     if (isFunction(o)) {
                         this.children = jTag.createFromStructures(keep, this, child.children, {normal: o(), special: {}}, myFlag);
@@ -49,7 +49,7 @@ export class PathTag extends CustomTag {
             keep.remove();
         }
         const setUpdateEventTarget = (updateEventTarget) => {
-            if (updateEventTarget.path) {
+            if (updateEventTarget.path) { // パラメーターに対応
                 this.dataBlocks = [jTag.setUpdateEventByPath(source, updateEventTarget.path, childrenReset, flag)];
             } else { // 文字列に対応
                 this.dataBlocks = [useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag},childrenReset)];

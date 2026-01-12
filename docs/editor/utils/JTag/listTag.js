@@ -67,7 +67,7 @@ export class ListTag extends CustomTag {
         }
 
         const keys = new Map();
-        let items = jTag.getParameter(source, data.src);
+        let items = jTag.getParameterByPath(source, data.src);
         this.children = [];
         const isPrimitive = data.isPrimitive;
         const listUpdate = () => {

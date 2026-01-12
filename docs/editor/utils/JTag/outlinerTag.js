@@ -90,11 +90,11 @@ export class OutlinerTag extends CustomTag {
 
         let result = {active: null, selects: []};
         if (options.selectSource) {
-            result.selects = jTag.getParameter(source, options.selectSource.object);
+            result.selects = jTag.getParameterByPath(source, options.selectSource.object);
         }
         let activeSource = null;
         if (options.activeSource) {
-            activeSource = {object: jTag.getParameter(source, options.activeSource.object), parameter: options.activeSource.parameter};
+            activeSource = {object: jTag.getParameterByPath(source, options.activeSource.object), parameter: options.activeSource.parameter};
         } else {
             activeSource = {object: result, parameter: "active"};
         }
@@ -118,7 +118,7 @@ export class OutlinerTag extends CustomTag {
                         const targetType = child[loopTarget.parameter];
                         const loopTargets = loopTarget.loopTargets[targetType] ? loopTarget.loopTargets[targetType] : loopTarget.loopTargets["others"] ? loopTarget.loopTargets["others"] : [];
                         for (const l of loopTargets) {
-                            const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
+                            const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
                             if (nextChildren) { // 子要素がある場合ループする
                                 const fnResult = getLoopChildren(nextChildren, resultObject);
                                 if (fnResult.filter) {
@@ -128,7 +128,7 @@ export class OutlinerTag extends CustomTag {
                         }
                     } else {
                         for (const l of loopTarget) {
-                            const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
+                            const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
                             if (nextChildren) { // 子要素がある場合ループする
                                 const fnResult = getLoopChildren(nextChildren, resultObject);
                                 if (fnResult.filter) {
@@ -155,9 +155,9 @@ export class OutlinerTag extends CustomTag {
         }
         const outlinerUpdate = () => {
             if (useMode) {
-                rootObject = isSourceFunction ? withObject(this.mode) : jTag.getParameter(source, withObject[this.mode]);
+                rootObject = isSourceFunction ? withObject(this.mode) : jTag.getParameterByPath(source, withObject[this.mode]);
             } else {
-                rootObject = isSourceFunction ? withObject() : jTag.getParameter(source, withObject);
+                rootObject = isSourceFunction ? withObject() : jTag.getParameterByPath(source, withObject);
             }
             array.length = 0;
             const allObject = getAllObject();
@@ -238,14 +238,14 @@ export class OutlinerTag extends CustomTag {
                                 const targetType = child[loopTarget.parameter];
                                 const loopTargets = loopTarget.loopTargets[targetType] ? loopTarget.loopTargets[targetType] : loopTarget.loopTargets["others"];
                                 for (const l of loopTargets) {
-                                    const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
+                                    const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
                                     if (nextChildren) { // 子要素がある場合ループする
                                         looper(nextChildren, container.children[1]);
                                     }
                                 }
                             } else {
                                 for (const l of loopTarget) {
-                                    const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
+                                    const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
                                     if (nextChildren) { // 子要素がある場合ループする
                                         looper(nextChildren, container.children[1]);
                                     }
@@ -290,7 +290,7 @@ export class OutlinerTag extends CustomTag {
         useEffect.set({o: result.selects, g: jTag.groupID, f: flag}, listActive);
         console.log("ヒエラルキー更新対象", child.updateEventTarget)
         const setUpdateEventTarget = (updateEventTarget) => {
-            if (updateEventTarget.path) {
+            if (updateEventTarget.path) { // パラメーターに対応
                 jTag.setUpdateEventByPath(source, updateEventTarget.path, outlinerUpdate, flag);
             } else { // 文字列に対応
                 useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag}, outlinerUpdate);
@@ -306,7 +306,7 @@ export class OutlinerTag extends CustomTag {
             }
         } else {
             if (!isSourceFunction) {
-                useEffect.set({o: jTag.getParameter(source, withObject), g: jTag.groupID, f: flag}, outlinerUpdate);
+                useEffect.set({o: jTag.getParameterByPath(source, withObject), g: jTag.groupID, f: flag}, outlinerUpdate);
             }
         }
         outlinerUpdate();

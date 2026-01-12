@@ -49,7 +49,7 @@ export class Area_Timeline {
                                 ]},
                                 {tagType: "padding", size: "10px"},
                             ]},
-                            {tagType: "box", class: "boxs", children: [
+                            {tagType: "group", children: [
                                 {tagType: "operatorButton", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
                                 }},

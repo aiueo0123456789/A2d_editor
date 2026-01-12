@@ -27,7 +27,7 @@ export class ParameterManagerTag extends CustomTag {
                 li.addEventListener("click", () => {
                     child.targets.forEach((targetPath, index) => {
                         /** @type {ParameterReference} */
-                        const reference = jTag.getParameter(source, targetPath, 1);
+                        const reference = jTag.getParameterByPath(source, targetPath, 1);
                         changeParameter(reference.object, reference.parameter, parameterManager.parameters[index].value);
                     });
                 })

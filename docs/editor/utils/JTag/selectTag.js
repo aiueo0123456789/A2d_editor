@@ -11,24 +11,20 @@ export class SelectTag extends CustomTag {
         this.element.classList.add("custom-select");
         this.input = createTag(this.element, "input", {style: "display: none;"});
         if (!isFunction(child.value)) {
-            jTag.setWith(this.input, child.value, source, flag, child.useCommand);
+            jTag.setWith(this.input, child.value, source, flag, child.useCommand, child.onChange);
         }
-        let initValue = "選択されていません";
-        const value = createTag(this.element, "p", {class: "nowrap"});
+        let initValue = "null";
+        const valueTag = createTag(this.element, "p", {class: "nowrap"});
         if (child.options.initValue) {
-            if (child.options.initValue.path) {
-                initValue = jTag.getParameter(source, child.options.initValue.path);
-            } else {
-                initValue = child.options.initValue;
-            }
+            initValue = jTag.getParameter(source, child.options.initValue);
         }
-        value.textContent = initValue;
+        valueTag.textContent = initValue;
         this.input.value = initValue;
-        const isOpen = createTag(this.element, "span", {class: "downArrow"});
+        const downArrowTag = createTag(this.element, "span", {class: "downArrow"});
         this.element.addEventListener("click", (e) => {
             let items;
             if (IsString(child.sourceObject)) {
-                items = jTag.getParameter(source, child.sourceObject);
+                items = jTag.getParameterByPath(source, child.sourceObject);
             } else if (Array.isArray(child.sourceObject)) {
                 items = child.sourceObject;
             } else if (isFunction(child.sourceObject)) {
@@ -38,7 +34,7 @@ export class SelectTag extends CustomTag {
             const listContainer = app.ui.jTag.getDOMFromID("custom-select-items");
             listContainer.style.minWidth = `${rect.width}px`;
             listContainer.style.left = `${rect.left}px`;
-            listContainer.style.top = `${rect.top + 15}px`;
+            listContainer.style.top = `${rect.bottom}px`;
             listContainer.replaceChildren();
             listContainer.classList.remove("hidden");
             function removeFn() {
@@ -56,26 +52,26 @@ export class SelectTag extends CustomTag {
                 const option = createTag(listContainer, "li");
                 if (isPlainObject(item)) {
                     const inner = createTag(option, "p", {textContent: item.name});
-                    if (value.textContent == item) {
+                    if (valueTag.textContent == item) {
                         option.classList.add("active");
                     }
                     option.addEventListener("click", () => {
                         this.input.value = item.id;
                         // change イベントを手動で発火させる
                         this.input.dispatchEvent(new Event("input", { bubbles: true }));
-                        value.textContent = item.name;
+                        valueTag.textContent = item.name;
                         submit(item.id);
                     })
                 } else {
                     const inner = createTag(option, "p", {textContent: item});
-                    if (value.textContent == item) {
+                    if (valueTag.textContent == item) {
                         option.classList.add("active");
                     }
                     option.addEventListener("click", () => {
                         this.input.value = item;
                         // change イベントを手動で発火させる
                         this.input.dispatchEvent(new Event("input", { bubbles: true }));
-                        value.textContent = item;
+                        valueTag.textContent = item;
                         submit(item);
                     })
                 }

@@ -1,6 +1,6 @@
 import { CustomTag } from "./customTag.js";
 import { createGroupButton, createRadios, createTag, useEffect, setClass, setStyle, updateRangeStyle } from "../ui/util.js";
-import { changeParameter, hexToRgba, isFunction, isNumber, isPassByReference, rgbToHex } from "../utility.js";
+import { changeParameter, hexToRgba, isFunction, isNumber, isPassByReference, IsString, rgbToHex } from "../utility.js";
 import { app } from "../../../main.js";
 import { MenuTag } from "./menuTag.js";
 import { CodeEditorTag } from "./codeEditorTag.js";
@@ -31,6 +31,8 @@ import { ChecksTag } from "./checksTag.js";
 import { createID } from "../idGenerator.js";
 import { PopoverMenuTag } from "./popoverMenuTag.js";
 import { IconTag } from "./iconTag.js";
+import { GroupTag } from "./groupTag.js";
+import { InputRadioTag } from "./radioTag.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
@@ -48,7 +50,7 @@ const tagCreater = {
         let element = createTag(t, "p");
         setClass(element, "text");
         const update = () => {
-            element.textContent = jTag.getParameter(source, child.withObject);
+            element.textContent = jTag.getParameterByPath(source, child.withObject);
         }
         update();
         jTag.setUpdateEventByPath(source, child.withObject, update, flag);
@@ -83,6 +85,8 @@ const tagCreater = {
             element = new InputColorTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
         } else if (child.type == "checkbox") {
             element = new InputCheckboxTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
+        } else if (child.type == "radio") {
+            element = new InputRadioTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
         } else { // 数字型
             element = new InputNumberTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
         }
@@ -96,9 +100,6 @@ const tagCreater = {
     },
     "buttons": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         createGroupButton(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
-    },
-    "radios": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        createRadios(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
     },
     "checks": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         const a = (child.withObjects).map((data, index) => {
@@ -190,16 +191,16 @@ const tagCreater = {
         return new PathTag(jTag,t,parent,source,child,flag);
     },
     "if": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        // console.log(source, child, jTag.getParameter(source,child.formula.source))
+        // console.log(source, child, jTag.getParameterByPath(source,child.formula.source))
         let bool = false;
         if (child.formula.conditions == "==") {
-            bool = jTag.getParameter(source,child.formula.source) == child.formula.value;
+            bool = jTag.getParameterByPath(source,child.formula.source) == child.formula.value;
         } else if (child.formula.conditions == ">") {
-            bool = jTag.getParameter(source,child.formula.source) > child.formula.value;
+            bool = jTag.getParameterByPath(source,child.formula.source) > child.formula.value;
         } else if (child.formula.conditions == "<") {
-            bool = jTag.getParameter(source,child.formula.source) < child.formula.value;
+            bool = jTag.getParameterByPath(source,child.formula.source) < child.formula.value;
         } else if (child.formula.conditions == "in") {
-            bool = child.formula.value in jTag.getParameter(source,child.formula.source);
+            bool = child.formula.value in jTag.getParameterByPath(source,child.formula.source);
         }
         if (bool) {
             if (child.true) {
@@ -215,7 +216,7 @@ const tagCreater = {
         return new HasKeyframeCheck(jTag,t,parent,source,child,flag);
     },
     "nodeFromFunction": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        const functionResult = jTag.getParameter(source, child.source)();
+        const functionResult = jTag.getParameterByPath(source, child.source)();
         return jTag.createFromStructures(t, null, functionResult, source, flag);
     },
     "html": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
@@ -235,8 +236,8 @@ const tagCreater = {
         return new DualListboxTag(jTag,t,parent,source,child,flag);
     },
     "color": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        if (t instanceof HTMLElement) t.style.backgroundColor = jTag.getParameter(source, child.src);
-        else t.element.style.backgroundColor = jTag.getParameter(source, child.src);
+        if (t instanceof HTMLElement) t.style.backgroundColor = jTag.getParameterByPath(source, child.src);
+        else t.element.style.backgroundColor = jTag.getParameterByPath(source, child.src);
         return null;
     },
     "parameterManager": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
@@ -247,6 +248,9 @@ const tagCreater = {
     },
     "label": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new LabelTag(jTag,t,parent,source,child,flag);
+    },
+    "group": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        return new GroupTag(jTag,t,parent,source,child,flag);
     }
 }
 
@@ -305,8 +309,8 @@ export class JTag {
                     const currentIndex = matches.length;
                     if (path[index - 1] == "%") {
                         checked = true;
-                        matches.push(`%${this.getParameter(source, content)}`);
-                    } else matches.push(this.getParameter(source, content));
+                        matches.push(`%${this.getParameterByPath(source, content)}`);
+                    } else matches.push(this.getParameterByPath(source, content));
                     return `&${currentIndex}`;
                 });
                 if (checked) replaced = replaced.replace("%", "");
@@ -352,7 +356,17 @@ export class JTag {
         }
     }
 
-    getParameter(source, path, option = 0) {
+    getParameter(source, value) {
+        if (IsString(value.path)) {
+            return this.getParameterByPath(source, value);
+        } else if (isFunction(value)) {
+            return value();
+        } else {
+            return value;
+        }
+    }
+
+    getParameterByPath(source, path, option = 0) {
         try {
             let useSearchTarget;
             path = path.replace("%", ""); // %はじゃまなので削除
@@ -365,7 +379,7 @@ export class JTag {
                 useSearchTarget = source.special;
             } else if (path[0] == "<") {
                 path = path.slice(1);
-                return this.getParameter(source, path, "fromSource");
+                return this.getParameterByPath(source, path, "fromSource");
             } else { // globalから
                 useSearchTarget = this.globalSource;
             }
@@ -378,7 +392,7 @@ export class JTag {
                 // {〜} 部分を抽出しつつ置換
                 const replaced = path.replace(/\{([^{}]*)\}/g, (match, content, index) => {
                     const currentIndex = matches.length;
-                    matches.push(this.getParameter(source, content));
+                    matches.push(this.getParameterByPath(source, content));
                     return `&${currentIndex}`;
                 });
                 roots = replaced.split("/").map(root => {
@@ -438,7 +452,7 @@ export class JTag {
         if (tagData.id) {
             let id = "";
             if (tagData.id.path) {
-                id = this.getParameter(source, tagData.id.path);
+                id = this.getParameterByPath(source, tagData.id.path);
             } else {
                 id = tagData.id;
             }
@@ -448,7 +462,7 @@ export class JTag {
 
     // inputとselectを値と関連付ける
     setWith(/** @type {HTMLElement} */t, path, source, flag, useCommand = true, submitFunction = null) {
-        let object = this.getParameter(source, path, 1);
+        let object = this.getParameterByPath(source, path, 1);
         if (!object) { // 取得できなかったら切り上げ
             console.warn("UIとパラメータの連携ができませんでした", path, source, this.globalSource);
             if (t.type == "number" || t.type == "range") { // 数字型
@@ -520,7 +534,7 @@ export class JTag {
     getKeyFromStructure(structure, source) {
         if (!structure.id) return null;
         if (structure.id.path) {
-            return this.getParameter(source, structure.id.path);
+            return this.getParameterByPath(source, structure.id.path);
         } else {
             return structure.id;
         }
