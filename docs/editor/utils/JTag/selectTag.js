@@ -15,9 +15,7 @@ export class SelectTag extends CustomTag {
         }
         let initValue = "null";
         const valueTag = createTag(this.element, "p", {class: "nowrap"});
-        if (child.options.initValue) {
-            initValue = jTag.getParameter(source, child.options.initValue);
-        }
+        if (child.options.initValue) initValue = jTag.getParameter(source, child.options.initValue);
         valueTag.textContent = initValue;
         this.input.value = initValue;
         const downArrowTag = createTag(this.element, "span", {class: "downArrow"});

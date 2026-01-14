@@ -26,11 +26,11 @@ export class TimelineSpaceData {
                 if (object instanceof BArmatureAnimation) {
                     object.selectedBones.forEach(bone => result.push({name: bone.name, type: "ボーン", children: looper([bone.keyframeBlockManager], {object: bone}), object: object}))
                 } else if (object instanceof BKeyframeBlockManager) {
-                    object.parameters.forEach((parameter, index) => result.push({parameter: parameter, type: "キーフレームブロック", pathID: `${othersData.object.id}/${object.keyframeBlocks[index].id}`, object: object.keyframeBlocks[index]}))
+                    object.parameters.forEach((parameter, index) => result.push({parameter: parameter, type: "KeyframeBlock", pathID: `${othersData.object.id}/${object.keyframeBlocks[index].id}`, object: object.keyframeBlocks[index]}))
                 } else if(object instanceof BlendShape) {
                     result.push({name: object.name, type: "ブレンドシェイプ", children: looper([object.keyframeBlockManager], {object: object}), object: object});
                 } else if (object instanceof KeyframeBlockManager) {
-                    object.parameters.forEach((parameter, index) => result.push({parameter: parameter, type: "キーフレームブロック", pathID: `${othersData.object.id}/${object.keyframeBlocks[index].id}`, object: object.keyframeBlocks[index]}))
+                    object.parameters.forEach((parameter, index) => result.push({parameter: parameter, type: "KeyframeBlock", pathID: `${othersData.object.id}/${object.keyframeBlocks[index].id}`, object: object.keyframeBlocks[index]}))
                 }
             }
             return result;
@@ -42,7 +42,7 @@ export class TimelineSpaceData {
         const result = [];
         const looper = (objects) => {
             for (const object of objects) {
-                if (object.type == "キーフレームブロック") result.push(object);
+                if (object.type == "KeyframeBlock") result.push(object);
                 else looper(object.children);
             }
         }

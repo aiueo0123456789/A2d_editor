@@ -91,7 +91,7 @@ export class Armature extends ObjectBase {
     }
 
     constructor(data) {
-        super(data.name, "アーマチュア", data.id);
+        super(data.name, "Armature", data.id);
         this.runtimeData = app.scene.runtimeData.armatureData;
 
         this.baseTransformIsLock = false;
@@ -145,7 +145,7 @@ export class Armature extends ObjectBase {
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.allAnimations,
                 parameters: createArrayN(this.allAnimations.length),
-                keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createAndAppendObject({type: "キーフレームブロック"}))
+                keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}))
             });
         }
         console.log(this)

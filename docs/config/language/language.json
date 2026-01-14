@@ -14,7 +14,7 @@
         "objectMode": "オブジェクトモード",
         "projectName": "プロジェクト名",
         "camera": "カメラ",
-        "maskTexture": "マスクテクスチャ",
+        "maskTexture": "MaskTexture",
         "view": "ビュー",
         "select": "選択",
         "allSelect": "全選択",

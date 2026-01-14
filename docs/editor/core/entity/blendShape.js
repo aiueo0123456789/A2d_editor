@@ -71,7 +71,7 @@ export class BlendShape {
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.value,
                 parameters: createArrayN(this.dimension),
-                keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createAndAppendObject({type: "キーフレームブロック"}))
+                keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}))
             });
         }
 

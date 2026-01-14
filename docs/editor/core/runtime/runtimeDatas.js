@@ -17,7 +17,7 @@ export class RuntimeDatas {
     getByID(object) {
         console.log("呼び出された")
         let index = 0;
-        if (object.type == "ベジェモディファイア") {
+        if (object.type == "BezierModifier") {
             index = this.bezierModifierData.order.indexOf(object);
         }
         return index;

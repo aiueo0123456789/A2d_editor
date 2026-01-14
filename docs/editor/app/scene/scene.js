@@ -31,10 +31,6 @@ const propagateBonePipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csr
 const physicsBonePipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csrw_Csrw"),GPU.getGroupLayout("Csr")], await loadFile("./editor/shader/compute/object/bone/physics.wgsl"));
 const calculateBoneVerticesPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/bone/calculateVertices.wgsl"));
 
-const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
-const bezierModifierHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/bezierModifier/hitTest.wgsl"));
-const polygonsHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/graphicMesh/hitTest.wgsl"));
-
 const templateParticleUpdateCode = `
 // MIT License. © Stefan Gustavson, Munrocket
 fn permute4(x: vec4f) -> vec4f { return ((x * 34. + 1.) * x) % vec4f(289.); }
@@ -116,9 +112,9 @@ fn main(@builtin(global_invocation_id) global_id: vec3<u32>) {
 }`;
 
 export const objectToNumber = {
-    "グラフィックメッシュ": 1,
-    "ベジェモディファイア": 2,
-    "アーマチュア": 3,
+    "GraphicMesh": 1,
+    "BezierModifier": 2,
+    "Armature": 3,
 };
 
 class ObjectsMetaData {
@@ -200,23 +196,23 @@ class Objects {
 
     createObject(data) {
         let objectType = data.type;
-        if (objectType == "グラフィックメッシュ") {
+        if (objectType == "GraphicMesh") {
             return new GraphicMesh(data);
-        } else if (objectType == "ベジェモディファイア") {
+        } else if (objectType == "BezierModifier") {
             return new BezierModifier(data);
-        } else if (objectType == "アーマチュア") {
+        } else if (objectType == "Armature") {
             return new Armature(data);
-        } else if (objectType == "キーフレームブロック") {
+        } else if (objectType == "KeyframeBlock") {
             return new KeyframeBlock(data);
-        } else if (objectType == "パラメーターマネージャー") {
+        } else if (objectType == "ParameterManager") {
             return new ParameterManager(data);
-        } else if (objectType == "パーティクル") {
+        } else if (objectType == "Particle") {
             return new Particle(data);
-        } else if (objectType == "スクリプト") {
+        } else if (objectType == "Script") {
             return new Script(data);
-        } else if (objectType == "テクスチャ") {
+        } else if (objectType == "Texture") {
             return new Texture(data);
-        } else if (objectType == "マスクテクスチャ") {
+        } else if (objectType == "MaskTexture") {
             return new MaskTexture(data);
         } else if (objectType == "ブレンドシェイプ") {
             return new BlendShape(data);
@@ -234,15 +230,15 @@ class Objects {
 
     // 属性から所属する配列を返す
     searchArrayFromType(objectType) {
-        if (objectType == "グラフィックメッシュ") return this.graphicMeshs;
-        else if (objectType == "ベジェモディファイア") return this.bezierModifiers;
-        else if (objectType == "アーマチュア") return this.armatures;
-        else if (objectType == "キーフレームブロック") return this.keyframeBlocks;
-        else if (objectType == "パラメーターマネージャー") return this.parameterManagers;
-        else if (objectType == "パーティクル") return this.particles;
-        else if (objectType == "スクリプト") return this.scripts;
-        else if (objectType == "テクスチャ") return this.textures;
-        else if (objectType == "マスクテクスチャ") return this.maskTextures;
+        if (objectType == "GraphicMesh") return this.graphicMeshs;
+        else if (objectType == "BezierModifier") return this.bezierModifiers;
+        else if (objectType == "Armature") return this.armatures;
+        else if (objectType == "KeyframeBlock") return this.keyframeBlocks;
+        else if (objectType == "ParameterManager") return this.parameterManagers;
+        else if (objectType == "Particle") return this.particles;
+        else if (objectType == "Script") return this.scripts;
+        else if (objectType == "Texture") return this.textures;
+        else if (objectType == "MaskTexture") return this.maskTextures;
         else if (objectType == "ブレンドシェイプ") return this.blendShapes;
         else if (objectType == "シェイプキー") return this.shapeKeys;
     }
@@ -319,7 +315,7 @@ export class Scene {
         this.app = app;
         this.objects = new Objects(this);
         this.layers = new Layers();
-        // this.objects.createAndAppendObject({type: "パラメーターマネージャー"});
+        // this.objects.createAndAppendObject({type: "ParameterManager"});
 
         this.renderingOrder = [];
 
@@ -351,7 +347,7 @@ export class Scene {
 
     init() {
         // const texture = this.objects.createObject({
-        //     type: "テクスチャ",
+        //     type: "Texture",
         //     name: "未設定テクスチャ",
         //     id: "isNotTexture",
         //     texture: GPU.isNotTexture
@@ -359,7 +355,7 @@ export class Scene {
         // this.objects.appendObject(texture);
 
         // const script = this.objects.createObject({
-        //     type: "スクリプト",
+        //     type: "Script",
         //     name: "スクリプトテスト",
         //     id: "templateParticleUpdateCode",
         //     text: templateParticleUpdateCode
@@ -367,92 +363,13 @@ export class Scene {
         // this.objects.appendObject(script);
 
         if (true) { // 白のマスクテクスチャ
-            const baseMaskTexture = this.objects.createAndAppendObject({name: "base", type: "マスクテクスチャ", id: "baseMaskTexture"});
+            const baseMaskTexture = this.objects.createAndAppendObject({name: "base", type: "MaskTexture", id: "baseMaskTexture"});
         }
     }
 
     reset() {
         this.app.operator.appendCommand(new DeleteObjectCommand(this.objects.allObject));
         this.app.operator.execute();
-    }
-
-    // オブジェクトとの当たり判定
-    async rayCast(point, option = {types: ["グラフィックメッシュ", "アーマチュア", "ベジェモディファイア"], depth: true}) {
-        const optionBuffer = GPU.createUniformBuffer(4, [0], ["u32"]);
-        const pointBuffer = GPU.createUniformBuffer(2 * 4, [...point], ["f32"]);
-        const promises = this.objects.allObject
-            .filter(object => option.types.includes(object.type) && !("visible" in object && !object.visible))
-            .map(async (object) => {
-                const resultBuffer = GPU.createStorageBuffer(4, [0], ["u32"]);
-                let hitTestGroup;
-                if (object.type === "グラフィックメッシュ") {
-                    hitTestGroup = GPU.createGroup(
-                        GPU.getGroupLayout("Csrw_Csr_Csr_Cu_Cu_Cu"),
-                        [
-                            resultBuffer,
-                            this.runtimeData.graphicMeshData.renderingVertices.buffer,
-                            this.runtimeData.graphicMeshData.meshes.buffer,
-                            object.objectDataBuffer,
-                            optionBuffer,
-                            pointBuffer
-                        ]
-                    );
-                    GPU.runComputeShader(polygonsHitTestPipeline, [hitTestGroup], Math.ceil(object.meshesNum / 64));
-                } else if (object.type === "アーマチュア") {
-                    hitTestGroup = GPU.createGroup(
-                        GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu"),
-                        [
-                            resultBuffer,
-                            this.runtimeData.armatureData.renderingVertices.buffer,
-                            object.objectDataBuffer,
-                            optionBuffer,
-                            pointBuffer
-                        ]
-                    );
-                    GPU.runComputeShader(boneHitTestPipeline, [hitTestGroup], Math.ceil(object.bonesNum / 64));
-                } else if (object.type === "ベジェモディファイア") {
-                    hitTestGroup = GPU.createGroup(
-                        GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu_Cu"),
-                        [
-                            resultBuffer,
-                            this.runtimeData.bezierModifierData.renderingVertices.buffer,
-                            object.objectDataBuffer,
-                            this.app.activeArea.uiModel.camera.cameraDataBuffer,
-                            optionBuffer,
-                            pointBuffer
-                        ]
-                    );
-                    GPU.runComputeShader(bezierModifierHitTestPipeline, [hitTestGroup], Math.ceil(object.verticesNum / 64));
-                }
-                const resultBufferData = await GPU.getU32BufferData(resultBuffer, 4);
-                if (resultBufferData[0] === 1) {
-                    return object;
-                } else {
-                    return null;
-                }
-            });
-        const allResults = await Promise.all(promises);
-        const result = [];
-        for (const obj of allResults) {
-            if (obj) result.push(obj);
-        }
-        if (option.depth) {
-            result.sort((a, b) => {
-                const az = a.zIndex;
-                const bz = b.zIndex;
-
-                // どちらかがzIndexを持たない場合
-                if (az === undefined && bz !== undefined) return -1; // aを先に
-                if (az !== undefined && bz === undefined) return 1;  // bを先に
-
-                // 両方zIndexを持たないなら順序を変えない
-                if (az === undefined && bz === undefined) return 0;
-
-                // どちらも存在するなら数値で降順ソート
-                return bz - az;
-            });
-        }
-        return result;
     }
 
     frameUpdate() {
@@ -591,15 +508,15 @@ export class Scene {
 
     async getSaveData() {
         const conversion = {
-            "マスクテクスチャ": "maskTextures",
-            "テクスチャ": "textures",
-            "スクリプト": "scripts",
-            "パーティクル": "particles",
-            "グラフィックメッシュ": "graphicMeshs",
-            "ベジェモディファイア": "bezierModifiers",
-            "アーマチュア": "armatures",
-            "キーフレームブロック": "keyframeBlocks",
-            "パラメーターマネージャー": "parameterManagers",
+            "MaskTexture": "maskTextures",
+            "Texture": "textures",
+            "Script": "scripts",
+            "Particle": "particles",
+            "GraphicMesh": "graphicMeshs",
+            "BezierModifier": "bezierModifiers",
+            "Armature": "armatures",
+            "KeyframeBlock": "keyframeBlocks",
+            "ParameterManager": "parameterManagers",
             "ブレンドシェイプ": "blendShapes"
         };
         const object = {maskTextures: [], textures: [], scripts: [], particles: [], graphicMeshs: [], bezierModifiers: [], armatures: [], rotateMOdifiers: [], keyframeBlocks: [], parameterManagers: [], blendShapes: []};

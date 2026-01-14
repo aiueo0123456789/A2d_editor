@@ -7,7 +7,7 @@ import { device, GPU } from "../../utils/webGPU.js";
 export class MaskTexture {
     constructor(data) {
         this.id = data.id ? data.id : createID();
-        this.type = "マスクテクスチャ";
+        this.type = "MaskTexture";
         this.name = data.name;
         this.texture = null;
         this.view = null;

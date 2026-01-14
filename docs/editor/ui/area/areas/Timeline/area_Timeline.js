@@ -36,19 +36,19 @@ export class Area_Timeline {
         this.frameBarDrag = false;
 
         this.struct = {
-            inputObject: {"colorData": targetValueToColor, "context": app.context, "spaceData": this.spaceData, "areasConifg": app.appConfig.areasConfig, "scene": app.scene},
+            inputObject: {"colorData": targetValueToColor, "context": app.context, "spaceData": this.spaceData, "scene": app.scene},
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
-                    {tagType: "option",style: "height: 25px;", name: "情報", children: [
-                        {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto 1fr", children: [
-                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "auto auto 1fr", children: [
-                                {tagType: "padding", size: "10px"},
-                                {tagType: "menu", title: "選択", struct: [
-                                    {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
-                                    {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
-                                ]},
-                                {tagType: "padding", size: "10px"},
+                    {tagType: "gridBox", class: "minLimitClear header", axis: "c", allocation: "auto 1fr auto 1fr auto", children: [
+                        {tagType: "flexBox", gap: "10px", children: [
+                            {tagType: "padding", size: "10px"},
+                            {tagType: "menu", title: "選択", struct: [
+                                {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
+                                {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
                             ]},
+                        ]},
+                        {tagType: "padding", size: "10px"},
+                        {tagType: "flexBox", gap: "10px", children: [
                             {tagType: "group", children: [
                                 {tagType: "operatorButton", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
@@ -59,22 +59,22 @@ export class Area_Timeline {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
-                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto auto auto auto", children: [
-                                {tagType: "padding", size: "10px"},
-                                {tagType: "label", text: "current", children: [
-                                    {tagType: "input", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
-                                ]},
-                                {tagType: "label", text: "start", children: [
-                                    {tagType: "input", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
-                                ]},
-                                {tagType: "label", text: "end", children: [
-                                    {tagType: "input", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
-                                ]},
-                                {tagType: "label", text: "FPS", children: [
-                                    {tagType: "input", name: "frame_end", value: "scene/frame_speed", type: "number", max: 500, min: -500},
-                                ]},
-                            ]}
                         ]},
+                        {tagType: "padding", size: "10px"},
+                        {tagType: "flexBox", gap: "10px", children: [
+                            {tagType: "label", text: "current", children: [
+                                {tagType: "input", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
+                            ]},
+                            {tagType: "label", text: "start", children: [
+                                {tagType: "input", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
+                            ]},
+                            {tagType: "label", text: "end", children: [
+                                {tagType: "input", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                            ]},
+                            {tagType: "label", text: "FPS", children: [
+                                {tagType: "input", name: "frame_end", value: "scene/frame_speed", type: "number", max: 500, min: -500},
+                            ]},
+                        ]}
                     ]},
                     {tagType: "grid", axis: "c", template: "30%", child1: [
                         {tagType: "outliner", name: "outliner", id: "overview",
@@ -103,7 +103,7 @@ export class Area_Timeline {
                                 }
                             },
                             structures: [
-                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "キーフレームブロック"},
+                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "KeyframeBlock"},
                                     true: [
                                         {tagType: "gridBox", id: {path: "/pathID"}, axis: "c", style: "marginTop: 1px; marginBottom: 1px", allocation: "10px auto auto 1fr", children: [
                                             {tagType: "html", tag: "div", children: [

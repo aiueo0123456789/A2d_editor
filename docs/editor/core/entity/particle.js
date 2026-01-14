@@ -75,7 +75,7 @@ export class ParticleParameter {
 
 export class Particle extends ObjectBase {
     constructor(data) {
-        super(data.name, "パーティクル", data.id)
+        super(data.name, "Particle", data.id)
         this.runtimeData = app.scene.runtimeData.particle;
 
         this.particles = [];

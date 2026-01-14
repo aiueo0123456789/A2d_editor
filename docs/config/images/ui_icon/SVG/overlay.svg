@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_レイヤー_2" data-name="レイヤー 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 402.63 400.08">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #cacaca;
+      }
+    </style>
+  </defs>
+  <g id="overlay">
+    <path class="cls-1" d="M352.63,50v166.72h-168.42V50h168.42M402.63,0H134.21v266.72h268.42V0h0Z"/>
+    <rect class="cls-1" y="133.36" width="268.42" height="266.72"/>
+  </g>
+</svg>

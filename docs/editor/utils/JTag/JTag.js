@@ -33,6 +33,7 @@ import { PopoverMenuTag } from "./popoverMenuTag.js";
 import { IconTag } from "./iconTag.js";
 import { GroupTag } from "./groupTag.js";
 import { InputRadioTag } from "./radioTag.js";
+import { HeaderTag } from "./headerTag.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
@@ -145,10 +146,13 @@ const tagCreater = {
         return new IconTag(jTag,t,parent,source,child,flag);
     },
     "flexBox": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        /** @type {HTMLElement} */
         let element = createTag(t, "div");
         element.style.display = "flex";
-        element.style.gap = child.interval;
+        element.style.gap = child.gap;
         element.style.width = "fit-content";
+        element.style.height = "100%";
+        element.style.alignItems = "center";
         if (child.children) {
             jTag.createFromStructures(element, null, child.children, source, flag);
         }
@@ -251,6 +255,9 @@ const tagCreater = {
     },
     "group": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new GroupTag(jTag,t,parent,source,child,flag);
+    },
+    "header": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
+        return new HeaderTag(jTag,t,parent,source,child,flag);
     }
 }
 
@@ -358,7 +365,7 @@ export class JTag {
 
     getParameter(source, value) {
         if (IsString(value.path)) {
-            return this.getParameterByPath(source, value);
+            return this.getParameterByPath(source, value.path);
         } else if (isFunction(value)) {
             return value();
         } else {
@@ -377,7 +384,7 @@ export class JTag {
             } else if (path[0] == "!") { // specialから
                 path = path.slice(1);
                 useSearchTarget = source.special;
-            } else if (path[0] == "<") {
+            } else if (path[0] == "<") { // sourceから
                 path = path.slice(1);
                 return this.getParameterByPath(source, path, "fromSource");
             } else { // globalから

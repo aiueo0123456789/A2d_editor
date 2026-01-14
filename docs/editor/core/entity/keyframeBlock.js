@@ -55,7 +55,7 @@ function cubic_bezier(t, p0, p1, p2, p3) {
 
 export class Keyframe {
     constructor(data) {
-        this.type = "キーフレーム"
+        this.type = "Keyframe"
         this.selectedPoint = false;
         this.selectedRightHandle = false;
         this.selectedLeftHandle = false;
@@ -70,7 +70,7 @@ export class Keyframe {
 
     getSaveData() {
         return {
-            type: "キーフレーム",
+            type: this.type,
             point: this.point,
             leftHandle: this.leftHandle,
             rightHandle: this.rightHandle,
@@ -89,7 +89,7 @@ export class KeyframeBlock {
         );
     }
     constructor(data) {
-        this.type = "キーフレームブロック";
+        this.type = "KeyframeBlock";
         this.id = data.id ? data.id : createID();
         this.visible = true;
         /** @type {Keyframe[]} */
@@ -153,7 +153,7 @@ export class KeyframeBlock {
 
     getSaveData() {
         return {
-            type: "キーフレームブロック",
+            type: "KeyframeBlock",
             id: this.id,
             keys: this.keys.map(key => key.getSaveData()),
         };

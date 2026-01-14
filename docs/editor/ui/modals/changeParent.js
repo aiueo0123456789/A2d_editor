@@ -9,7 +9,7 @@ export class ChangeParentModal {
     }
 
     async mousedown(/** @type {InputManager} */inputManager) {
-        const parent = await app.scene.rayCast(inputManager.position, {types: ["アーマチュア", "ベジェモディファイア"]});
+        const parent = await app.activeArea.uiModel.getObjectRayCast(inputManager.position, {types: ["Armature", "BezierModifier"]});
         this.command.update(parent[0]);
         app.operator.execute();
         return "FINISHED";

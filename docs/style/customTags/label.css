@@ -1,0 +1,100 @@
+.label {
+    overflow: hidden;
+    width: fit-content;
+    min-width: fit-content;
+    height: fit-content;
+    display: grid;
+    align-items: center;
+    grid-template-columns: auto 5px auto;
+
+    /* 勝手に改行されるから */
+    grid-template-rows: min-content;
+    grid-auto-flow: column;
+}
+.label > :first-child {
+    margin: 0 0 0 auto;
+    white-space: nowrap;
+    min-width: fit-content;
+    height: fit-content;
+    grid-column: 1/2;
+}
+.label > :last-child {
+    display: flex;
+    margin: 0 0 0 0;
+    max-width: 150px;
+    min-width: fit-content;
+    height: fit-content;
+    grid-column: 3/4;
+    align-items: center;
+}
+
+.panel-main > .label {
+    width: 100%;
+    grid-template-columns: 1fr 5px 1fr;
+}
+
+.speechBubbleMain > .label {
+    width: 100%;
+    grid-template-columns: 1fr 5px auto;
+}
+.speechBubbleMain > .label :first-child {
+    margin: 0 0 0 0;
+}
+
+.afterLabel {
+    overflow: hidden;
+    min-width: fit-content;
+    height: fit-content;
+    display: grid;
+    text-align: center;
+    width: 100%;
+    grid-template-columns: auto 5px 1fr;
+
+    /* 勝手に改行されるから */
+    grid-template-rows: min-content;
+    grid-auto-flow: column;
+}
+.afterLabel > :first-child {
+    margin: 0 0 0 0;
+    min-width: fit-content;
+    height: fit-content;
+    grid-column: 3/4;
+}
+.afterLabel > :last-child {
+    margin: 0 0 0 0;
+    min-width: fit-content;
+    height: fit-content;
+    grid-column: 1/2;
+}
+
+.topLabel {
+    overflow: hidden;
+    display: grid;
+    width: 100%;
+    min-width: fit-content;
+    height: fit-content;
+    /* 勝手に改行されるから */
+    grid-template-columns: min-content;
+    grid-auto-flow: row;
+    grid-template-rows: auto 5px 1fr;
+}
+.topLabel > :first-child {
+    margin: 0 0 0 0;
+    min-width: fit-content;
+    height: fit-content;
+    grid-row: 1/2;
+}
+.topLabel > :last-child {
+    margin: 0 0 0 0;
+    min-width: fit-content;
+    height: fit-content;
+    grid-row: 3/4;
+}
+
+label {
+    display: flex;
+    /* 横中央揃え */
+    /* justify-content: center; */
+    /* 縦中央揃え */
+    align-items: center;
+}

@@ -25,7 +25,7 @@ class Bone {
 
         this.color = data.color;
 
-        this.keyframeBlocks = data.keyframeBlocks ? data.keyframeBlocks : createArrayN(6).map(() => app.scene.objects.createAndAppendObject({type: "キーフレームブロック"}));
+        this.keyframeBlocks = data.keyframeBlocks ? data.keyframeBlocks : createArrayN(6).map(() => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}));
     }
 
     get polygon() {

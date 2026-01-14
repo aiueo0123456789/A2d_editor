@@ -30,7 +30,7 @@
     max-height: 500px;
     overflow-y: auto;
     background-color: var(--inputColor);
-    z-index: 1000;
+    z-index: 2000;
     /* gap: 5px; */
 }
 

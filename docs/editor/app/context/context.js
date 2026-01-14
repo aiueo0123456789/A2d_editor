@@ -51,7 +51,7 @@ export class Context {
 
     get getSelectBones() {
         const result = [];
-        for (const /** @type {Armature} */ armature of this.selectedObjects.filter(object => object.type == "アーマチュア")) {
+        for (const /** @type {Armature} */ armature of this.selectedObjects.filter(object => object.type == "Armature")) {
             result.push(...armature.allBone.filter(bone => bone && bone.selected));
         }
         return result;
@@ -60,7 +60,7 @@ export class Context {
     get selectVertices() {
         const result = [];
         for (const object of this.selectedObjects) {
-            if (object.type == "アーマチュア") {
+            if (object.type == "Armature") {
                 for (const bone of object.allBone) {
                     if (bone.baseHead.selected) {
                         result.push(bone.baseHead);
@@ -69,9 +69,9 @@ export class Context {
                         result.push(bone.baseTail);
                     }
                 }
-            } else if (object.type == "グラフィックメッシュ") {
+            } else if (object.type == "GraphicMesh") {
                 result.push(...object.allVertices.filter(vertex => vertex && vertex.selected));
-            } else if (object.type == "ベジェモディファイア") {
+            } else if (object.type == "BezierModifier") {
                 for (const point of object.allPoint) {
                     if (point.basePoint.selected) {
                         result.push(point.basePoint);
@@ -91,13 +91,13 @@ export class Context {
     get getSelcetInSelectedObject() {
         const result = [];
         for (const object of this.selectedObjects) {
-            if (object.type == "アーマチュア") {
+            if (object.type == "Armature") {
                 for (const bone of object.allBone) {
                     if (bone.selected) result.push(bone);
                 }
-            } else if (object.type == "グラフィックメッシュ") {
+            } else if (object.type == "GraphicMesh") {
                 result.push(...object.allVertices.filter(vertex => vertex && vertex.selected));
-            } else if (object.type == "ベジェモディファイア") {
+            } else if (object.type == "BezierModifier") {
                 for (const point of object.allPoint) {
                     if (point.basePoint.selected) {
                         result.push(point.basePoint);

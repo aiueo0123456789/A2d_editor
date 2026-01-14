@@ -9,7 +9,7 @@ export class BezierModifier extends ObjectBase {
         return new ShapeKeyMetaData({name: name, index: index, object: this, id: id});
     }
     constructor(data) {
-        super(data.name, "ベジェモディファイア", data.id);
+        super(data.name, "BezierModifier", data.id);
         this.runtimeData = app.scene.runtimeData.bezierModifierData;
 
         this.baseTransformIsLock = false;

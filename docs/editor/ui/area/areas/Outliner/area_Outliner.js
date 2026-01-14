@@ -6,7 +6,7 @@ export class Area_Outliner {
         this.dom = area.main;
 
         this.struct = {
-            inputObject: {"context": app.context, "scene": app.scene, "areaConfig": app.appConfig.areasConfig["Outliner"]},
+            inputObject: {"context": app.context, "scene": app.scene},
             DOM: [
                 {
                     tagType: "outliner", name: "outliner", options: {

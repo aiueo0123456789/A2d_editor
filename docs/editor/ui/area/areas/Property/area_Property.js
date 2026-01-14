@@ -13,7 +13,7 @@ export class Area_Property {
         this.pixelDensity = 4;
 
         this.struct = {
-            inputObject: {"scene": app.scene, "areaConfig": app.appConfig.areasConfig["Outliner"], "app": app},
+            inputObject: {"scene": app.scene, "app": app},
             DOM: [
                 {tagType: "html", type: "div", class: "ui_container_0", children: [
                     // {tagType: "tab", name: "アニメーション", children: [
@@ -32,7 +32,7 @@ export class Area_Property {
                     ]},
                     {tagType: "panel", name: "マスク", children: [
                         {tagType: "list", label: "マスク", onAppend: () => {
-                            app.operator.appendCommand(new CreateObjectCommand({type: "マスクテクスチャ", name: "名称未設定"}));
+                            app.operator.appendCommand(new CreateObjectCommand({type: "MaskTexture", name: "名称未設定"}));
                             app.operator.execute();
                         }, onDelete: (masks) => {
                             app.operator.appendCommand(new DeleteObjectCommand(masks));
@@ -44,9 +44,9 @@ export class Area_Property {
                             ]
                         }}
                     ]},
-                    {tagType: "panel", name: "パラメーターマネージャー", children: [
+                    {tagType: "panel", name: "ParameterManager", children: [
                         {tagType: "list", onAppend: () => {
-                            app.operator.appendCommand(new CreateObjectCommand({type: "パラメーターマネージャー", name: "名称未設定"}));
+                            app.operator.appendCommand(new CreateObjectCommand({type: "ParameterManager", name: "名称未設定"}));
                             app.operator.execute();
                         }, onDelete: (parameterManagers) => {
                             app.operator.appendCommand(new DeleteObjectCommand(parameterManagers));

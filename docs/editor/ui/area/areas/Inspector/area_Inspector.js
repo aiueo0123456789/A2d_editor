@@ -10,12 +10,12 @@ export class Area_Inspector {
         this.dom = area.main;
 
         this.struct = {
-            inputObject: {"context": app.context,"scene": app.scene, "areaConfig": app.appConfig.areasConfig["Outliner"]},
+            inputObject: {"context": app.context,"scene": app.scene},
             DOM: [
                 {tagType: "html", type: "div", class: "ui_container_0", children: [
                     {tagType: "path", sourceObject: "context/activeObject", updateEventTarget: {path: "context/%activeObject"}, children: [
                         {tagType: "panel", name: "基本情報", children: [
-                            {tagType: "if", formula: {source: "/type", conditions: "==", value: "グラフィックメッシュ"},
+                            {tagType: "if", formula: {source: "/type", conditions: "==", value: "GraphicMesh"},
                                 true: [
                                     {tagType: "label", text: "name", children: [
                                         {tagType: "input", value: "/name", type: "text"},
@@ -27,7 +27,7 @@ export class Area_Inspector {
                                                 app.operator.execute();
                                             },
                                             sourceObject: () => {
-                                                return app.scene.objects.getObjectsFromeTypes(["ベジェモディファイア", "アーマチュア"]).map(object => {return {name: object.name, id: object.id}});
+                                                return app.scene.objects.getObjectsFromeTypes(["BezierModifier", "Armature"]).map(object => {return {name: object.name, id: object.id}});
                                             },
                                             options: {initValue: {path: "context/activeObject/parent/name"}}
                                         },
@@ -88,7 +88,7 @@ export class Area_Inspector {
                                     ]}
                                 ],
                                 false: [
-                                    {tagType: "if", formula: {source: "/type", conditions: "==", value: "ベジェモディファイア"},
+                                    {tagType: "if", formula: {source: "/type", conditions: "==", value: "BezierModifier"},
                                         true: [
                                             {tagType: "label", text: "name", children: [
                                                 {tagType: "input", value: "/name", type: "text"},
@@ -100,7 +100,7 @@ export class Area_Inspector {
                                                         app.operator.execute();
                                                     },
                                                     sourceObject: () => {
-                                                        return app.scene.objects.getObjectsFromeTypes(["ベジェモディファイア", "アーマチュア"]).map(object => {return {name: object.name, id: object.id}});
+                                                        return app.scene.objects.getObjectsFromeTypes(["BezierModifier", "Armature"]).map(object => {return {name: object.name, id: object.id}});
                                                     },
                                                     options: {initValue: {path: "context/activeObject/parent/name"}}
                                                 },
@@ -116,7 +116,7 @@ export class Area_Inspector {
                                             ]}
                                         ],
                                         false: [
-                                            {tagType: "if", formula: {source: "/type", conditions: "==", value: "アーマチュア"},
+                                            {tagType: "if", formula: {source: "/type", conditions: "==", value: "Armature"},
                                                 true: [
                                                     {tagType: "label", text: "name", children: [
                                                         {tagType: "input", value: "/name", type: "text"},

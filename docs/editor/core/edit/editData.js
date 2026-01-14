@@ -28,7 +28,7 @@ export class EditDatas {
 
     createEditObject(object, mode) {
         let b = null;
-        if (object.type == "グラフィックメッシュ") {
+        if (object.type == "GraphicMesh") {
             if (mode == "メッシュ編集") {
                 b = new BMesh();
             } else if (mode == "メッシュウェイト編集") {
@@ -37,7 +37,7 @@ export class EditDatas {
                 b = new BMeshShapeKey();
             }
             b.fromMesh(object);
-        } else if (object.type == "アーマチュア") {
+        } else if (object.type == "Armature") {
             if (mode == "ボーン編集") {
                 b = new BArmature();
             } else if (mode == "ボーンアニメーション編集") {
@@ -48,7 +48,7 @@ export class EditDatas {
                 b = new BArmatureAnimation("weightPaint");
             }
             b.fromArmature(object);
-        } else if (object.type == "ベジェモディファイア") {
+        } else if (object.type == "BezierModifier") {
             if (mode == "ベジェ編集") {
                 b = new BBezier();
             } else if (mode == "ベジェシェイプキー編集") {

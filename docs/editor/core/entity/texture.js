@@ -4,7 +4,7 @@ import { GPU } from "../../utils/webGPU.js";
 
 export class Texture extends NameAndTypeAndID {
     constructor(data) {
-        super(data.name, "テクスチャ", data.id);
+        super(data.name, "Texture", data.id);
         /** @type {GPUTexture} */
         this.texture = GPU.isNotTexture;
         if (data.texture instanceof GPUTexture) {

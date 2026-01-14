@@ -29,7 +29,7 @@ export class KeyframeBlockManager {
         copyToArray(this.keyframeBlocks, keyframeBlocks);
     }
 
-    appendParameter(parameter, keyframeBlcok = app.scene.objects.createAndAppendObject({type: "キーフレームブロック"})) {
+    appendParameter(parameter, keyframeBlcok = app.scene.objects.createAndAppendObject({type: "KeyframeBlock"})) {
         pushToArray(this.parameters, parameter);
         pushToArray(this.keyframeBlocks, keyframeBlcok);
     }

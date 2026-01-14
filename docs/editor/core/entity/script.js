@@ -7,7 +7,7 @@ import { GPU } from "../../utils/webGPU.js";
 export class Script {
     constructor(data) {
         this.name = data.name;
-        this.type = "スクリプト";
+        this.type = "Script";
         this.id = data.id ? data.id : createID()
         this.text = data.text;
         this.pipeline = null;

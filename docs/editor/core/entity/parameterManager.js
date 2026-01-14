@@ -20,7 +20,7 @@ export class ParameterManager {
         return new Parameter({label: label, value: value});
     }
     constructor(data) {
-        this.type = "パラメーターマネージャー";
+        this.type = "ParameterManager";
         this.name = data.name ? data.name : "名称未設定";
         this.id = data.id ? data.id : createID();
         this.parameters = data.parameters ? data.parameters.map(parameterData => new Parameter(parameterData)) : [];

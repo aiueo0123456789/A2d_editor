@@ -36,7 +36,7 @@ export class Area_Graph {
         this.frameBarDrag = false;
 
         this.struct = {
-            inputObject: {"colorData": targetValueToColor, "context": app.context, "spaceData": this.spaceData, "areasConifg": app.appConfig.areasConfig, "scene": app.scene},
+            inputObject: {"colorData": targetValueToColor, "context": app.context, "spaceData": this.spaceData, "scene": app.scene},
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option",style: "height: 25px;", name: "情報", children: [
@@ -102,7 +102,7 @@ export class Area_Graph {
                                 }
                             },
                             structures: [
-                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "キーフレームブロック"},
+                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "KeyframeBlock"},
                                     true: [
                                         {tagType: "gridBox", id: {path: "/pathID"}, axis: "c", style: "marginTop: 1px; marginBottom: 1px", allocation: "10px auto auto 1fr", children: [
                                             {tagType: "html", tag: "div", children: [

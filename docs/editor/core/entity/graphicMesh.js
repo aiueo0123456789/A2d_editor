@@ -12,7 +12,7 @@ export class GraphicMesh extends ObjectBase {
         return new ShapeKeyMetaData({name: name, index: index, object: this, id: id});
     }
     constructor(data) {
-        super(data.name, "グラフィックメッシュ", data.id);
+        super(data.name, "GraphicMesh", data.id);
         this.runtimeData = app.scene.runtimeData.graphicMeshData;
 
         this.baseTransformIsLock = false;

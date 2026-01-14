@@ -11,7 +11,7 @@ export class InputFileTag extends CustomTag{
             this.element.setAttribute("webkitdirectory", "");
             this.element.setAttribute("directory", "");
         }
-        this.dataBlocks = [jTag.setWith(this.element, child.value, source, flag, child.useCommand, child.onChange)];
+        if (child.value) this.dataBlocks = [jTag.setWith(this.element, child.value, source, flag, child.useCommand, child.onChange)];
         // if (child.custom && "collision" in child.custom && !child.custom.collision) {
         //     this.element.style.pointerEvents = "none";
         // }

@@ -49,9 +49,9 @@ class AppOptions {
     constructor(/** @type {Application} */app) {
         this.app = app;
         this.primitives = {
-            "アーマチュア": {
+            "Armature": {
                 "normal": {
-                    type: "アーマチュア",
+                    type: "Armature",
                     name: "名称未設定",
                     bonesNum: 1,
                     boneMetaDatas: [{name: "ボーン0", index: 0, parentIndex: -1, depth: 0}],
@@ -68,9 +68,9 @@ class AppOptions {
                     vertices: [[0,0, 0,100]]
                 },
             },
-            "ベジェモディファイア": {
+            "BezierModifier": {
                 "normal": {
-                    type: "ベジェモディファイア",
+                    type: "BezierModifier",
                     name: "名称未設定",
                     autoWeight: true,
                     parent: null,
@@ -80,9 +80,9 @@ class AppOptions {
                     shapeKeys: []
                 }
             },
-            "グラフィックメッシュ": {
+            "GraphicMesh": {
                 "normal": {
-                    type: "グラフィックメッシュ",
+                    type: "GraphicMesh",
                     zIndex: 0,
                     imageBBox: {
                         min: [0, 0],
@@ -139,10 +139,10 @@ class AppOptions {
         if (!object.parent) return ;
         let parentVerticesBuffer;
         let parentAllocationBuffer;
-        if (object.parent.type == "アーマチュア") {
+        if (object.parent.type == "Armature") {
             parentVerticesBuffer = this.app.scene.runtimeData.armatureData.baseVertices.buffer;
             parentAllocationBuffer = object.parent.objectDataBuffer;
-        } else if (object.parent.type == "ベジェモディファイア") {
+        } else if (object.parent.type == "BezierModifier") {
             parentVerticesBuffer = this.app.scene.runtimeData.bezierModifierData.baseVertices.buffer;
             parentAllocationBuffer = object.parent.objectDataBuffer;
             console.log(await this.app.scene.runtimeData.bezierModifierData.baseVertices.getObjectData(object.parent))
@@ -151,7 +151,7 @@ class AppOptions {
         if (object instanceof GraphicMesh) {
             const runtimeObject = this.app.scene.runtimeData.graphicMeshData;
             const group = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu"), [runtimeObject.weightBlocks.buffer, runtimeObject.baseVertices.buffer, object.objectDataBuffer, parentVerticesBuffer, parentAllocationBuffer]);
-            if (object.parent.type == "アーマチュア") {
+            if (object.parent.type == "Armature") {
                 GPU.runComputeShader(calculateMeshParentWeightByBone, [group], Math.ceil(object.verticesNum / 64));
             } else {
                 GPU.runComputeShader(calculateMeshParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));
@@ -161,7 +161,7 @@ class AppOptions {
             console.log("ベジェウェイト更新", object)
             const runtimeObject = this.app.scene.runtimeData.bezierModifierData;
             const group = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu"), [runtimeObject.weightBlocks.buffer, runtimeObject.baseVertices.buffer, object.objectDataBuffer, parentVerticesBuffer, parentAllocationBuffer]);
-            if (object.parent.type == "アーマチュア") {
+            if (object.parent.type == "Armature") {
                 GPU.runComputeShader(calculateBezierParentWeightByBone, [group], Math.ceil(object.verticesNum / 64));
             } else {
                 GPU.runComputeShader(calculateBezierParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));

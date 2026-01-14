@@ -42,7 +42,7 @@ export function setLabel(target, labelText, inner) {
     const label = document.createElement("label");
     label.textContent = labelText;
     const div = document.createElement("div");
-    div.className = "label-input";
+    div.className = "label";
     // div.append(document.createElement("span"),label,document.createElement("span"),inner,document.createElement("span"));
     div.append(label,inner);
     target.append(div);

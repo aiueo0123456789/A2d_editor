@@ -17,10 +17,10 @@ export class Area_BlendShape {
         this.pixelDensity = 4;
 
         /** @type {Area_BlendShapeSpaceData} */
-        this.areaConfig = app.appConfig.areasConfig["BlendShape"];
+        this.spaceData = app.appConfig.areasConfig["BlendShape"];
 
         this.struct = {
-            inputObject: {"scene": app.scene, "areaConfig": this.areaConfig, "app": app},
+            inputObject: {"scene": app.scene, "spaceData": this.spaceData, "app": app},
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option", name: "情報", children: [
@@ -28,7 +28,7 @@ export class Area_BlendShape {
                             {tagType: "group", template: "100px 50px", children: [
                                 {tagType: "select",
                                     value: (value) => {
-                                        changeParameter(this.areaConfig, "activeBlendShape", app.scene.objects.getObjectByID(value));
+                                        changeParameter(this.spaceData, "activeBlendShape", app.scene.objects.getObjectByID(value));
                                     },
                                     sourceObject: () => {
                                         return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});
@@ -92,7 +92,7 @@ export class Area_BlendShape {
     }
 
     get activeBlendShape() {
-        return this.areaConfig.activeBlendShape;
+        return this.spaceData.activeBlendShape;
     }
 
     getCanvasPositionByValue(value) {

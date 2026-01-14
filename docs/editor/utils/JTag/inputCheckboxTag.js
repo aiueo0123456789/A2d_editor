@@ -29,9 +29,7 @@ export class InputCheckboxTag extends CustomTag {
         }
         const icon = document.createElement("span");
         icon.classList.add(className)
-        if (child.checked) {
-            this.dataBlocks = [jTag.setWith(this.checkbox, child.checked, source, flag, child.useCommand, child.onChange)];
-        }
+        if (child.checked) this.dataBlocks = [jTag.setWith(this.checkbox, child.checked, source, flag, child.useCommand, child.onChange)];
         if (imgNames.size) {
             icon.style.width = imgNames.size;
             icon.style.height = imgNames.size;

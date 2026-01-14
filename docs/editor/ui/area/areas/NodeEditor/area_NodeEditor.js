@@ -5,10 +5,10 @@ import { changeParameter } from "../../../../utils/utility.js";
 export class Area_NodeEditor {
     constructor(area) {
         this.dom = area.main;
-        this.areaConfig = app.appConfig.areasConfig["NodeEditor"];
+        this.spaceData = app.appConfig.areasConfig["NodeEditor"];
 
         this.struct = {
-            inputObject: {"areaConifg": this.areaConfig, "scene": app.scene},
+            inputObject: {"spaceData": this.spaceData, "scene": app.scene},
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "option", name: "情報", children: [
@@ -17,7 +17,7 @@ export class Area_NodeEditor {
                                 {tagType: "select",
                                     value: (value) => {
                                         console.log("書き換え")
-                                        changeParameter(this.areaConfig, "sourceCode", app.scene.objects.getObjectByID(value));
+                                        changeParameter(this.spaceData, "sourceCode", app.scene.objects.getObjectByID(value));
                                     },
                                     sourceObject: () => {
                                         return app.scene.objects.scripts.map(script => {return {name: script.name, id: script.id}});
@@ -26,7 +26,7 @@ export class Area_NodeEditor {
                             ]},
                             {tagType: "operatorButton", label: "Add", onClick: () => {
                                 app.operator.appendCommand(new CreateObjectCommand({
-                                    type: "スクリプト",
+                                    type: "Script",
                                     name: "名称未設定",
                                     text: "// wgslのシェーダーをかけます"
                                 }));
@@ -34,7 +34,7 @@ export class Area_NodeEditor {
                             }},
                         ]}
                     ]},
-                    {tagType: "path", sourceObject: "areaConifg/sourceCode", updateEventTarget: {path: "areaConifg/sourceCode"}, children: [
+                    {tagType: "path", sourceObject: "spaceData/sourceCode", updateEventTarget: {path: "spaceData/sourceCode"}, children: [
                         {tagType: "codeEditor", source: "/text"}
                     ]}
                 ]}
