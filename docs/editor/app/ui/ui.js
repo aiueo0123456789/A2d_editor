@@ -17,7 +17,7 @@ export class UI {
             {
                 inputObject: {"app": app},
                 DOM: [
-                    {tagType: "html", type: "div", class: "all", children: [
+                    {tagType: "html", tag: "div", class: "all", children: [
                         {tagType: "html", id: "contextmenu", class: "contextmenu hidden", tag: "ul"},
                         {tagType: "html", id: "popupMenu-items", class: "popupMenu-items hidden", tag: "ul"},
                         {tagType: "html", id: "custom-select-items", class: "custom-select-items hidden", tag: "ul"},

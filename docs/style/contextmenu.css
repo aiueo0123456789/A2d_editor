@@ -3,12 +3,13 @@
     height: fit-content;
     position: absolute; /* 必要に応じて位置を調整 */
     z-index: 100000000000;
-    background-color: #282828;
+    background-color: var(--color-secondary);
+    border: 1px solid var(--color-secondary-border);
+    border-radius: 4px;
 }
 
 .menu {
     width: 100%;
-    background-color: #181818;
     position: relative; /* 子要素の位置基準にする */
     overflow: visible; /* サブメニューが親の範囲外に表示されるようにする */
     padding: 2px;
@@ -32,7 +33,10 @@
     top: 0; /* 親の上端に揃える */
     white-space: nowrap; /* 長いテキストでもサブメニューの幅が変わらないようにする */
     z-index: 1000; /* サブメニューが他の要素より前に表示されるようにする */
-    background-color: #282828;
+    background-color: var(--color-secondary);
+    border: 1px solid var(--color-secondary-border);
+    border-radius: 4px;
+    border-top-left-radius: 0px;
 }
 
 .menu:hover > .submenu {
@@ -40,5 +44,5 @@
 }
 
 .menu:hover {
-    background-color: #3a3a3a;
+    background-color: var(--color-secondary-hover);
 }

@@ -12,7 +12,6 @@ export class Area_Outliner {
                     tagType: "outliner", name: "outliner", options: {
                     modes: ["scene", "layer"],
                     mode: "scene",
-                    arrange: true,
                     clickEventFn: (event, object) => {
                         event.stopPropagation();
                         if (app.context.currentMode == "オブジェクト") {

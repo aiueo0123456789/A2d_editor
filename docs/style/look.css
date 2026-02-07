@@ -15,7 +15,7 @@
 }
 .boxs .box > * {
     border-radius: 0px;
-    border: 1px solid rgb(59, 59, 59);
+    border: 1px solid var(--color-border);
 }
 .boxs > .box:first-child > * {
     border-top-left-radius: 4px;

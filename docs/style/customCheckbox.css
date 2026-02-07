@@ -6,7 +6,7 @@
     height: 20px;
     background-color: #545454; /* 背景色（黒に近いグレー） */
     border-radius: 2px;  /* 角丸 */
-    border: 0.5px solid #464646; /* 枠線 */
+    border: 0.5px solid var(--color-border); /* 枠線 */
     position: relative;
     cursor: pointer;
 }
@@ -34,7 +34,7 @@ input[type="checkbox"]:checked + .custom-checkbox::after { /* チェックを表
     cursor: pointer;
     border-radius: 4px;
     padding: 2px;
-    border: solid 1px rgb(77, 77, 77);
+    border: solid 1px var(--color-border);
     background-color: rgb(120, 120, 120);
     box-shadow: 0px 1px 0px rgb(28, 28, 28);
 }
@@ -80,6 +80,18 @@ input[type="checkbox"]:not(:checked) + .hasKeyframeCheck::after { /* なかっ�
     height: 15px;
     align-items: center;
     justify-content: center;
+}
+.customCheckboxButton {
+    display: flex;
+    /* width: fit-content; */
+    width: 100%;
+    height: 20px;
+    border-radius: 4px;
+    background-color: #626262;
+    border: 1px solid var(--color-border);
+    align-items: center;
+    justify-content: center;
+    padding: 0 2px;
 }
 .customCheckbox span {
     width: 100%;

@@ -23,7 +23,7 @@ fn vmain(@builtin(vertex_index) vertexIndex: u32) -> VertexOutput {
 @group(0) @binding(1) var maskTexture: texture_2d<f32>;
 @group(0) @binding(2) var<uniform> edgeColor: vec4<f32>;
 
-const outlineSize = 1.5;
+const outlineSize = 2.0;
 const threshold = 1.0 / 255.0; // 約0.0039215
 
 @fragment
@@ -32,32 +32,32 @@ fn fmain(@location(0) texCoordForMask: vec2<f32>) -> @location(0) vec4<f32> {
     let pixel = 1.0 / texSize;
     let offset = pixel * outlineSize;
 
-    // Sobel フィルターのサンプル座標
-    let s00 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x, -offset.y)).r;
-    let s01 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( 0.0,       -offset.y)).r;
-    let s02 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,  -offset.y)).r;
+    let s00 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x, -offset.y)).rgb;
+    let s01 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( 0.0,       -offset.y)).rgb;
+    let s02 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,  -offset.y)).rgb;
 
-    let s10 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x,  0.0)).r;
-    let s11 = textureSample(maskTexture, mySampler, texCoordForMask).r;
-    let s12 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,  0.0)).r;
+    let s10 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x,  0.0)).rgb;
+    let s11 = textureSample(maskTexture, mySampler, texCoordForMask).rgb;
+    let s12 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,  0.0)).rgb;
 
-    let s20 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x,  offset.y)).r;
-    let s21 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( 0.0,        offset.y)).r;
-    let s22 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,   offset.y)).r;
-
+    let s20 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>(-offset.x,  offset.y)).rgb;
+    let s21 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( 0.0,        offset.y)).rgb;
+    let s22 = textureSample(maskTexture, mySampler, texCoordForMask + vec2<f32>( offset.x,   offset.y)).rgb;
     // Sobelカーネルによる勾配計算
     let gx = (s02 + 2.0 * s12 + s22) - (s00 + 2.0 * s10 + s20);
     let gy = (s00 + 2.0 * s01 + s02) - (s20 + 2.0 * s21 + s22);
-
     // エッジ強度（勾配の長さ）
     let gradient = sqrt(gx * gx + gy * gy);
 
     // 閾値以上だけを描画（1/255 以上の差分を検出）
-    let edge = select(0.0, 1.0, gradient > threshold);
-
-    // 色出力（エッジ部分のみ）
-    var color = select(vec4<f32>(1.0, 0.5, 0.0, 1.0), vec4<f32>(1.0, 0.8, 0.0, 1.0), s11 == threshold || s01 == threshold || s02 == threshold || s10 == threshold || s20 == threshold);
-    color.a *= edge;
+    var color = vec4<f32>(0.0, 0.0, 0.0, 0.0);
+    if (gradient.r > threshold) {
+        color = vec4<f32>(1.0, 0.8, 0.0, 1.0);
+    } else if (gradient.g > threshold) {
+        color = vec4<f32>(1.0, 0.5, 0.0, 1.0);
+    } else if (gradient.b > threshold) {
+        color = vec4<f32>(0.0, 0.5, 1.0, 1.0);
+    }
 
     return color;
 }

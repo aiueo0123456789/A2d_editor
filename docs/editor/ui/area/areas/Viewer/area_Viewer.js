@@ -1,7 +1,7 @@
 import { ConvertCoordinate } from '../../../../utils/convertCoordinate.js';
 import { resizeObserver } from '../../../../utils/ui/resizeObserver.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
-import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, loadFile, range } from '../../../../utils/utility.js';
+import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, isPlainObject, loadFile, range } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/entity/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
@@ -39,7 +39,7 @@ const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_
 const bezierModifierHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/bezierModifier/hitTest.wgsl"));
 const polygonsHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/graphicMesh/hitTest.wgsl"));
 
-const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "mask", "t");
+const selectObjectOutlinePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineMeshRenderPipeline.wgsl"), [["u"]], "2d", "t", "");
 const selectObjectOutlineMixPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/mix.wgsl"), [], "2d", "s");
 
 const devMaskTexturePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("Fts_Ft")], await loadFile("./editor/shader/render/devMaskTexture.wgsl"), [], "2d", "s");
@@ -66,11 +66,11 @@ const BAABoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupL
 const BArmatureVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/vertices.wgsl"), [], "2d", "t");
 const BArmatureBonesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/bones.wgsl"), [], "2d", "s");
 
-const selectObjectOutlineBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBoneRenderPipeline.wgsl"), [], "mask", "t");
+const selectObjectOutlineBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBoneRenderPipeline.wgsl"), [], "2d", "t", "");
 const boneBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/bones.wgsl"), [], "2d", "s");
 const boneRelationshipsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/relationships.wgsl"), [], "2d", "s");
 
-const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "mask", "s");
+const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "2d", "s", "");
 const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/curve.wgsl"), [], "2d", "s");
 const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/curve.wgsl"), [], "2d", "s");
 const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/vertices.wgsl"), [], "2d", "t");
@@ -753,7 +753,7 @@ export class Renderer {
         this.depthTexture = GPU.createDepthTexture2D([this.canvas.width, this.canvas.height]);
         this.depthTextureView = this.depthTexture.createView();
 
-        this.selectObjectMaskTexture = GPU.createTexture2D([this.canvas.width, this.canvas.height],"r8unorm");
+        this.selectObjectMaskTexture = GPU.createTexture2D([this.canvas.width, this.canvas.height], format);
         this.selectObjectMaskTextureView = this.selectObjectMaskTexture.createView();
 
         this.camera.updateCanvasSize([this.canvas.offsetWidth, this.canvas.offsetHeight]);
@@ -781,12 +781,15 @@ export class Renderer {
                 // オブジェクト表示
                 selectObjectOutlineRenderPass.setBindGroup(0, this.staticGroup);
                 const selectedObjects = app.context.selectedObjects;
-                app.scene.allRenderingOrder.filter(object => selectedObjects.includes(object)).forEach((object, index) => {
+                app.scene.allRenderingOrder.forEach((object, index) => {
                     if (object == app.context.activeObject) {
-                        // selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Fu"), [GPU.createUniformBuffer(4, [244 / 255], ["f32"])]));
-                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4, [1 / 255], ["f32"])]));
-                    } else{
-                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4, [(index + 2) / 255], ["f32"])]));
+                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4 * 4, [1 / 255, 0, 0, 1], ["f32"])]));
+                    } else if (selectedObjects.includes(object)) {
+                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4 * 4, [0, (1 + index) / 255, 0, 1], ["f32"])]));
+                    } else if (this.viewer.modalOperator.nowModal?.hoverObject == object) {
+                        selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4 * 4, [0, 0, (1 + index) / 255, 1], ["f32"])]));
+                    } else {
+                        return ;
                     }
                     if (object.type == "GraphicMesh") {
                         selectObjectOutlineRenderPass.setBindGroup(1, this.viewer.spaceData.GPUDataForVisualSettings.mesh.group);

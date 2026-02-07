@@ -86,12 +86,13 @@ export class ListTag extends CustomTag {
             items.forEach((item, index) => {
                 /** @type {HTMLElement} */
                 const li = createTag(this.list, "li", {style: "width: 100%; minHeight: fit-content;"});
+                li.classList.remove(["activeColor", "selectedColor"]);
                 if (isPrimitive) {
-                    if (this.active === index) li.style.backgroundColor = "var(--activeColor)";
-                    else if (this.selected.includes(index)) li.style.backgroundColor = "var(--selectedColor)";
+                    if (this.active === index) li.classList.add("activeColor");
+                    else if (this.selected.includes(index)) li.classList.add("selectedColor");
                 } else {
-                    if (this.active === item) li.style.backgroundColor = "var(--activeColor)";
-                    else if (this.selected.includes(item)) li.style.backgroundColor = "var(--selectedColor)";
+                    if (this.active === item) li.classList.add("activeColor");
+                    else if (this.selected.includes(item)) li.classList.add("selectedColor");
                 }
                 if (!data.notUseActiveAndSelect) {
                     li.addEventListener("click", (e) => {

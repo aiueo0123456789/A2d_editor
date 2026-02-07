@@ -37,17 +37,16 @@ fn vmain(
 
 @group(0) @binding(1) var mySampler: sampler;
 @group(2) @binding(4) var textureAtlas: texture_2d<f32>;
-@group(3) @binding(1) var<uniform> objectColor: f32;
+@group(3) @binding(1) var<uniform> objectColor: vec4<f32>;
 
 struct FragmentOutput {
     @location(0) color: vec4<f32>,   // カラーバッファ (通常は0番目の出力)
 };
 
-// フラグメントシェーダー
 @fragment
 fn fmain(
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    output.color = vec4<f32>(objectColor,0.0,0.0,1.0);
+    output.color = objectColor;
     return output;
 }

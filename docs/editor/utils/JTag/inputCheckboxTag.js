@@ -10,7 +10,7 @@ export class InputCheckboxTag extends CustomTag {
         this.checkbox.type = "checkbox";
         this.checkbox.style.display = "none";
         this.element = document.createElement("label");
-        this.element.setAttribute("name", "checkbox");
+        if (child.attributes?.includes("isButton")) this.element.classList.add("customCheckboxButton");
         this.element.classList.add("customCheckbox");
         const imgNames = child.look;
         const className = `customCheckbox-${imgNames.check}-${imgNames.uncheck}`;

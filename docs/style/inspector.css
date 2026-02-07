@@ -13,7 +13,7 @@
 .inspector-container {
     width: 100%;
     border-radius: 10px;
-    border: 2px solid rgb(62, 62, 62);
+    border: 2px solid var(--color-border);
     background-color: rgb(78, 78, 78);
     display: flex;
     flex-flow: column;

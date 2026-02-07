@@ -59,7 +59,7 @@ fn vmain(
     return output;
 }
 
-@group(3) @binding(1) var<uniform> objectColor: f32;
+@group(3) @binding(1) var<uniform> objectColor: vec4<f32>;
 
 struct FragmentOutput {
     @location(0) color: vec4<f32>,   // カラーバッファ (通常は0番目の出力)
@@ -69,7 +69,6 @@ struct FragmentOutput {
 fn fmain(
 ) -> FragmentOutput {
     var output: FragmentOutput;
-    output.color = vec4<f32>(objectColor,0.0,0.0,1.0);
-    // output.color = vec4<f32>(0,1,0,1);
+    output.color = objectColor;
     return output;
 }

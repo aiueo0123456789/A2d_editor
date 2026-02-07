@@ -169,7 +169,7 @@ const tagCreater = {
     },
     "padding": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         let element = createTag(t, "div");
-        element.style.width = child.size;
+        if ("size" in child) element.style.width = child.size;
         return element;
     },
     "separator": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
@@ -281,10 +281,12 @@ export class JTag {
             appendTarget.append(appendChild);
         }
     }
+    static createTag(type, t, options) {
+
+    }
     constructor(groupID) {
         this.groupID = groupID ? groupID : createID();
         this.dom = null;
-        this.lists = new Map();
         this.globalSource = {};
         this.keyRef = new Map();
     }
@@ -633,7 +635,6 @@ export class JTag {
             this.dom.replaceChildren();
         }
         this.globalSource = {};
-        this.lists.clear();
         this.keyRef.clear();
         useEffect.delete({g: this.groupID});
     }

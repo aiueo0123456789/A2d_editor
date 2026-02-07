@@ -63,7 +63,7 @@ export class CodeEditorTag extends CustomTag {
         setStyle(this.mainContainer, "width: 100%; height: 100%; display: grid; gridTemplateColumns: auto 1fr; fontFamily: monospace; overflowX: hidden; overflowY: auto;");
         /** @type {HTMLElement} */
         this.lineNumbers = createTag(this.mainContainer, "div");
-        setStyle(this.lineNumbers, "width: fit-content; height: fit-content; textAlign: right; padding: 0px 2px; userSelect: none; backgroundColor: var(--sub3Color); border: solid rgba(0, 0, 0, 0) 1px;");
+        setStyle(this.lineNumbers, "width: fit-content; height: fit-content; textAlign: right; padding: 0px 2px; userSelect: none; border: solid rgba(0, 0, 0, 0) 1px;");
         /** @type {HTMLElement} */
         this.codeAreaContainer = createTag(this.mainContainer, "div");
         setClass(this.codeAreaContainer, "codeAreaContainer")
@@ -73,18 +73,18 @@ export class CodeEditorTag extends CustomTag {
         // setStyle(input, "display: none;");
         setStyle(input, "width: 100px; height: 20px; position: absolute;");
         this.autocompleteArea = createTag(this.codeAreaContainer, "div");
-        setStyle(this.autocompleteArea, "width: 400px; height: fit-content; maxHeight: 200px; position: absolute; display: none; backgroundColor: var(--sub3Color); border: solid rgb(90, 90, 90) 1px; overflowY: auto;");
+        setStyle(this.autocompleteArea, "width: 400px; height: fit-content; maxHeight: 200px; position: absolute; display: none; border: solid var(--color-border) 1px; overflowY: auto;");
         this.selectionArea = createTag(this.codeAreaContainer, "div");
         setStyle(this.selectionArea, "width: 0px; height: 0px; position: absolute;");
         this.caret = createTag(this.codeAreaContainer, "div");
         setClass(this.caret, "caret");
         this.textViewArea = createTag(this.codeAreaContainer, "div");
-        setStyle(this.textViewArea, "width: fit-content; height: fit-content; backgroundColor: var(--sub3Color);");
+        setStyle(this.textViewArea, "width: fit-content; height: fit-content;");
         this.textViewArea.setAttribute("contenteditable", "true");
         this.textViewArea.setAttribute("spellcheck", "false");
 
         this.debuglogAreaContainer = createTag(rightContainerGrid.child2, "div");
-        setStyle(this.debuglogAreaContainer, "width: 100%; height: 100%; backgroundColor: var(--sub3Color); borderRadius: 0px; userSelect: text; overflow: auto; whiteSpace: pre;");
+        setStyle(this.debuglogAreaContainer, "width: 100%; height: 100%; borderRadius: 0px; userSelect: text; overflow: auto; whiteSpace: pre;");
 
         let lastScrollX = 0;
         let lastScrollY = 0;

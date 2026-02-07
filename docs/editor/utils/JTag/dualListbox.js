@@ -11,11 +11,11 @@ export class DualListboxTag extends CustomTag {
         const selectedItems = Array.isArray(child.selected) ? child.selected : jTag.getParameterByPath(source, child.selected);
         this.element = createTag(t, "div", {style: "width: 100%; minHeight: fit-content; display: grid; gridTemplateColumns: 1fr 2px 1fr;"});
         /** @type {HTMLElement} */
-        this.availableList = createTag(this.element, "div", {style: "width: 100%; minHeight: 100px; height: fit-content; backgroundColor: var(--inputColor);"});
+        this.availableList = createTag(this.element, "div", {style: "width: 100%; minHeight: 100px; height: fit-content; backgroundColor: var(--color-input);"});
         /** @type {HTMLElement} */
         this.centerLine = createTag(this.element, "div", {style: "width: 100%; height: 100%;"});
         /** @type {HTMLElement} */
-        this.selectedList = createTag(this.element, "div", {style: "width: 100%; minHeight: 100px; height: fit-content; backgroundColor: var(--inputColor);"});
+        this.selectedList = createTag(this.element, "div", {style: "width: 100%; minHeight: 100px; height: fit-content; backgroundColor: var(--color-input);"});
 
         let tags = new Map();
 

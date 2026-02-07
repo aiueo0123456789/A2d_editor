@@ -15,7 +15,7 @@
 .loadingModalContainer {
     width: 500px;
     height: 120px;
-    background: var(--subColor);
+    background: var(--color-tertiary);
     display: flex;
     flex-flow: column;
     gap: 10px;
@@ -24,7 +24,7 @@
 .loadingModal-header {
     display: flex;
     align-items: center;
-    background: var(--baseColor);
+    background: var(--color-primary);
     width: 100%;
     height: fit-content;
     padding: 10px;

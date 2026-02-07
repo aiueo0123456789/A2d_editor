@@ -269,22 +269,22 @@ export class OutlinerTag extends CustomTag {
         }
         // 選択表示の更新
         const listActive = (o, gID, t) => {
-            // console.log("ヒエラルキーアクティブ")
-            // const createdTags = managerForDOMs.get({g: jTag.groupID, i: outlinerID}); // すでに作っている場合
-            // createdTags.forEach((data, object) => {
-            //     const bool_ = activeSource.object[activeSource.parameter] == object;
-            //     if (bool_) {
-            //         data.others.myContainer.classList.add("activeColor");
-            //     } else {
-            //         data.others.myContainer.classList.remove("activeColor");
-            //         const bool__ = result.selects.includes(object);
-            //         if (bool__) {
-            //             data.others.myContainer.classList.add("activeColor2");
-            //         } else {
-            //             data.others.myContainer.classList.remove("activeColor2");
-            //         }
-            //     }
-            // })
+            console.log("ヒエラルキーアクティブ")
+            const createdTags = managerForDOMs.get({g: jTag.groupID, i: outlinerID}); // すでに作っている場合
+            createdTags.forEach((data, object) => {
+                const bool_ = activeSource.object[activeSource.parameter] == object;
+                if (bool_) {
+                    data.others.myContainer.classList.add("activeColor");
+                } else {
+                    data.others.myContainer.classList.remove("selectedColor");
+                    const bool__ = result.selects.includes(object);
+                    if (bool__) {
+                        data.others.myContainer.classList.add("selectedColor");
+                    } else {
+                        data.others.myContainer.classList.remove("selectedColor");
+                    }
+                }
+            })
         }
         useEffect.set({o: activeSource.object, g: jTag.groupID, i: activeSource.parameter, f: flag}, listActive);
         useEffect.set({o: result.selects, g: jTag.groupID, f: flag}, listActive);

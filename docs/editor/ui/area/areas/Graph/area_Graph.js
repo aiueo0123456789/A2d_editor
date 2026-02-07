@@ -39,58 +39,45 @@ export class Area_Graph {
             inputObject: {"colorData": targetValueToColor, "context": app.context, "spaceData": this.spaceData, "scene": app.scene},
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
-                    {tagType: "option",style: "height: 25px;", name: "情報", children: [
-                        {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto 1fr", children: [
-                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "auto auto 1fr", children: [
-                                {tagType: "padding", size: "10px"},
-                                {tagType: "menu", title: "選択", struct: [
-                                    {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
-                                    {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
-                                ]},
-                                {tagType: "padding", size: "10px"},
+                    {tagType: "gridBox", class: "minLimitClear header", axis: "c", allocation: "1fr auto 1fr", children: [
+                        {tagType: "flexBox", gap: "10px", children: [
+                            {tagType: "menu", title: "選択", struct: [
+                                {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
+                                {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
                             ]},
-                            {tagType: "box", class: "boxs", children: [
+                        ]},
+                        {tagType: "flexBox", gap: "10px", children: [
+                            {tagType: "group", children: [
                                 {tagType: "operatorButton", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
                                 }},
-                                {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isReversePlaying", look: {check: "stop", uncheck: "reverse"}, useCommand: false},
-                                {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isPlaying", look: {check: "stop", uncheck: "playing"}, useCommand: false},
+                                {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isReversePlaying", look: {check: "stop", uncheck: "reverse"}, attributes: ["isButton"], useCommand: false},
+                                {tagType: "input", name: "isPlaying", type: "checkbox", checked: "scene/isPlaying", look: {check: "stop", uncheck: "playing"}, attributes: ["isButton"], useCommand: false},
                                 {tagType: "operatorButton", icon: "skip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_end);
                                 }},
                             ]},
-                            {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "c", allocation: "1fr auto auto auto", children: [
-                                {tagType: "padding", size: "10px"},
-                                {tagType: "label", text: "current", children: [
-                                    {tagType: "input", name: "frame_current", value: "scene/frame_current", type: "number", max: 500, min: -500},
-                                ]},
-                                {tagType: "label", text: "start", children: [
-                                    {tagType: "input", name: "frame_start", value: "scene/frame_start", type: "number", max: 500, min: -500},
-                                ]},
-                                {tagType: "label", text: "end", children: [
-                                    {tagType: "input", name: "frame_end", value: "scene/frame_end", type: "number", max: 500, min: -500},
-                                ]}
-                            ]}
                         ]},
+                        {tagType: "gridBox", axis: "c", allocation: "1fr auto", children: [
+                            {tagType: "padding"},
+                            {tagType: "flexBox", gap: "10px", children: [
+                                {tagType: "input", name: "frame_current", style: "maxWidth: 70px", value: "scene/frame_current", type: "number", max: 500, min: -500},
+                                {tagType: "input", name: "frame_start", style: "maxWidth: 70px", value: "scene/frame_start", type: "number", max: 500, min: -500},
+                                {tagType: "input", name: "frame_end", style: "maxWidth: 70px", value: "scene/frame_end", type: "number", max: 500, min: -500},
+                                {tagType: "input", name: "frame_end", style: "maxWidth: 70px", value: "scene/frame_speed", type: "number", max: 500, min: -500},
+                            ]}
+                        ]}
                     ]},
                     {tagType: "grid", axis: "c", child1: [
                         {tagType: "outliner", name: "outliner", id: "overview",
                             updateEventTarget: "選択物",
                             options: {
-                                arrange: false,
                                 clickEventFn: (event, object) => {
-                                    // app.context.setSelectedObject(object, app.input.keysDown["Ctrl"]);
-                                    // app.context.setActiveObject(object);
                                     event.stopPropagation();
                                 }, rangeonSelectFn: (event, array, startIndex, endIndex) => {
-                                    // let minIndex = Math.min(startIndex, endIndex);
-                                    // let maxIndex = Math.max(startIndex, endIndex);
-                                    // for (let i = minIndex; i < maxIndex; i ++) {
-                                    //     app.context.setSelectedObject(array[i], true);
-                                    // }
-                                    // app.context.setActiveObject(array[endIndex]);
+                                    event.stopPropagation();
                                 },
-                                activeSource: {object: "context", parameter: "activeObject"}, selectSource: {object: "context/selectedObjects"}
+                                activeSource: {object: "context", parameter: "activeObject"}, selectSource: {object: "context/selectedObjects"},
                             },
                             withObject: "spaceData/outlineData",
                             updateEventTarget: ["頂点選択","ボーン選択","オブジェクト選択"],
@@ -124,7 +111,7 @@ export class Area_Graph {
                         },
                     ],child2: [
                         {tagType: "box", id: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
-                            {tagType: "html", tag: "canvas", id: "timelineCanvasForGrid", style: "width: 100%; height: 100%; position: absolute; backgroundColor: var(--sub3Color);"},
+                            {tagType: "html", tag: "canvas", id: "timelineCanvasForGrid", style: "width: 100%; height: 100%; position: absolute;"},
                         ]},
                     ]}
                 ]}

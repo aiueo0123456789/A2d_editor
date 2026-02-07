@@ -1,6 +1,5 @@
 import { isPlainObject } from "../utility.js";
 import { UseEffect } from "../useEffect.js";
-import { app } from "../../../main.js";
 
 export const useEffect = new UseEffect();
 

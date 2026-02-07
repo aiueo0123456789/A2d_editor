@@ -16,7 +16,7 @@ class Parameter {
 }
 
 export class ParameterManager {
-    static createParameter(label = "名称未設定", value = 0) {
+    static createParameter(label = "値", value = 0) {
         return new Parameter({label: label, value: value});
     }
     constructor(data) {

@@ -52,11 +52,11 @@ class WebGPU {
             const items = [];
             for (const item of groupLayout.split("_")) {
                 const useShaderTypes = [];
-                for (let i = 0; i < item.length; i ++) {
+                for (let i = 0; i < item.length; i++) {
                     const char = item[i];
                     if (isLowerCase(char)) {
-                        items.push({useShaderTypes: useShaderTypes, type: item.slice(i)});
-                        break ;
+                        items.push({ useShaderTypes: useShaderTypes, type: item.slice(i) });
+                        break;
                     } else {
                         useShaderTypes.push(char.toLowerCase());
                     }
@@ -100,12 +100,12 @@ class WebGPU {
             return allReplace(extractBetween(strings, "struct ", "{")[0], " ");
         }
         let structures = code.split("struct "); // 型宣言で分割
-        structures.splice(0,1); // 先頭の空文字を削除
+        structures.splice(0, 1); // 先頭の空文字を削除
         structures.forEach(text => {
             const startIndex = text.indexOf("{");
             const endIndex = text.indexOf("}");
             if (startIndex > endIndex) {
-                console.warn("}が{の前にあります",text);
+                console.warn("}が{の前にあります", text);
                 return "";
             }
             // text = allReplace(text,"\n");
@@ -121,7 +121,7 @@ class WebGPU {
         // console.trace("Calling writeBuffer");
         if (buffer instanceof GPUBuffer) {
             try {
-                device.queue.writeBuffer(buffer, offset ,data);
+                device.queue.writeBuffer(buffer, offset, data);
             } catch (e) {
                 // console.warn("bufferの書き込み時", buffer, data, offset);
                 // console.error(e);
@@ -167,19 +167,19 @@ class WebGPU {
 
         let offset = 0;
         let index = 0;
-        for (let i = 0; i < bufferLength;i ++) {
+        for (let i = 0; i < bufferLength; i++) {
             for (const bitType of struct) {
                 if (bitType == "u8") {
                     view.setUint8(offset, array[index], true);
-                    index ++;
-                    offset ++;
+                    index++;
+                    offset++;
                 } else if (bitType == "u32") {
                     view.setUint32(offset, array[index], true);
-                    index ++;
+                    index++;
                     offset += 4;
                 } else if (bitType == "f32") {
                     view.setFloat32(offset, array[index], true);
-                    index ++;
+                    index++;
                     offset += 4;
                 } else if (bitType == "padding") {
                     view.setFloat32(offset, 1, true);
@@ -190,7 +190,7 @@ class WebGPU {
         return new Uint8Array(buffer);
     }
 
-    concatBuffer(bufferA,bufferB) {
+    concatBuffer(bufferA, bufferB) {
         const resultBuffer = this.createBuffer(bufferA.size + bufferB.size, bufferA.usage);
         GPU.copyBuffer(bufferA, resultBuffer, 0, 0, bufferA.size);
         GPU.copyBuffer(bufferB, resultBuffer, 0, bufferA.size, bufferB.size);
@@ -251,7 +251,7 @@ class WebGPU {
         }
     }
 
-    createBuffer(size,usage,data = undefined) {
+    createBuffer(size, usage, data = undefined) {
         size = this.alignTo4(size);
         if (Array.isArray(usage)) {
             const usageArray = usage;
@@ -264,7 +264,7 @@ class WebGPU {
             for (const element of usageArray) {
                 usage |= GPUBufferUsageTable[element];
             }
-            for (const element of [GPUBufferUsage.COPY_DST,GPUBufferUsage.COPY_SRC]) {
+            for (const element of [GPUBufferUsage.COPY_DST, GPUBufferUsage.COPY_SRC]) {
                 usage |= element;
             }
         }
@@ -342,12 +342,12 @@ class WebGPU {
             throw new TypeError('Loaded image is not an instance of HTMLImageElement.');
         }
 
-        const resultTexture = this.createTexture2D([img.width,img.height],"rgba8unorm");
+        const resultTexture = this.createTexture2D([img.width, img.height], "rgba8unorm");
 
         device.queue.copyExternalImageToTexture(
-            { source: img},
+            { source: img },
             { texture: resultTexture, origin: [0, 0, 0] },
-            [img.width,img.height,1]
+            [img.width, img.height, 1]
         );
 
         return resultTexture;
@@ -361,8 +361,8 @@ class WebGPU {
             const textureWidth = imageBitmap.width;
             const textureHeight = imageBitmap.height;
             // テクスチャを作成
-            const s_texture = this.createStorageTexture2D([textureWidth,textureHeight],"rgba8unorm");
-            const texture = this.createTexture2D([textureWidth,textureHeight],"rgba8unorm");
+            const s_texture = this.createStorageTexture2D([textureWidth, textureHeight], "rgba8unorm");
+            const texture = this.createTexture2D([textureWidth, textureHeight], "rgba8unorm");
             // imageBitmapからGPUテクスチャにコピー
             device.queue.copyExternalImageToTexture(
                 { source: imageBitmap },
@@ -394,7 +394,7 @@ class WebGPU {
             const textureWidth = imageBitmap.width;
             const textureHeight = imageBitmap.height;
             // テクスチャを作成
-            const texture = this.createTexture2D([textureWidth,textureHeight],"rgba8unorm");
+            const texture = this.createTexture2D([textureWidth, textureHeight], "rgba8unorm");
             // imageBitmapからGPUテクスチャにコピー
             device.queue.copyExternalImageToTexture(
                 { source: imageBitmap },
@@ -510,11 +510,11 @@ class WebGPU {
         }
 
         return device.createBindGroupLayout({
-            entries: items.map((x,i) => {
+            entries: items.map((x, i) => {
                 return Object.assign({
-                        binding: i, // インプットオブジェクトデータ
-                        visibility: stageFromType(x.useShaderTypes)
-                    },
+                    binding: i, // インプットオブジェクトデータ
+                    visibility: stageFromType(x.useShaderTypes)
+                },
                     entrieFromType(x.type)
                 )
             })
@@ -535,7 +535,7 @@ class WebGPU {
                 } else if (item instanceof GPUSampler) {
                     type = "ts";
                 } else {
-                    console.warn("無効",item);
+                    console.warn("無効", item);
                 }
             }
             if (type == 'b') {
@@ -582,7 +582,7 @@ class WebGPU {
 
         return device.createBindGroup({
             layout: groupLayout,
-            entries: items.map((x,i) => {
+            entries: items.map((x, i) => {
                 let entrie;
                 if (Array.isArray(x)) {
                     entrie = entrieFromType(x[1], x[0]);
@@ -596,8 +596,8 @@ class WebGPU {
                     throw Error(entrie.error + `index: ${i}`);
                 }
                 return Object.assign({
-                        binding: i, // インプットオブジェクトデータ
-                    },
+                    binding: i, // インプットオブジェクトデータ
+                },
                     entrie
                 )
             })
@@ -726,17 +726,17 @@ class WebGPU {
 
     deleteIndexsToBuffer(buffer, indexs, structByteSize) {
         const dataNum = buffer.size / structByteSize;
-        indexs.sort((a,b) => a - b);
+        indexs.sort((a, b) => a - b);
         const startAndEndIndexs = [];
         let lastIndex = 0;
         for (const subIndex of indexs) {
             if (subIndex - lastIndex >= 1) {
-                startAndEndIndexs.push([lastIndex,subIndex - 1]);
+                startAndEndIndexs.push([lastIndex, subIndex - 1]);
             }
             lastIndex = subIndex + 1;
         }
         if (lastIndex < dataNum) {
-            startAndEndIndexs.push([lastIndex,dataNum - 1]);
+            startAndEndIndexs.push([lastIndex, dataNum - 1]);
         }
         // GPU.consoleBufferData(buffer, ["f32"], "old");
         const newBuffer = GPU.createStorageBuffer((buffer.size - indexs.length * structByteSize), undefined, ["f32"]);
@@ -774,9 +774,9 @@ class WebGPU {
             return {
                 arrayStride: structSize.reduce((sum, x) => {
                     return sum + x;
-                },0),
+                }, 0),
                 attributes: struct.map((x, i) => {
-                    shaderLocationOffset ++;
+                    shaderLocationOffset++;
                     let format = "float32";
                     if (x == "u") {
                         format = "uint32";
@@ -818,14 +818,12 @@ class WebGPU {
                     entryPoint: 'fmain',
                     targets: [
                         {
-                            // format: 'bgra8unorm',
-                            // format: fragmentOutputFormat,
                             format: format,
                             blend: {
                                 color: {
-                                    srcFactor: 'src-alpha', // ソースのアルファ値
-                                    dstFactor: 'one-minus-src-alpha', // 1 - ソースのアルファ値
-                                    operation: 'add', // 加算
+                                    srcFactor: 'src-alpha',
+                                    dstFactor: 'one-minus-src-alpha',
+                                    operation: 'add',
                                 },
                                 alpha: {
                                     srcFactor: 'src-alpha',
@@ -836,10 +834,40 @@ class WebGPU {
                         }
                     ],
                 },
-                depthStencil: {
-                    format: 'depth32float', // 必須: RenderPassで指定された深度フォーマット
-                    depthWriteEnabled: depth[0] == "w", // 深度を書き込む場合はtrue
-                    depthCompare: depth[1] == "l" ? "less" : "always", // 深度テストの比較方法
+                primitive: {
+                    topology: topologyType == "t" ? 'triangle-list' : 'triangle-strip',
+                },
+            };
+        } else if (option == "special") {
+            object = {
+                layout: device.createPipelineLayout({
+                    bindGroupLayouts: groupLayouts,
+                }),
+                vertex: {
+                    module: shader,
+                    entryPoint: 'vmain',
+                    buffers: vertexBuffers,
+                },
+                fragment: {
+                    module: shader,
+                    entryPoint: 'fmain',
+                    targets: [
+                        {
+                            format: format,
+                            blend: {
+                                color: {
+                                    srcFactor: 'one',
+                                    dstFactor: 'one',
+                                    operation: 'add',
+                                },
+                                alpha: {
+                                    srcFactor: 'one',
+                                    dstFactor: 'one',
+                                    operation: 'add',
+                                },
+                            }
+                        }
+                    ],
                 },
                 primitive: {
                     topology: topologyType == "t" ? 'triangle-list' : 'triangle-strip',
@@ -883,6 +911,13 @@ class WebGPU {
                 },
             };
         }
+        if (depth != "") {
+            object.depthStencil = {
+                format: 'depth32float', // 必須: RenderPassで指定された深度フォーマット
+                depthWriteEnabled: depth[0] == "w", // 深度を書き込む場合はtrue
+                depthCompare: depth[1] == "l" ? "less" : "always", // 深度テストの比較方法
+            }
+        }
         return device.createRenderPipeline(object);
     }
 
@@ -914,9 +949,9 @@ class WebGPU {
             return {
                 arrayStride: structSize.reduce((sum, x) => {
                     return sum + x;
-                },0),
+                }, 0),
                 attributes: struct.map((x, i) => {
-                    shaderLocationOffset ++;
+                    shaderLocationOffset++;
                     let format = "float32";
                     if (x == "u") {
                         format = "uint32";
@@ -1017,7 +1052,7 @@ class WebGPU {
                     topology: topologyType == "t" ? 'triangle-list' : 'triangle-strip',
                 },
             });
-        }else if (option == "cvsCopy") {
+        } else if (option == "cvsCopy") {
             return device.createRenderPipeline({
                 layout: device.createPipelineLayout({
                     bindGroupLayouts: groupLayouts,
@@ -1070,8 +1105,8 @@ class WebGPU {
         } else {
             const computePassEncoder = copyCommandEncoder.beginComputePass();
             computePassEncoder.setPipeline(copyForBytePipeline);
-            computePassEncoder.setBindGroup(0, this.createGroup(this.getGroupLayout("Csr_Csrw_Cu"), [resource, copyTarget, this.createUniformBuffer(3 * 4,[resourceOffset, targetOffset, copySize],["u32"])]));
-            computePassEncoder.dispatchWorkgroups(Math.ceil(copySize / 32) + 1 ,1, 1); // ワークグループ数をディスパッチ
+            computePassEncoder.setBindGroup(0, this.createGroup(this.getGroupLayout("Csr_Csrw_Cu"), [resource, copyTarget, this.createUniformBuffer(3 * 4, [resourceOffset, targetOffset, copySize], ["u32"])]));
+            computePassEncoder.dispatchWorkgroups(Math.ceil(copySize / 32) + 1, 1, 1); // ワークグループ数をディスパッチ
             computePassEncoder.end();
         }
 
@@ -1098,15 +1133,15 @@ class WebGPU {
     }
 
     // コンピューターシェーダーの実行
-    runComputeShader(pipeline, groups, workNumX = 1, workNumY = 1,workNumZ = 1) {
-        if (workNumX < 1 || workNumY < 1 || workNumZ < 1) return ;
+    runComputeShader(pipeline, groups, workNumX = 1, workNumY = 1, workNumZ = 1) {
+        if (workNumX < 1 || workNumY < 1 || workNumZ < 1) return;
         const computeCommandEncoder = device.createCommandEncoder();
         const computePassEncoder = computeCommandEncoder.beginComputePass();
         computePassEncoder.setPipeline(pipeline);
-        for (let i = 0; i < groups.length; i ++) {
+        for (let i = 0; i < groups.length; i++) {
             computePassEncoder.setBindGroup(i, groups[i]);
         }
-        computePassEncoder.dispatchWorkgroups(workNumX,workNumY,workNumZ); // ワークグループ数をディスパッチ
+        computePassEncoder.dispatchWorkgroups(workNumX, workNumY, workNumZ); // ワークグループ数をディスパッチ
         computePassEncoder.end();
         device.queue.submit([computeCommandEncoder.finish()]);
     }
@@ -1127,7 +1162,7 @@ class WebGPU {
         // 一時バッファの内容をマップして表示
         await readBuffer.mapAsync(GPUMapMode.READ);
         const mappedRange = new Float32Array(readBuffer.getMappedRange());
-        for (let i = 0; i < array.length; i ++) {
+        for (let i = 0; i < array.length; i++) {
             array[i] = mappedRange[i];
         }
         readBuffer.unmap();
@@ -1155,7 +1190,7 @@ class WebGPU {
         object.BBox.width = [mappedRange[2], mappedRange[3]];
         object.BBox.width = mappedRange[2] - mappedRange[0];
         object.BBox.height = mappedRange[3] - mappedRange[1];
-        object.BBox.center = MathVec2.reverseScaleR(MathVec2.addR(object.BBox.min,object.BBox.max), 2);
+        object.BBox.center = MathVec2.reverseScaleR(MathVec2.addR(object.BBox.min, object.BBox.max), 2);
         readBuffer.unmap();
     }
 
@@ -1176,7 +1211,7 @@ class WebGPU {
         // 一時バッファの内容をマップして表示
         await readBuffer.mapAsync(GPUMapMode.READ);
         const mappedRange = new Float32Array(readBuffer.getMappedRange());
-        const result = [[mappedRange[0], mappedRange[1]],[mappedRange[2], mappedRange[3]]];
+        const result = [[mappedRange[0], mappedRange[1]], [mappedRange[2], mappedRange[3]]];
         readBuffer.unmap();
         return result;
     }
@@ -1191,7 +1226,7 @@ class WebGPU {
         return newBuffer;
     }
 
-    getPartPackBuffer(buffer, range, ) {
+    getPartPackBuffer(buffer, range,) {
 
     }
 
@@ -1215,7 +1250,7 @@ class WebGPU {
 
         // 各バイトについて、ビット単位で処理
         for (let byte of data) {
-            for (let i = 0; i < 8; i ++) {
+            for (let i = 0; i < 8; i++) {
                 const bit = (byte >> i) & 1;
                 result.push(bit === 1);
             }
@@ -1244,7 +1279,7 @@ class WebGPU {
         const result = [];
 
         // 各バイトについて、ビット単位で処理
-        for (let i = startIndex; i < endIndex; i ++) {
+        for (let i = startIndex; i < endIndex; i++) {
             const byte = data[Math.floor(i / 8)];
             const bitIndex = i % 8;
             const bit = (byte >> bitIndex) & 1;
@@ -1276,7 +1311,7 @@ class WebGPU {
         const result = [];
 
         // 各バイトについて、ビット単位で処理
-        for (let i = startIndex; i < endIndex; i ++) {
+        for (let i = startIndex; i < endIndex; i++) {
             const byte = data[Math.floor(i / 8)];
             const bitIndex = i % 8;
             const bit = (byte >> bitIndex) & 1;
@@ -1336,7 +1371,7 @@ class WebGPU {
         return dataArray;
     }
 
-    async getStructDataFromGPUBuffer(sourceBuffer,struct,startIndex,readNum) {
+    async getStructDataFromGPUBuffer(sourceBuffer, struct, startIndex, readNum) {
         const sourceOffset = startIndex * this.getStructByteSize(struct);
         const sizeToRead = readNum * this.getStructByteSize(struct);
         // 1. 読み出し用のバッファを作成
@@ -1381,7 +1416,7 @@ class WebGPU {
         return result;
     }
 
-    async getVerticesDataFromGPUBuffer(sourceBuffer,startIndex,readNum) {
+    async getVerticesDataFromGPUBuffer(sourceBuffer, startIndex, readNum) {
         const sourceOffset = startIndex * 2 * 4;
         const sizeToRead = readNum * 2 * 4;
         // 1. 読み出し用のバッファを作成
@@ -1409,7 +1444,7 @@ class WebGPU {
         const floatArray = new Float32Array(arrayBuffer); // 型は必要に応じて変える
         // 5. 必要に応じてコピー
         const result = new Array(readNum); // or Array.from(floatArray)
-        for (let i = 0; i < readNum; i ++) {
+        for (let i = 0; i < readNum; i++) {
             result[i] = [floatArray[i * 2], floatArray[i * 2 + 1]];
         }
         // 6. アンマップ
@@ -1552,7 +1587,7 @@ class WebGPU {
                 indexs.end = indexs.start + indexs.num;
             }
             offset = indexs.start * (this.getStructByteSize(struct)); // フィールドのサイズを加算
-            for (let i = indexs.start; i < indexs.end; i ++) {
+            for (let i = indexs.start; i < indexs.end; i++) {
                 const keep = [];
                 for (const field of struct) {
                     if (field === "u32") {
@@ -1561,7 +1596,7 @@ class WebGPU {
                         keep.push(dataView.getFloat32(offset, true));
                     } else if (field == "bit") {
                         // 各バイトについて、ビット単位で処理
-                        for (let bI = 0; bI < 8; bI ++) {
+                        for (let bI = 0; bI < 8; bI++) {
                             const bit = (dataView.getUint32(offset, true) >> bI) & 1;
                             keep.push(bit === 1);
                         }
@@ -1581,7 +1616,7 @@ class WebGPU {
                         keep.push(dataView.getFloat32(offset, true));
                     } else if (field == "bit") {
                         // 各バイトについて、ビット単位で処理
-                        for (let bI = 0; bI < 8; bI ++) {
+                        for (let bI = 0; bI < 8; bI++) {
                             const bit = (dataView.getUint32(offset, true) >> bI) & 1;
                             keep.push(bit === 1);
                         }
@@ -1593,7 +1628,7 @@ class WebGPU {
         }
 
         readBuffer.unmap();
-        console.log(text,result);
+        console.log(text, result);
     }
 
     async getBufferDataFromIndexs(buffer, indexs, struct) {
@@ -1621,7 +1656,7 @@ class WebGPU {
         let offset = 0;
         if (!("end" in indexs)) indexs.end = indexs.start + indexs.num;
         offset = indexs.start * (this.getStructByteSize(struct)); // フィールドのサイズを加算
-        for (let i = indexs.start; i < indexs.end; i ++) {
+        for (let i = indexs.start; i < indexs.end; i++) {
             const keep = [];
             for (const field of struct) {
                 if (field === "u32") {
@@ -1654,22 +1689,22 @@ class WebGPU {
         let isError = false;
         const textureLeftBottom = [];
         while (!isAllIncluded && !isError) {
-            let skyline = [[0,0]]; // 左下から始める
+            let skyline = [[0, 0]]; // 左下から始める
             let isOverflowing = false;
             textureLeftBottom.length = 0;
             for (const texture of sortedTextures) {
                 const textureSize = [texture.width + padding, texture.height + padding];
                 let minIndex = -1;
-                for (let pointIndex = 0; pointIndex < skyline.length; pointIndex ++) {
+                for (let pointIndex = 0; pointIndex < skyline.length; pointIndex++) {
                     let widthBool = false; // 横幅が足りるか
                     if (pointIndex == skyline.length - 1) widthBool = textureSize[0] < width - skyline[pointIndex][0];
                     else {
                         widthBool = textureSize[0] < skyline[pointIndex + 1][0] - skyline[pointIndex][0];
                         if (!widthBool) { // 隣だけじゃ足りない場合
                             let maxWidth = skyline[pointIndex][0];
-                            for (let pointIndex_ = pointIndex + 1; pointIndex_ < skyline.length; pointIndex_ ++) {
+                            for (let pointIndex_ = pointIndex + 1; pointIndex_ < skyline.length; pointIndex_++) {
                                 if (skyline[pointIndex_][1] < skyline[pointIndex][1]) maxWidth = skyline[pointIndex_][0]; // 隣の方が低いなら
-                                else break ;
+                                else break;
                             }
                             if (textureSize[0] < maxWidth - skyline[pointIndex][0]) widthBool = true;
                         }
@@ -1680,7 +1715,7 @@ class WebGPU {
                 }
                 if (minIndex == -1) { // 場所が足りない
                     isOverflowing = true;
-                    break ;
+                    break;
                 }
                 let [minX, minY] = skyline[minIndex]; // 左下
                 let [maxX, maxY] = [skyline[minIndex][0] + textureSize[0], skyline[minIndex][1] + textureSize[1]]; // 右上
@@ -1693,7 +1728,7 @@ class WebGPU {
                         skyline.splice(i + 1, 1);
                     }
                 }
-                skyline = skyline.sort((a,b) => a[0] - b[0]); // 頂点を並び替える
+                skyline = skyline.sort((a, b) => a[0] - b[0]); // 頂点を並び替える
             }
             if (!isOverflowing) isAllIncluded = true; // 一つも溢れなかったら終了
             else { // 溢れたらサイズを増やす
@@ -1716,13 +1751,13 @@ class WebGPU {
         const atlasTexture = device.createTexture({
             size: [width, height],
             format: "rgba8unorm",
-            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC |GPUTextureUsage.RENDER_ATTACHMENT,
+            usage: GPUTextureUsage.TEXTURE_BINDING | GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC | GPUTextureUsage.RENDER_ATTACHMENT,
         });
 
         // 各テクスチャをアトラスにコピー
         const commandEncoder = device.createCommandEncoder();
         sortedTextures.forEach((texture, index) => {
-            if (textureLeftBottom.length <= index) return ;
+            if (textureLeftBottom.length <= index) return;
             commandEncoder.copyTextureToTexture(
                 { texture },
                 { texture: atlasTexture, origin: textureLeftBottom[index] },
@@ -1733,10 +1768,12 @@ class WebGPU {
         const commandBuffer = commandEncoder.finish();
         device.queue.submit([commandBuffer]);
 
-        return {texture: atlasTexture, texCoordOffset: textures.map(texture => {
-            const point = textureLeftBottom[sortedTextures.indexOf(texture)];
-            return [point[0] / width, point[1] / height, texture.width / width, texture.height / height];
-        })};
+        return {
+            texture: atlasTexture, texCoordOffset: textures.map(texture => {
+                const point = textureLeftBottom[sortedTextures.indexOf(texture)];
+                return [point[0] / width, point[1] / height, texture.width / width, texture.height / height];
+            })
+        };
     }
 
     decompression(data, t) {
@@ -1754,10 +1791,10 @@ class WebGPU {
 
                 const zeroNum = dataView.getUint32(0, true);
                 const result = new Uint8Array(zeroNum + dataView.byteLength - 4);
-                for (let i = 0; i < zeroNum; i ++) {
+                for (let i = 0; i < zeroNum; i++) {
                     result[i] = 0;
                 }
-                for (let i = 0; i < dataView.byteLength - 4; i ++) {
+                for (let i = 0; i < dataView.byteLength - 4; i++) {
                     result[zeroNum + i] = dataView.getUint8(4 + i, true);
                 }
                 return result;
@@ -1799,7 +1836,7 @@ class WebGPU {
             const colorTableBit = base64ToU8Array(sectionData[0]);
             const colorTable = [];
             for (let i = 0; i < colorTableBit.length; i += 4) {
-                colorTable.push([colorTableBit[i],colorTableBit[i + 1],colorTableBit[i + 2],colorTableBit[i + 3]]);
+                colorTable.push([colorTableBit[i], colorTableBit[i + 1], colorTableBit[i + 2], colorTableBit[i + 3]]);
             }
 
             for (const base64 of sectionData.slice(1)) {
@@ -1809,8 +1846,8 @@ class WebGPU {
                     if (colorTable[uint8Array[i / 4]]) {
                         colorArray.set(colorTable[uint8Array[i / 4]], i);
                     } else {
-                        colorArray.set([255,0,255,255], i);
-                        console.warn("カラーテーブル以上のindexが見つかりました",uint8Array[i / 4],colorTable.length);
+                        colorArray.set([255, 0, 255, 255], i);
+                        console.warn("カラーテーブル以上のindexが見つかりました", uint8Array[i / 4], colorTable.length);
                     }
                 }
                 t.set(colorArray, offset);
@@ -1841,7 +1878,7 @@ class WebGPU {
             const buffer = new ArrayBuffer(4 + data.length); // u32, u8...
             const view = new DataView(buffer);
             view.setUint32(0, zeroNum, true);
-            for (let i = 0; i < data.length; i ++) {
+            for (let i = 0; i < data.length; i++) {
                 view.setUint8(4 + i, data[i], true);
             }
             result.push(new Uint8Array(buffer));
@@ -1863,15 +1900,15 @@ class WebGPU {
             while (i < b.length) {
                 let zeroNum = 0;
                 while (b[i] == 0 && i < b.length) {
-                    zeroNum ++;
-                    i ++;
+                    zeroNum++;
+                    i++;
                 }
                 const arrayData = [];
                 while (b[i] != 0 && i < b.length) {
                     arrayData.push(b[i]);
-                    i ++;
+                    i++;
                 }
-                appendBitData(zeroNum,arrayData);
+                appendBitData(zeroNum, arrayData);
             }
             arrayData.length = 0;
             return "1" + datasToBase64(result);
@@ -1891,15 +1928,15 @@ class WebGPU {
             while (i < b.length) {
                 let zeroNum = 0;
                 while (b[i] == 0 && i < b.length) {
-                    zeroNum ++;
-                    i ++;
+                    zeroNum++;
+                    i++;
                 }
                 const arrayData = [];
                 while (b[i] != 0 && i < b.length) {
                     arrayData.push(b[i]);
-                    i ++;
+                    i++;
                 }
-                appendBitData(zeroNum,arrayData);
+                appendBitData(zeroNum, arrayData);
             }
             arrayData.length = 0;
             return "2" + colorTable + "_" + datasToBase64(result);
@@ -1927,9 +1964,9 @@ class WebGPU {
 
         function getColorHash(c) {
             return c[0] * 255 ** 3 +
-                   c[1] * 255 ** 2 +
-                   c[2] * 255 +
-                   c[3];
+                c[1] * 255 ** 2 +
+                c[2] * 255 +
+                c[3];
         }
 
         const colorTable = [];
@@ -1945,7 +1982,7 @@ class WebGPU {
             tableIndex.push(colorHashs.get(hash)); // ピクセルのテーブルindexを取得
             if (option) {
                 if (uint8Array[i + 3] == 0) { // 透明度だった場合
-                    for (let j = 0; j < 3; j ++) {
+                    for (let j = 0; j < 3; j++) {
                         uint8Array[i + j] = 0;
                     }
                 }
@@ -1956,10 +1993,10 @@ class WebGPU {
         if (colorTable.length / 4 >= 257) { // テーブルの数が257以上の場合
             base64String = this.compression(uint8Array);
         } else {
-            base64String = this.compression({tableIndex: tableIndex, colorTable: colorTable},"2");
+            base64String = this.compression({ tableIndex: tableIndex, colorTable: colorTable }, "2");
         }
         stagingBuffer.unmap();
-        return {data: base64String, width: texture.width, height: texture.height}; // "data:image/png;base64,..." の形式で返される
+        return { data: base64String, width: texture.width, height: texture.height }; // "data:image/png;base64,..." の形式で返される
     }
 
     copyBase64ToTexture(texture, base64String, option = "背景色白") {
@@ -1997,7 +2034,7 @@ class WebGPU {
             { width: texture.width, height: texture.height, depthOrArrayLayers: 1 }
         );
         if (option == "背景色白") {
-            const s_texture = this.createStorageTexture2D([texture.width,texture.height],"rgba8unorm");
+            const s_texture = this.createStorageTexture2D([texture.width, texture.height], "rgba8unorm");
             const computePassEncoder = commandEncoder.beginComputePass();
             computePassEncoder.setPipeline(transparentToWhitePipeline);
             computePassEncoder.setBindGroup(0, GPU.createGroup(transparentToWhitePipeline.getBindGroupLayout(0), [s_texture, texture]));
@@ -2209,7 +2246,7 @@ class WebGPU {
 
 export const userLang = navigator.language || navigator.userLanguage;
 
-console.log("使用言語",userLang)
+console.log("使用言語", userLang)
 
 if ('gpu' in navigator) {
 } else {
@@ -2240,7 +2277,7 @@ export const GPU = new WebGPU();
 GPU.setStructByCode(await loadFile("./editor/shader/structures.wgsl"));
 const isNotTexture = await GPU.imageToTexture2D("./config/images/ui_icon/画像未設定.png");
 const transparentToWhitePipeline = GPU.createComputePipeline(
-    [GPU.createGroupLayout([{useShaderTypes: ['c'], type: 'stw'},{useShaderTypes: ['c'], type: 't'}])],
+    [GPU.createGroupLayout([{ useShaderTypes: ['c'], type: 'stw' }, { useShaderTypes: ['c'], type: 't' }])],
     `
     @group(0) @binding(0) var modifyTexture : texture_storage_2d<rgba8unorm, write>;
     @group(0) @binding(1) var image : texture_2d<f32>;
@@ -2262,7 +2299,7 @@ const transparentToWhitePipeline = GPU.createComputePipeline(
     `
 );
 const copyForBytePipeline = GPU.createComputePipeline(
-    [GPU.createGroupLayout([{useShaderTypes: ['c'], type: 'sr'},{useShaderTypes: ['c'], type: 'srw'},{useShaderTypes: ["c"], type: "u"}])],
+    [GPU.createGroupLayout([{ useShaderTypes: ['c'], type: 'sr' }, { useShaderTypes: ['c'], type: 'srw' }, { useShaderTypes: ["c"], type: "u" }])],
     `
     struct Config {
         srcOffset: u32,
