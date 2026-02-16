@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
-import { BBezierWeight } from "../../core/edit/objects/BBezierWeight.js";
-import { BMeshWeight } from "../../core/edit/objects/BMeshWeight.js";
+import { BBezierWeight } from "../../core/edit/entity/BBezierWeight.js";
+import { BMeshWeight } from "../../core/edit/entity/BMeshWeight.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { createArrayNAndFill } from "../../utils/utility.js";
 

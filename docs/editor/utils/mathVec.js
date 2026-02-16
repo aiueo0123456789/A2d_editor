@@ -21,6 +21,7 @@ export class MathVec2 {
     static set(t,a) {
         t[0] = a[0];
         t[1] = a[1];
+        return t;
     }
 
     static add(t,a,b) {

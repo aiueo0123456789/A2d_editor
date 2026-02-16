@@ -57,6 +57,9 @@ export class Armature extends ObjectBase {
             t[key] += bCopy[key];
         }
     }
+    static BoneDataByArray(array) {
+        return {x: array[0], y: array[1], sx: array[2], sy: array[3], r: array[4], l: array[5]};;
+    }
     static copyBoneData(a) {
         if (!a.x) a.x = 0;
         if (!a.y) a.y = 0;
@@ -137,15 +140,14 @@ export class Armature extends ObjectBase {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.allAnimations,
-                parameters: data.keyframeBlockManager.parameters.slice(0, this.allAnimations.length),
-                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks.slice(0, this.allAnimations.length),
+                parameters: data.keyframeBlockManager.parameters,
+                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
             });
         } else {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.allAnimations,
                 parameters: createArrayN(this.allAnimations.length),
-                keyframeBlocks: createArrayN(this.allAnimations.length).map(x => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}))
             });
         }
         console.log(this)

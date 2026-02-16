@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
-import { BArmatureAnimation } from "../../core/edit/objects/BArmatureAnimation.js";
-import { BKeyframeBlockManager } from "../../core/edit/objects/BKeyframeBlockManager.js";
+import { BArmatureAnimation } from "../../core/edit/entity/BArmatureAnimation.js";
+import { BKeyframeBlock, BKeyframeBlockManager } from "../../core/edit/entity/BKeyframeBlockManager.js";
 import { KeyframeBlock } from "../../core/entity/keyframeBlock.js";
 
 export class KeyframeInsertInSelectedElementCommand {
@@ -15,7 +15,7 @@ export class KeyframeInsertInSelectedElementCommand {
                 /** @type {BKeyframeBlockManager} */
                 const keyframeBlockManager = bone.keyframeBlockManager;
                 const values = keyframeBlockManager.values;
-                return keyframeBlockManager.keyframeBlocks.map((keyframeBlock, valueIndex) => KeyframeBlock.createKeyframe(app.scene.frame_current, values[valueIndex]));
+                return keyframeBlockManager.keyframeBlocks.map((keyframeBlock, valueIndex) => BKeyframeBlock.createKeyframe(app.scene.frame_current, values[valueIndex]));
             });
         }
     }
@@ -42,7 +42,7 @@ export class KeyframeInsertInSelectedElementCommand {
     }
 }
 
-export class KeyframeInsertInKeyframeCommand {
+export class KeyframeInsertInKeyframeBlockCommand {
     constructor(/** @type {KeyframeBlock} */ keyframeBlock, frame, value) {
         this.keyframeBlock = keyframeBlock;
         this.newKey = KeyframeBlock.createKeyframe(frame, value);

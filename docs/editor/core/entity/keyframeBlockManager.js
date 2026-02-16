@@ -1,21 +1,28 @@
 import { app } from "../../../main.js";
 import { createID } from "../../utils/idGenerator.js";
 import { UnfixedReference } from "../../utils/objects/util.js";
-import { copyToArray, pushToArray } from "../../utils/utility.js";
+import { copyToArray } from "../../utils/utility.js";
 import { KeyframeBlock } from "./keyframeBlock.js";
 
 export class KeyframeBlockManager {
-    constructor(data = {object: null, parameters: null}) {
+    constructor(data = {object: null, parameters: null, keyframeBlocks: null}) {
         this.type = "キーフレームブロックマネージャー";
         this.id = data.id ? data.id : createID();
         this.object = data.object;
-        /** @type {Array} */
+        /** @type {string[]} */
         this.parameters = data.parameters;
         /** @type {KeyframeBlock[]} */
-        this.keyframeBlocks = data.keyframeBlocks.map(keyframeBlock => {
-            if (keyframeBlock instanceof KeyframeBlock) return keyframeBlock;
-            else return app.scene.objects.getObjectByID(keyframeBlock);
-        });
+        this.keyframeBlocks = [];
+        if (data.keyframeBlocks) {
+            this.keyframeBlocks = data.keyframeBlocks.map(keyframeBlock => {
+                if (keyframeBlock instanceof KeyframeBlock) return keyframeBlock;
+                else return app.scene.objects.getObjectByID(keyframeBlock);
+            });
+        } else {
+            for (let i = 0; i < this.parameters.length; i ++) {
+                this.keyframeBlocks.push(app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}));
+            }
+        }
     }
 
     resolvePhase() {
@@ -27,11 +34,6 @@ export class KeyframeBlockManager {
     setKeyframeBlocks(parameters, keyframeBlocks) {
         copyToArray(this.parameters, parameters);
         copyToArray(this.keyframeBlocks, keyframeBlocks);
-    }
-
-    appendParameter(parameter, keyframeBlcok = app.scene.objects.createAndAppendObject({type: "KeyframeBlock"})) {
-        pushToArray(this.parameters, parameter);
-        pushToArray(this.keyframeBlocks, keyframeBlcok);
     }
 
     update() {

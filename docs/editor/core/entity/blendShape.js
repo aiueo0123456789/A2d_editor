@@ -1,8 +1,10 @@
 import { app } from "../../../main.js";
 import { createID } from "../../utils/idGenerator.js";
+import { MathVec2 } from "../../utils/mathVec.js";
 import { cdt } from "../../utils/objects/graphicMesh/createMesh/cdt.js";
 import { UnfixedReference } from "../../utils/objects/util.js";
 import { copyToArray, createArrayN, createArrayNAndFill, hitTestPointTriangle, IsString, lerpTriangle } from "../../utils/utility.js";
+import { GPU } from "../../utils/webGPU.js";
 import { KeyframeBlockManager } from "./keyframeBlockManager.js";
 
 export class ShapeKeyMetaData {
@@ -45,7 +47,7 @@ export class BlendShape {
     constructor(data) {
         this.id = data.id ? data.id : createID();
         this.name = data.name;
-        this.type = "ブレンドシェイプ";
+        this.type = "BlendShape";
         /** @type {ShapeKeyMetaData[]} */
         this.shapeKeys = data.shapeKeys.map(shapeKey => {
             if (shapeKey instanceof ShapeKeyMetaData) return shapeKey;
@@ -58,7 +60,7 @@ export class BlendShape {
         this.max = data.max;
         this.min = data.min;
         this.weights = createArrayNAndFill(this.shapeKeys.length, 0);
-        this.triangles = []; // ドロネーで自動生成
+        this.triangles = data.triangles; // ドロネーで自動生成
         if (data.keyframeBlockManager) { // セーブデータから
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
@@ -74,13 +76,23 @@ export class BlendShape {
                 keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}))
             });
         }
-
         // エディターデータ
         this.activePoint = null;
 
-        console.log(data,this)
+        this.selected = false;
+        this.mode = "オブジェクト";
 
-        this.updateTriangle();
+        // view表示用
+        this.positoin = MathVec2.create();
+        this.scale = 10;
+    }
+
+    get size() {
+        return MathVec2.subR(this.max, this.min);
+    }
+
+    get halfSize() {
+        return MathVec2.reverseScaleR(this.size, 2);
     }
 
     resolvePhase() {
@@ -92,14 +104,8 @@ export class BlendShape {
         this.keyframeBlockManager.resolvePhase();
     }
 
-    updateTriangle() {
-        copyToArray(this.triangles, cdt(this.points.map(point => point.co), []).meshes.map(indexs => indexs.map(index => this.points[index])));
-    }
-
-    /**
-     * valueを点とした時それを内包する三角形を探しその三角形で重みを補完する
-     */
-    updateWeights() {
+    update() {
+        // valueを点とした時それを内包する三角形を探しその三角形で重みを補完する
         for (const triangle of this.triangles) {
             if (hitTestPointTriangle(triangle[0].co,triangle[1].co,triangle[2].co,this.value)) {
                 copyToArray(
@@ -110,13 +116,9 @@ export class BlendShape {
                         this.value
                     )
                 );
-                return ;
+                break ;
             }
         }
-    }
-
-    update() {
-        this.updateWeights();
         for (let i = 0; i < this.shapeKeys.length; i ++) {
             const object = this.shapeKeys[i].object;
             object.allShapeKeyWeights[this.shapeKeys[i].index] = this.weights[i];
@@ -133,6 +135,7 @@ export class BlendShape {
             dimension: this.dimension,
             shapeKeys: this.shapeKeys.map(shapeKey => shapeKey.id),
             points: this.points.map(point => point.getSaveData()),
+            triangles: this.triangles,
             keyframeBlockManager: this.keyframeBlockManager.getSaveData(),
         };
     }

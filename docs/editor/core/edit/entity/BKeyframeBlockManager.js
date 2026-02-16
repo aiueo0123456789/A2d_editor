@@ -1,8 +1,7 @@
-import { changeParameter } from "../../utils/utility.js";
-import {useEffect } from "../../utils/ui/util.js";
-import { app } from "../../../main.js";
-import { createID } from "../../utils/idGenerator.js";
-
+import { KeyframeBlockManager } from "../../entity/keyframeBlockManager.js";
+import { Keyframe, KeyframeBlock } from "../../entity/keyframeBlock.js";
+import { useEffect } from "../../../utils/ui/util.js";
+import { changeParameter, copyToArray } from "../../../utils/utility.js";
 
 function bezierInterpolation(keyA, keyB, currentFrame) {
     // フレーム範囲外の場合は直接値を返す
@@ -53,9 +52,8 @@ function cubic_bezier(t, p0, p1, p2, p3) {
     ];
 }
 
-export class Keyframe {
+export class BKeyframe {
     constructor(data) {
-        this.type = "Keyframe"
         this.selectedPoint = false;
         this.selectedRightHandle = false;
         this.selectedLeftHandle = false;
@@ -63,35 +61,32 @@ export class Keyframe {
         this.rightHandle = [...data.rightHandle];
         this.leftHandle = [...data.leftHandle];
     }
-
-    getSaveData() {
-        return {
-            type: this.type,
-            point: this.point,
-            leftHandle: this.leftHandle,
-            rightHandle: this.rightHandle,
-        };
-    }
 }
 
-export class KeyframeBlock {
+export class BKeyframeBlock {
     static createKeyframe(frame, value) {
-        return new Keyframe({
-            point: [frame, value],
-            leftHandle: [frame + -1, value + 0],
-            rightHandle: [frame + 1, value + 0],
-        });
+        return new BKeyframe(
+            {
+                point: [frame, value],
+                leftHandle: [frame + -1, value + 0],
+                rightHandle: [frame + 1, value + 0],
+            }
+        );
     }
-    constructor(data) {
-        this.type = "KeyframeBlock";
-        this.id = data.id ? data.id : createID();
+    constructor() {
         this.visible = true;
-        /** @type {Keyframe[]} */
-        this.keys = data.keys ? data.keys.map(key => new Keyframe(key)) : [];
+        /** @type {KeyframeBlock} */
+        this.keyframeBlock = null;
+        /** @type {BKeyframe[]} */
+        this.keys = [];
         this.value = 0;
     }
 
-    addKeyframe(/** @type {Keyframe} */ key) {
+    get id() {
+        return this.keyframeBlock.id;
+    }
+
+    addKeyframe(/** @type {BKeyframe} */ key) {
         let insertIndex = this.keys.length;
         for (let i = 0; i < this.keys.length; i ++) {
             if (key.point[0] <= this.keys[i].point[0]) {
@@ -99,17 +94,14 @@ export class KeyframeBlock {
                 break ;
             }
         }
-        this.keys.splice(insertIndex, 0, key);
+        this.keys.splice(insertIndex,0, key);
         useEffect.update({o: this});
         useEffect.update({o: this, i: "keys"});
     }
 
-    removeKeyframe(/** @type {Keyframe} */ key) {
-        if (this.keys.includes(key)) {
-            this.keys.splice(this.keys.indexOf(key),1);
-            useEffect.update({o: this});
-            useEffect.update({o: this, i: "keys"});
-        }
+    removeKeyframe(/** @type {BKeyframe} */ key) {
+        this.keys.splice(this.keys.indexOf(key),1);
+        useEffect.update({o: this});
     }
 
     setKeyframe(data) {
@@ -148,11 +140,59 @@ export class KeyframeBlock {
         changeParameter(this, "value", bezierInterpolation(leftKey, rightKey, frame));
     }
 
-    getSaveData() {
-        return {
-            type: "KeyframeBlock",
-            id: this.id,
-            keys: this.keys.map(key => key.getSaveData()),
-        };
+    fromKeyframeBlock(/** @type {KeyframeBlock} */ object) {
+        console.log(object)
+        this.keyframeBlock = object;
+        for (const keyframe of object.keys) {
+            this.keys.push(new BKeyframe(keyframe));
+        }
+        return this;
+    }
+
+    toRuntime() {
+        copyToArray(this.keyframeBlock.keys, this.keys.map(key => new Keyframe(key)));
+    }
+}
+
+export class BKeyframeBlockManager {
+    constructor() {
+        this.keyframeBlockManager = null;
+        this.object = null;
+        /** @type {string[]} */
+        this.parameters = [];
+        /** @type {BKeyframeBlock[]} */
+        this.keyframeBlocks = [];
+    }
+
+    get id() {
+        return this.object.id;
+    }
+
+    get values() {
+        return this.parameters.map(parameter => this.object[parameter]);
+    }
+
+    setKeyframeBlocks(parameters, keyframeBlocks) {
+        copyToArray(this.parameters, parameters);
+        copyToArray(this.keyframeBlocks, keyframeBlocks);
+    }
+
+    update() {
+        this.parameters.forEach((parameter, index) => {
+            this.object[parameter] = this.keyframeBlocks[index].value;
+        })
+    }
+
+    toRuntime() {
+        this.keyframeBlocks.forEach(keyframeBlock => keyframeBlock.toRuntime());
+    }
+
+    fromKeyframeBlockManager(/** @type {KeyframeBlockManager} */ object) {
+        console.log("編集用キーフレームブロックマネージャーの作成", object, this)
+        this.keyframeBlockManager = object;
+        this.object = object.object;
+        copyToArray(this.parameters, object.parameters);
+        copyToArray(this.keyframeBlocks, object.keyframeBlocks.map(keyframeBlock => new BKeyframeBlock().fromKeyframeBlock(keyframeBlock)));
+        return this;
     }
 }

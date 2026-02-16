@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { BMesh } from "../../core/edit/objects/BMesh.js";
+import { BMesh } from "../../core/edit/entity/BMesh.js";
 import { useEffect } from "../../utils/ui/util.js";
 
 export class SelectOnlyEdgeCommand {

@@ -1,9 +1,9 @@
 import { app } from "../../../main.js";
-import { BArmature } from "../../core/edit/objects/BArmature.js";
-import { BBezier } from "../../core/edit/objects/BBezier.js";
-import { BBezierShapeKey } from "../../core/edit/objects/BBezierShapeKey.js";
-import { BMesh } from "../../core/edit/objects/BMesh.js";
-import { BMeshShapeKey } from "../../core/edit/objects/BMeshShapeKey.js";
+import { BArmature } from "../../core/edit/entity/BArmature.js";
+import { BBezier } from "../../core/edit/entity/BBezier.js";
+import { BBezierShapeKey } from "../../core/edit/entity/BBezierShapeKey.js";
+import { BMesh } from "../../core/edit/entity/BMesh.js";
+import { BMeshShapeKey } from "../../core/edit/entity/BMeshShapeKey.js";
 import { useEffect } from "../../utils/ui/util.js";
 
 export class SelectVerticesCommand {

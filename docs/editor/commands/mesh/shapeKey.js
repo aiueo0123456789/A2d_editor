@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { BMeshShapeKey } from "../../core/edit/objects/BMeshShapeKey.js";
+import { BMeshShapeKey } from "../../core/edit/entity/BMeshShapeKey.js";
 import { BlendShape, ShapeKeyMetaData } from "../../core/entity/blendShape.js";
 import { pushToArray, indexOfSplice, insertToArray, indexRemoveToArray } from "../../utils/utility.js";
 
@@ -40,7 +40,7 @@ export class AppendShapeKeyInBlendShapeCommand {
 }
 
 /**
- * ブレンドシェイプにポイントを追加
+ * BlendShapeにポイントを追加
  */
 export class AppendBlendShapePointCommand {
     constructor(/** @type {BlendShape} */blendShape) {

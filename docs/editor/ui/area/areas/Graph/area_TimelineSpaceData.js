@@ -1,6 +1,6 @@
 import { app } from "../../../../../main.js";
-import { BArmatureAnimation } from "../../../../core/edit/objects/BArmatureAnimation.js";
-import { BKeyframeBlockManager } from "../../../../core/edit/objects/BKeyframeBlockManager.js";
+import { BArmatureAnimation } from "../../../../core/edit/entity/BArmatureAnimation.js";
+import { BKeyframeBlockManager } from "../../../../core/edit/entity/BKeyframeBlockManager.js";
 import { BlendShape } from "../../../../core/entity/blendShape.js";
 import { Keyframe, KeyframeBlock } from "../../../../core/entity/keyframeBlock.js";
 import { KeyframeBlockManager } from "../../../../core/entity/keyframeBlockManager.js";
@@ -28,7 +28,7 @@ export class TimelineSpaceData {
                 } else if (object instanceof BKeyframeBlockManager) {
                     object.parameters.forEach((parameter, index) => result.push({parameter: parameter, type: "KeyframeBlock", pathID: `${othersData.object.id}/${object.keyframeBlocks[index].id}`, object: object.keyframeBlocks[index]}))
                 } else if(object instanceof BlendShape) {
-                    result.push({name: object.name, type: "ブレンドシェイプ", children: looper([object.keyframeBlockManager], {object: object}), object: object});
+                    result.push({name: object.name, type: "BlendShape", children: looper([object.keyframeBlockManager], {object: object}), object: object});
                 } else if (object instanceof KeyframeBlockManager) {
                     object.parameters.forEach((parameter, index) => result.push({parameter: parameter, type: "KeyframeBlock", pathID: `${othersData.object.id}/${object.keyframeBlocks[index].id}`, object: object.keyframeBlocks[index]}))
                 }

@@ -35,7 +35,7 @@ export class Area_BlendShape {
                                     }, options: {initValue: ""}
                                 },
                                 {tagType: "operatorButton", label: "Add", onClick: () => {
-                                    app.operator.appendCommand(new CreateObjectCommand({type: "ブレンドシェイプ", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], shapeKeys: []}));
+                                    app.operator.appendCommand(new CreateObjectCommand({type: "BlendShape", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], triangles: [], shapeKeys: []}));
                                     app.operator.execute();
                                 }},
                             ]}

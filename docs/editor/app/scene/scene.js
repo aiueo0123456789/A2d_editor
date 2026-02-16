@@ -16,7 +16,7 @@ import { MaskTexture } from '../../core/entity/maskTexture.js';
 import { NameAndTypeAndID, UnfixedReference, UnfixedReferenceForLayer } from '../../utils/objects/util.js';
 import { EditDatas } from '../../core/edit/editData.js';
 import { KeyframeBlock } from '../../core/entity/keyframeBlock.js';
-import { BArmatureAnimation } from '../../core/edit/objects/BArmatureAnimation.js';
+import { BArmatureAnimation } from '../../core/edit/entity/BArmatureAnimation.js';
 import { BlendShape } from '../../core/entity/blendShape.js';
 import { app } from '../../../main.js';
 
@@ -214,7 +214,7 @@ class Objects {
             return new Texture(data);
         } else if (objectType == "MaskTexture") {
             return new MaskTexture(data);
-        } else if (objectType == "ブレンドシェイプ") {
+        } else if (objectType == "BlendShape") {
             return new BlendShape(data);
         }
     }
@@ -239,7 +239,7 @@ class Objects {
         else if (objectType == "Script") return this.scripts;
         else if (objectType == "Texture") return this.textures;
         else if (objectType == "MaskTexture") return this.maskTextures;
-        else if (objectType == "ブレンドシェイプ") return this.blendShapes;
+        else if (objectType == "BlendShape") return this.blendShapes;
         else if (objectType == "シェイプキー") return this.shapeKeys;
     }
 
@@ -342,7 +342,7 @@ export class Scene {
     }
 
     get allRenderingOrder() {
-        return this.renderingOrder.concat(this.objects.bezierModifiers).concat(this.objects.armatures);
+        return this.renderingOrder.concat(this.objects.bezierModifiers).concat(this.objects.armatures).concat(this.objects.blendShapes);
     }
 
     init() {
@@ -517,7 +517,7 @@ export class Scene {
             "Armature": "armatures",
             "KeyframeBlock": "keyframeBlocks",
             "ParameterManager": "parameterManagers",
-            "ブレンドシェイプ": "blendShapes"
+            "BlendShape": "blendShapes"
         };
         const object = {maskTextures: [], textures: [], scripts: [], particles: [], graphicMeshs: [], bezierModifiers: [], armatures: [], rotateMOdifiers: [], keyframeBlocks: [], parameterManagers: [], blendShapes: []};
         // 各オブジェクトの保存処理を並列化

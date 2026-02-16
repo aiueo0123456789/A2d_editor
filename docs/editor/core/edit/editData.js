@@ -1,12 +1,19 @@
 import { Application } from "../../app/app.js";
-import { BArmature } from "./objects/BArmature.js";
-import { BArmatureAnimation } from "./objects/BArmatureAnimation.js";
-import { BBezier } from "./objects/BBezier.js";
-import { BBezierShapeKey } from "./objects/BBezierShapeKey.js";
-import { BBezierWeight } from "./objects/BBezierWeight.js";
-import { BMesh } from "./objects/BMesh.js";
-import { BMeshShapeKey } from "./objects/BMeshShapeKey.js";
-import { BMeshWeight } from "./objects/BMeshWeight.js";
+import { Armature } from "../entity/armature.js";
+import { BezierModifier } from "../entity/bezierModifier.js";
+import { BlendShape } from "../entity/blendShape.js";
+import { GraphicMesh } from "../entity/graphicMesh.js";
+import { KeyframeBlockManager } from "../entity/keyframeBlockManager.js";
+import { BArmature } from "./entity/BArmature.js";
+import { BArmatureAnimation } from "./entity/BArmatureAnimation.js";
+import { BBezier } from "./entity/BBezier.js";
+import { BBezierShapeKey } from "./entity/BBezierShapeKey.js";
+import { BBezierWeight } from "./entity/BBezierWeight.js";
+import { BBlendShape } from "./entity/BBlendShape.js";
+import { BKeyframeBlockManager } from "./entity/BKeyframeBlockManager.js";
+import { BMesh } from "./entity/BMesh.js";
+import { BMeshShapeKey } from "./entity/BMeshShapeKey.js";
+import { BMeshWeight } from "./entity/BMeshWeight.js";
 
 export class EditDatas {
     constructor(/** @type {Application} */ app) {
@@ -28,7 +35,7 @@ export class EditDatas {
 
     createEditObject(object, mode) {
         let b = null;
-        if (object.type == "GraphicMesh") {
+        if (object instanceof GraphicMesh) {
             if (mode == "メッシュ編集") {
                 b = new BMesh();
             } else if (mode == "メッシュウェイト編集") {
@@ -37,7 +44,7 @@ export class EditDatas {
                 b = new BMeshShapeKey();
             }
             b.fromMesh(object);
-        } else if (object.type == "Armature") {
+        } else if (object instanceof Armature) {
             if (mode == "ボーン編集") {
                 b = new BArmature();
             } else if (mode == "ボーンアニメーション編集") {
@@ -48,7 +55,7 @@ export class EditDatas {
                 b = new BArmatureAnimation("weightPaint");
             }
             b.fromArmature(object);
-        } else if (object.type == "BezierModifier") {
+        } else if (object instanceof BezierModifier) {
             if (mode == "ベジェ編集") {
                 b = new BBezier();
             } else if (mode == "ベジェシェイプキー編集") {
@@ -57,8 +64,13 @@ export class EditDatas {
                 b = new BBezierWeight();
             }
             b.fromBezier(object);
+        } else if (object instanceof KeyframeBlockManager) {
+            b = new BKeyframeBlockManager();
+            b.fromKeyframeBlockManager(object);
+        } else if (object instanceof BlendShape) {
+            b = new BBlendShape();
+            b.fromBlendShape(object);
         }
-        console.log(b);
         return b;
     }
 

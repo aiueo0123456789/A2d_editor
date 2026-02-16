@@ -4,6 +4,7 @@ import { MathVec2 } from "../../../utils/mathVec.js";
 import { changeParameter, range, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { Armature } from "../../entity/armature.js";
+import { KeyframeBlockManager } from "../../entity/keyframeBlockManager.js";
 import { BBezierWeight } from "./BBezierWeight.js";
 import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 import { BMeshWeight } from "./BMeshWeight.js";
@@ -19,17 +20,17 @@ class Bone {
 
         this.color = data.color;
 
-        this.baseWorldBoneData = {x: data.base[0], y: data.base[1], sx: data.base[2], sy: data.base[3], r: data.base[4], l: data.base[5]};
+        this.baseWorldBoneData = data.baseWorldBoneData;
         this.baseWorldMatrix = Armature.getMatrixByBoneData(this.baseWorldBoneData);
         if (this.parent) {
             this.baseLocalMatrix = Armature.getLocalMatrixByWorldMatrixs(this.baseWorldMatrix, this.parent.baseWorldMatrix);
         } else {
             this.baseLocalMatrix = Armature.getLocalMatrixByWorldMatrixs(this.baseWorldMatrix, MathMat3x3.createMatrix());
         }
-        const baseLocalArray = Armature.getBoneDataByMatrix(this.baseLocalMatrix, this.baseWorldBoneData.l);
-        this.baseLocalBoneData = {x: baseLocalArray[0], y: baseLocalArray[1], sx: baseLocalArray[2], sy: baseLocalArray[3], r: baseLocalArray[4], l: baseLocalArray[5]};
-        this.animationLocalBoneData = {x: data.animation.values[0], y: data.animation.values[1], sx: data.animation.values[2], sy: data.animation.values[3], r: data.animation.values[4], l: data.animation.values[5]};
-        this.keyframeBlockManager = new BKeyframeBlockManager({object: this.animationLocalBoneData, parameters: ["x", "y", "sx", "sy", "r", "l"], keyframeBlocks: data.animation.keyframeBlocks});
+        this.baseLocalBoneData = Armature.BoneDataByArray(Armature.getBoneDataByMatrix(this.baseLocalMatrix, this.baseWorldBoneData.l));
+        this.animationLocalBoneData = data.animationLocalBoneData;
+        /** @type {BKeyframeBlockManager} */
+        this.keyframeBlockManager = data.keyframeBlockManager;
     }
 
     get polygon() {
@@ -178,16 +179,24 @@ export class BArmatureAnimation {
         const createBones = (children, parent) => {
             for (const childData of children) {
                 const boneIndex = childData.index;
+                // 編集用キーフレームブロックマネージャーの作成
+                const animationLocalBoneData = Armature.BoneDataByArray(object.allAnimations.slice(boneIndex * 6, boneIndex * 6 + 6));
+                const keyframeBlockManager = new KeyframeBlockManager({
+                    object: animationLocalBoneData,
+                    parameters: ["x", "y", "sx", "sy", "r", "l"],
+                    keyframeBlocks: object.keyframeBlockManager.keyframeBlocks.slice(boneIndex * 6, boneIndex * 6 + 6),
+                });
+                const bKeyframeBlockManager = new BKeyframeBlockManager();
+                bKeyframeBlockManager.fromKeyframeBlockManager(keyframeBlockManager);
+
                 const bone = new Bone({
                     name: object.boneMetaDatas[boneIndex].name,
                     parent: parent,
-                    base: Armature.getWorldBoneDataByVertices(coordinates[boneIndex].slice(0,2), coordinates[boneIndex].slice(2,4)),
+                    baseWorldBoneData: Armature.BoneDataByArray(Armature.getWorldBoneDataByVertices(coordinates[boneIndex].slice(0,2), coordinates[boneIndex].slice(2,4))),
                     color: colors[boneIndex],
                     physics: physics[boneIndex].slice(0, 13),
-                    animation: {
-                        keyframeBlocks: object.keyframeBlockManager.keyframeBlocks.slice(boneIndex * 6, boneIndex * 6 + 6),
-                        values: object.allAnimations.slice(boneIndex * 6, boneIndex * 6 + 6)
-                    }
+                    animationLocalBoneData: animationLocalBoneData,
+                    keyframeBlockManager: bKeyframeBlockManager
                 });
                 this.bones[boneIndex] = bone;
                 createBones(object.getBoneChildren(childData), bone);
@@ -205,7 +214,6 @@ export class BArmatureAnimation {
         this.object.allPhysics.length = 0;
         this.object.allAnimations.length = 0;
         for (const bone of this.bones) {
-            // keyframeBlocks.push(...bone.keyframeBlockManager.keyframeBlocks); // x y sx sy r l
             this.object.allPhysics.push(...bone.physics,
                 0, 1, 0,
 
@@ -227,8 +235,14 @@ export class BArmatureAnimation {
                 bone.animationLocalBoneData.r,
                 bone.animationLocalBoneData.l,
             );
+            // keyframeBlockManagerは仮だからなかのkeyframeBlockをまとめながらキーフレームのランタイムデータを更新
+            keyframeBlocks.push(...bone.keyframeBlockManager.keyframeBlocks.map(keyframeBlock => {
+                keyframeBlock.toRuntime();
+                return keyframeBlock.keyframeBlock;
+            }));
         }
-        // this.object.keyframeBlockManager.setKeyframeBlocks(range(0, keyframeBlocks.length), keyframeBlocks);
+        console.log(keyframeBlocks)
+        this.object.keyframeBlockManager.setKeyframeBlocks(range(0, keyframeBlocks.length), keyframeBlocks);
         const armatureData = app.scene.runtimeData.armatureData;
         armatureData.update(this.object);
     }

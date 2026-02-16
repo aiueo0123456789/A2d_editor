@@ -270,7 +270,7 @@ export class OutlinerTag extends CustomTag {
         // 選択表示の更新
         const listActive = (o, gID, t) => {
             console.log("ヒエラルキーアクティブ")
-            const createdTags = managerForDOMs.get({g: jTag.groupID, i: outlinerID}); // すでに作っている場合
+            const createdTags = useEffect.get({g: jTag.groupID, i: outlinerID}); // すでに作っている場合
             createdTags.forEach((data, object) => {
                 const bool_ = activeSource.object[activeSource.parameter] == object;
                 if (bool_) {

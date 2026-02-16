@@ -100,7 +100,6 @@ export class FaileIOManager {
             changeParameter(this.app.scene, "frame_end", jsonData.scene.frame_end);
         }
         this.app.ui.updateLoadingModal(loadingModalID, 100, "完了");
-        // managerForDOMs.allUpdate();
         this.app.ui.removeLodingModal(loadingModalID);
         this.app.updateStopCancel("load");
         useEffect.play();

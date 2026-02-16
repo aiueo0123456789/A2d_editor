@@ -10,12 +10,12 @@ export class ChangeParentModal {
     }
 
     async mousemove(/** @type {InputManager} */inputManager) {
-        this.hoverObject = (await app.activeArea.uiModel.getObjectRayCast(inputManager.position, {types: ["Armature", "BezierModifier"]}))[0];
+        this.hoverObject = (await app.activeArea.uiModel.getObjectRayCast(inputManager.position, true, ["Armature", "BezierModifier"]))[0];
         return "RUNNING";
     }
 
     async mousedown(/** @type {InputManager} */inputManager) {
-        this.command.update((await app.activeArea.uiModel.getObjectRayCast(inputManager.position, {types: ["Armature", "BezierModifier"]}))[0]);
+        this.command.update((await app.activeArea.uiModel.getObjectRayCast(inputManager.position, true, ["Armature", "BezierModifier"]))[0]);
         app.operator.execute();
         return "FINISHED";
     }

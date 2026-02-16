@@ -24,16 +24,17 @@ export function setClass(element, classString) {
     element.classList.add(...classString.split(" ").filter(Boolean));
 }
 
-export function setStyle(element,style) {
-    // style = style.replace(/\s+/g, ""); // 半角・全角スペースを削除
-    const styles = style.split(";").filter(Boolean); // ;で区切る
-    for (const style of styles) {
-        const code = style.split(":");
-        code[0] = code[0].replace(/\s+/g, "");
-        if (code[1][0] == " ") {
-            code[1] = code[1].slice(1);
+export function setStyle(element, style) {
+    const styles = style
+        .split(/[\n;]+/)      // 改行 or ; で区切る
+        .map(s => s.trim())   // 前後の空白だけ削除
+        .filter(Boolean);
+
+    for (const item of styles) {
+        const [property, value] = item.split(":").map(s => s.trim());
+        if (property && value) {
+            element.style[property] = value;
         }
-        element.style[code[0]] = code[1];
     }
 }
 

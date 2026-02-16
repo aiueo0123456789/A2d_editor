@@ -9,7 +9,7 @@ class CustomHTTPRequestHandler(SimpleHTTPRequestHandler):
         super().end_headers()
 
 if __name__ == '__main__':
-    port = 8000
+    port = 4000
     server_address = ('', port)
     httpd = HTTPServer(server_address, CustomHTTPRequestHandler)
     print(f'Serving on port {port}...')

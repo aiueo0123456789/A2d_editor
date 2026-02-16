@@ -136,38 +136,38 @@ class AppOptions {
 
     // 自動ウェイトペイント
     async assignWeights(object) {
-        if (!object.parent) return ;
-        let parentVerticesBuffer;
-        let parentAllocationBuffer;
-        if (object.parent.type == "Armature") {
-            parentVerticesBuffer = this.app.scene.runtimeData.armatureData.baseVertices.buffer;
-            parentAllocationBuffer = object.parent.objectDataBuffer;
-        } else if (object.parent.type == "BezierModifier") {
-            parentVerticesBuffer = this.app.scene.runtimeData.bezierModifierData.baseVertices.buffer;
-            parentAllocationBuffer = object.parent.objectDataBuffer;
-            console.log(await this.app.scene.runtimeData.bezierModifierData.baseVertices.getObjectData(object.parent))
-            console.log(await this.app.scene.runtimeData.bezierModifierData.allocations.getObjectData(object.parent))
-        }
-        if (object instanceof GraphicMesh) {
-            const runtimeObject = this.app.scene.runtimeData.graphicMeshData;
-            const group = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu"), [runtimeObject.weightBlocks.buffer, runtimeObject.baseVertices.buffer, object.objectDataBuffer, parentVerticesBuffer, parentAllocationBuffer]);
-            if (object.parent.type == "Armature") {
-                GPU.runComputeShader(calculateMeshParentWeightByBone, [group], Math.ceil(object.verticesNum / 64));
-            } else {
-                GPU.runComputeShader(calculateMeshParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));
-            }
-            console.log(await runtimeObject.weightBlocks.getObjectData(object))
-        } else if (object instanceof BezierModifier) {
-            console.log("ベジェウェイト更新", object)
-            const runtimeObject = this.app.scene.runtimeData.bezierModifierData;
-            const group = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu"), [runtimeObject.weightBlocks.buffer, runtimeObject.baseVertices.buffer, object.objectDataBuffer, parentVerticesBuffer, parentAllocationBuffer]);
-            if (object.parent.type == "Armature") {
-                GPU.runComputeShader(calculateBezierParentWeightByBone, [group], Math.ceil(object.verticesNum / 64));
-            } else {
-                GPU.runComputeShader(calculateBezierParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));
-            }
-            // console.log(await runtimeObject.weightBlocks.getObjectData(object))
-        }
+        // if (!object.parent) return ;
+        // let parentVerticesBuffer;
+        // let parentAllocationBuffer;
+        // if (object.parent.type == "Armature") {
+        //     parentVerticesBuffer = this.app.scene.runtimeData.armatureData.baseVertices.buffer;
+        //     parentAllocationBuffer = object.parent.objectDataBuffer;
+        // } else if (object.parent.type == "BezierModifier") {
+        //     parentVerticesBuffer = this.app.scene.runtimeData.bezierModifierData.baseVertices.buffer;
+        //     parentAllocationBuffer = object.parent.objectDataBuffer;
+        //     console.log(await this.app.scene.runtimeData.bezierModifierData.baseVertices.getObjectData(object.parent))
+        //     console.log(await this.app.scene.runtimeData.bezierModifierData.allocations.getObjectData(object.parent))
+        // }
+        // if (object instanceof GraphicMesh) {
+        //     const runtimeObject = this.app.scene.runtimeData.graphicMeshData;
+        //     const group = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu"), [runtimeObject.weightBlocks.buffer, runtimeObject.baseVertices.buffer, object.objectDataBuffer, parentVerticesBuffer, parentAllocationBuffer]);
+        //     if (object.parent.type == "Armature") {
+        //         GPU.runComputeShader(calculateMeshParentWeightByBone, [group], Math.ceil(object.verticesNum / 64));
+        //     } else {
+        //         GPU.runComputeShader(calculateMeshParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));
+        //     }
+        //     console.log(await runtimeObject.weightBlocks.getObjectData(object))
+        // } else if (object instanceof BezierModifier) {
+        //     console.log("ベジェウェイト更新", object)
+        //     const runtimeObject = this.app.scene.runtimeData.bezierModifierData;
+        //     const group = GPU.createGroup(GPU.getGroupLayout("Csrw_Csr_Cu_Csr_Cu"), [runtimeObject.weightBlocks.buffer, runtimeObject.baseVertices.buffer, object.objectDataBuffer, parentVerticesBuffer, parentAllocationBuffer]);
+        //     if (object.parent.type == "Armature") {
+        //         GPU.runComputeShader(calculateBezierParentWeightByBone, [group], Math.ceil(object.verticesNum / 64));
+        //     } else {
+        //         GPU.runComputeShader(calculateBezierParentWeightByBezier, [group], Math.ceil(object.verticesNum / 64));
+        //     }
+        //     // console.log(await runtimeObject.weightBlocks.getObjectData(object))
+        // }
     }
 }
 

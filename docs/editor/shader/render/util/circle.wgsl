@@ -42,8 +42,10 @@ fn vmain(
                 point * strokeWidth * isAffectedForZoom.stroke +
                 coordinate - camera.position
             ) * camera.zoom +
-            point * raidus * (1.0 - isAffectedForZoom.raidus) +
-            point * strokeWidth * (1.0 - isAffectedForZoom.stroke)
+            (
+                point * raidus * (1.0 - isAffectedForZoom.raidus) +
+                point * strokeWidth * (1.0 - isAffectedForZoom.stroke)
+            )
         ) * camera.cvsSize,
         0,
         1.0

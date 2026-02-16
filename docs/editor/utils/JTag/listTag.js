@@ -15,7 +15,7 @@ export class ListTag extends CustomTag {
             this.listNameTag = createTag(t, "p", {textContent: data.label});
             this.element = createTag(t, "div", {class: "flex", style: "gap: 10px;"});
             this.listContainer = createTag(this.element, "div", {class: "minList", style: "height: 200px;"});
-            new ResizerForDOM(this.listContainer, "h", 100, 600);
+            new ResizerForDOM(this.listContainer, "b", 100, 600);
             /** @type {HTMLElement} */
             this.list = createTag(this.listContainer, "div", {class: "scrollable", style: "padding: 2px; gap: 2px;"});
             // アクション

@@ -1,5 +1,5 @@
 import { app } from "../../../../../../../main.js";
-import { BArmatureAnimation } from "../../../../../../core/edit/objects/BArmatureAnimation.js";
+import { BArmatureAnimation } from "../../../../../../core/edit/entity/BArmatureAnimation.js";
 import { changeParameter } from "../../../../../../utils/utility.js";
 
 export class WeightPaintPanel {
@@ -7,21 +7,19 @@ export class WeightPaintPanel {
         this.struct = {
             inputObject: {"context": app.context, "areasConifg": app.appConfig.areasConfig, "scene": app.scene, "values": this.values},
             DOM: [
-                {tagType: "div", class: "sideBar-shelfe", children: [
-                    {tagType: "panel", name: "ウェイトペイント", children: [
-                        {tagType: "list", label: "ボーン",
-                        src: "context/activeObject/parent/boneMetaDatas",
-                        onActive: (object) => {
-                            changeParameter(app.appConfig.areasConfig["Viewer"].weightPaintMetaData,"weightBlockIndex",object.index)
-                            app.scene.editData.allEditObjects.forEach(editObject => editObject instanceof BArmatureAnimation && (editObject.selectedClear(),editObject.selectBones([object.index])));
-                        },
-                        type: "min",
-                        liStruct: {
-                            tagType: "gridBox", id: {path: "context/activeObject/parent/boneMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
-                                {tagType: "dblClickInput", value: "/name", options: {tagType: "text"}},
-                            ]
-                        }}
-                    ]}
+                {tagType: "panel", name: "ウェイトペイント", children: [
+                    {tagType: "list", label: "ボーン",
+                    src: "context/activeObject/parent/boneMetaDatas",
+                    onActive: (object) => {
+                        changeParameter(app.appConfig.areasConfig["Viewer"].weightPaintMetaData,"weightBlockIndex",object.index)
+                        app.scene.editData.allEditObjects.forEach(editObject => editObject instanceof BArmatureAnimation && (editObject.selectedClear(),editObject.selectBones([object.index])));
+                    },
+                    type: "min",
+                    liStruct: {
+                        tagType: "gridBox", id: {path: "context/activeObject/parent/boneMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
+                            {tagType: "dblClickInput", value: "/name", options: {tagType: "text"}},
+                        ]
+                    }}
                 ]}
             ]
         };

@@ -1,5 +1,5 @@
 import { app } from "../../../../../main.js";
-import { managerForDOMs } from "../../../../utils/ui/util.js";
+import { useEffect } from "../../../../utils/ui/util.js";
 
 export class PhysicsAttachmentData {
     constructor(data) {
@@ -20,7 +20,7 @@ export class PhysicsAttachmentData {
         this.mix = data.mix;
         this.limit = data.limit;
 
-        managerForDOMs.set({o: this, i: "&all"}, () => {
+        useEffect.set({o: this, i: "&all"}, () => {
             app.scene.runtimeData.armatureData.update(this.bone.armature);
         });
     }

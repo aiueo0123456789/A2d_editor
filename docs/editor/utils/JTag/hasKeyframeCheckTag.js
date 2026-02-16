@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { KeyframeInsertInKeyframeCommand } from "../../commands/animation/keyframeInsert.js";
+import { KeyframeInsertInKeyframeBlockCommand } from "../../commands/animation/keyframeInsert.js";
 import { CustomTag } from "./customTag.js";
 import { useEffect } from "../ui/util.js";
 
@@ -23,7 +23,7 @@ export class HasKeyframeCheck extends CustomTag {
         this.checkbox.addEventListener("click", () => {
             if (this.targetKeyframeBlock.hasKeyFromFrame(app.scene.frame_current, 0.2)) {
             } else {
-                app.operator.appendCommand(new KeyframeInsertInKeyframeCommand(this.targetKeyframeBlock, app.scene.frame_current, jTag.getParameterByPath(source, child.value)));
+                app.operator.appendCommand(new KeyframeInsertInKeyframeBlockCommand(this.targetKeyframeBlock, app.scene.frame_current, jTag.getParameterByPath(source, child.value)));
                 app.operator.execute();
             }
         });

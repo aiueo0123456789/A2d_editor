@@ -25,8 +25,10 @@ export class ModalOperator {
         }
     }
 
-    start(modalInstance) {
+    async start(modalInstance) {
         this.nowModal = new modalInstance();
+        if (!this.nowModal) return false;
+        if (isFunction(this.nowModal.init)) this.util(await this.nowModal.init());
     }
 
     async keyInput(/** @type {InputManager} */inputManager) {
