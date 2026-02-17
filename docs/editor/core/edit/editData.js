@@ -64,9 +64,6 @@ export class EditDatas {
                 b = new BBezierWeight();
             }
             b.fromBezier(object);
-        } else if (object instanceof KeyframeBlockManager) {
-            b = new BKeyframeBlockManager();
-            b.fromKeyframeBlockManager(object);
         } else if (object instanceof BlendShape) {
             b = new BBlendShape();
             b.fromBlendShape(object);

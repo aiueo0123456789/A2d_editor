@@ -12,6 +12,14 @@ class EmptyGPUBuffer {
     }
 }
 
+class TextTexutre {
+    constructor() {
+        this.texture = null;
+        this.metaBuffer = null;
+        this.group = null;
+    }
+}
+
 class WebGPU {
     constructor() {
         this.structures = new Map();
@@ -22,6 +30,53 @@ class WebGPU {
         this.shaderModules = [];
 
         this.padding = 0;
+
+        /** @type { TextTexutre[] } */
+        this.textTextures = {};
+    }
+
+    createTextTexture(text) {
+        if (text in this.textTextures) return ;
+        const scale = 20; // ← 解像度倍率
+        // 仮canvasでサイズ測定
+        const tmpCanvas = document.createElement("canvas");
+        const tmpCtx = tmpCanvas.getContext("2d");
+        // tmpCtx.font = font;
+        const metrics = tmpCtx.measureText(text);
+        const width = Math.ceil(metrics.width) * scale;
+        const height = Math.ceil(
+            metrics.actualBoundingBoxAscent +
+            metrics.actualBoundingBoxDescent
+        ) * scale;
+
+        // 本番canvas
+        const canvas = document.createElement("canvas");
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx.scale(scale, scale);  // ← ここ重要
+        // ctx.font = font;
+        ctx.fillStyle = "white";
+        ctx.textBaseline = "top";
+        ctx.fillText(text, 0, 0);
+
+        const texture = this.createTexture2D([width, height]);
+        device.queue.copyExternalImageToTexture(
+            { source: canvas },
+            { texture },
+            [width, height]
+        );
+        const metaBuffer = this.createUniformBuffer(2 * 4, [width, height], ["f32"]);
+        this.textTextures[text] = {texture, metaBuffer, group: this.createGroup(GPU.getGroupLayout("VFu_Ft"), [metaBuffer, texture])};
+        return this.textTextures[text];
+    }
+    getTextTexture(text) {
+        this.createTextTexture(text);
+        return this.textTextures[text];
+    }
+    getTextGroup(text) {
+        this.createTextTexture(text);
+        return this.textTextures[text].group;
     }
 
     get isNotTexture() {

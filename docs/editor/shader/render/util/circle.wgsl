@@ -1,18 +1,30 @@
 import Camera;
 
 struct AffectedForZoom {
-    raidus: f32,
+    radius: f32,
     stroke: f32,
 }
 
+struct CircleUniform {
+    positionX: f32,         // X
+    positionY: f32,         // Y
+    radius: f32,            // 角の丸さ (px)
+    colorR: f32,            // 色R
+    colorG: f32,            // 色G
+    colorB: f32,            // 色B
+    colorA: f32,            // 色A
+    isAffectedForZoomRadius: f32,
+    strokeWidth: f32,       // 縁の太さ (px)
+    strokeColorR: f32,      // 縁の色R
+    strokeColorG: f32,      // 縁の色G
+    strokeColorB: f32,      // 縁の色B
+    strokeColorA: f32,      // 縁の色A
+    isAffectedForZoomStroke: f32,
+};
+
 @group(0) @binding(0) var<uniform> camera: Camera;
 @group(0) @binding(1) var mySampler: sampler;
-@group(1) @binding(0) var<uniform> coordinate: vec2<f32>;
-@group(1) @binding(1) var<uniform> raidus: f32;
-@group(1) @binding(2) var<uniform> color: vec4<f32>;
-@group(1) @binding(3) var<uniform> strokeWidth: f32;
-@group(1) @binding(4) var<uniform> strokeColor: vec4<f32>;
-@group(1) @binding(5) var<uniform> isAffectedForZoom: AffectedForZoom;
+@group(1) @binding(0) var<uniform> circle: CircleUniform;
 
 struct VertexOutput {
     @builtin(position) position: vec4<f32>, // クリッピング座標系での頂点位置
@@ -38,19 +50,19 @@ fn vmain(
     output.position = vec4f(
         (
             (
-                point * raidus * isAffectedForZoom.raidus +
-                point * strokeWidth * isAffectedForZoom.stroke +
-                coordinate - camera.position
+                point * circle.radius * circle.isAffectedForZoomRadius +
+                point * circle.strokeWidth * circle.isAffectedForZoomStroke +
+                vec2<f32>(circle.positionX, circle.positionY) - camera.position
             ) * camera.zoom +
             (
-                point * raidus * (1.0 - isAffectedForZoom.raidus) +
-                point * strokeWidth * (1.0 - isAffectedForZoom.stroke)
+                point * circle.radius * (1.0 - circle.isAffectedForZoomRadius) +
+                point * circle.strokeWidth * (1.0 - circle.isAffectedForZoomStroke)
             )
         ) * camera.cvsSize,
         0,
         1.0
         );
-    output.texCoord = (point * raidus * isAffectedForZoom.raidus + point * strokeWidth * isAffectedForZoom.stroke) * camera.zoom + (point * raidus * (1.0 - isAffectedForZoom.raidus) + point * strokeWidth * (1.0 - isAffectedForZoom.stroke));
+    output.texCoord = (point * circle.radius * circle.isAffectedForZoomRadius + point * circle.strokeWidth * circle.isAffectedForZoomStroke) * camera.zoom + (point * circle.radius * (1.0 - circle.isAffectedForZoomRadius) + point * circle.strokeWidth * (1.0 - circle.isAffectedForZoomStroke));
     return output;
 }
 
@@ -65,14 +77,14 @@ fn fmain(
 ) -> FragmentOutput {
     var output: FragmentOutput;
     let dist = length(texCoord);
-    let fixRadius = (raidus * isAffectedForZoom.raidus) * camera.zoom + (raidus * (1.0 - isAffectedForZoom.raidus));
-    let fixStrokeWidth = (strokeWidth * isAffectedForZoom.stroke) * camera.zoom + (strokeWidth * (1.0 - isAffectedForZoom.stroke));
+    let fixRadius = (circle.radius * circle.isAffectedForZoomRadius) * camera.zoom + (circle.radius * (1.0 - circle.isAffectedForZoomRadius));
+    let fixStrokeWidth = (circle.strokeWidth * circle.isAffectedForZoomStroke) * camera.zoom + (circle.strokeWidth * (1.0 - circle.isAffectedForZoomStroke));
     let sumRadius = fixRadius + fixStrokeWidth;
     if (dist < sumRadius) {
         if (dist < fixRadius) {
-            output.color = color;
+            output.color = vec4<f32>(circle.colorR, circle.colorG, circle.colorB, circle.colorA);;
         } else {
-            output.color = strokeColor;
+            output.color = vec4<f32>(circle.strokeColorR, circle.strokeColorG, circle.strokeColorB, circle.strokeColorA);;
         }
     } else {
         discard ;

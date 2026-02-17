@@ -15,7 +15,7 @@ export class SideBarOperator {
         /** @type {HTMLElement} */
         this.domForMainContainer = createTag(this.dom, "div", {style: "width: 100%; height: 100%; pointerEvents: none;"});
         setStyle(new ResizerForDOM(this.domForMainContainer, "l", 100, 500).resizer, "backgroundColor: rgba(0,0,0,0);");
-        this.domForMain = createTag(this.domForMainContainer, "div", {style: "width: 100%; height: 100%; pointerEvents: none; overflow-y: auto;"});
+        this.domForMain = createTag(this.domForMainContainer, "div", {style: "width: 100%; height: 100%; pointerEvents: all; overflow-y: auto;"});
         /** @type {HTMLElement} */
         this.domForSideBar = createTag(this.dom, "div", {style: `
             width: 20px;

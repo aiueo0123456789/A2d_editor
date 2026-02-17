@@ -7,7 +7,7 @@ struct Option {
 
 struct Point {
     position: vec2<f32>,
-    raidus: f32,
+    radius: f32,
     padding: f32,
 }
 

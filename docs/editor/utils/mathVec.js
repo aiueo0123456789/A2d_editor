@@ -194,6 +194,6 @@ export class MathVec2 {
     }
 
     static copy(vec) {
-        return [...vec];
+        return this.set(this.create(), vec);
     }
 }

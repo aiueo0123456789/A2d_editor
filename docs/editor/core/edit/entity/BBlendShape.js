@@ -41,7 +41,7 @@ export class BBlendShape {
         this.activePoint = null;
 
         // view表示用
-        this.positoin = MathVec2.create();
+        this.position = MathVec2.create();
         this.scale = 10;
     }
 
@@ -89,7 +89,7 @@ export class BBlendShape {
         this.triangles = [...object.triangles];
         this.max = [...object.max];
         this.min = [...object.min];
-        this.positoin = MathVec2.copy(object.positoin);
+        this.position = MathVec2.copy(object.position);
         this.shapeKeys = [...object.shapeKeys];
         console.log(object, this)
         return this;

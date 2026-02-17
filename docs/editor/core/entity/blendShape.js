@@ -83,7 +83,7 @@ export class BlendShape {
         this.mode = "オブジェクト";
 
         // view表示用
-        this.positoin = MathVec2.create();
+        this.position = MathVec2.create();
         this.scale = 10;
     }
 

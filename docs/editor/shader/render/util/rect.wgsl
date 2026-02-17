@@ -7,13 +7,22 @@ struct AffectedForZoom {
 }
 
 struct RectUniform {
-    position: vec2<f32>,    // x, y
-    halfSize: vec2<f32>,        // 大きさ (px)
+    positionX: f32,         // X
+    positionY: f32,         // Y
+    halfSizeX: f32,         // 大きさX (px)
+    halfSizeY: f32,         // 大きさY (px)
     radius: f32,            // 角の丸さ (px)
+    colorR: f32,            // 色R
+    colorG: f32,            // 色G
+    colorB: f32,            // 色B
+    colorA: f32,            // 色A
+    isAffectedForZoomSize: f32,
     strokeWidth: f32,       // 縁の太さ (px)
-    isAffectedForZoom: AffectedForZoom,
-    color: vec4<f32>,       // 色
-    strokeColor: vec4<f32>, // 縁の色
+    strokeColorR: f32,      // 縁の色R
+    strokeColorG: f32,      // 縁の色G
+    strokeColorB: f32,      // 縁の色B
+    strokeColorA: f32,      // 縁の色A
+    isAffectedForZoomStroke: f32,
 };
 
 @group(0) @binding(0) var<uniform> camera: Camera;
@@ -44,19 +53,19 @@ fn vmain(
     output.position = vec4f(
         (
             (
-                point * rect.halfSize * rect.isAffectedForZoom.size +
-                point * rect.strokeWidth * rect.isAffectedForZoom.stroke +
-                rect.position - camera.position
+                point * vec2<f32>(rect.halfSizeX, rect.halfSizeY) * rect.isAffectedForZoomSize +
+                point * rect.strokeWidth * rect.isAffectedForZoomStroke +
+                vec2<f32>(rect.positionX, rect.positionY) - camera.position
             ) * camera.zoom +
             (
-                point * rect.halfSize * (1.0 - rect.isAffectedForZoom.size) +
-                point * rect.strokeWidth * (1.0 - rect.isAffectedForZoom.stroke)
+                point * vec2<f32>(rect.halfSizeX, rect.halfSizeY) * (1.0 - rect.isAffectedForZoomSize) +
+                point * rect.strokeWidth * (1.0 - rect.isAffectedForZoomStroke)
             )
         ) * camera.cvsSize,
         0,
         1.0
         );
-    output.texCoord = (point * rect.halfSize * rect.isAffectedForZoom.size + point * rect.strokeWidth * rect.isAffectedForZoom.stroke) * camera.zoom + (point * rect.halfSize * (1.0 - rect.isAffectedForZoom.size) + point * rect.strokeWidth * (1.0 - rect.isAffectedForZoom.stroke));
+    output.texCoord = (point * vec2<f32>(rect.halfSizeX, rect.halfSizeY) * rect.isAffectedForZoomSize + point * rect.strokeWidth * rect.isAffectedForZoomStroke) * camera.zoom + (point * vec2<f32>(rect.halfSizeX, rect.halfSizeY) * (1.0 - rect.isAffectedForZoomSize) + point * rect.strokeWidth * (1.0 - rect.isAffectedForZoomStroke));
     return output;
 }
 
@@ -71,18 +80,18 @@ fn fmain(
 ) -> FragmentOutput {
     var output: FragmentOutput;
     // 左上原点想定
-    let fixSize = (rect.halfSize * rect.isAffectedForZoom.size * camera.zoom) + (rect.halfSize * (1.0 - rect.isAffectedForZoom.size));
-    let fixRadius = (rect.radius * rect.isAffectedForZoom.size * camera.zoom) + (rect.radius * (1.0 - rect.isAffectedForZoom.size));
+    let fixSize = (vec2<f32>(rect.halfSizeX, rect.halfSizeY) * rect.isAffectedForZoomSize * camera.zoom) + (vec2<f32>(rect.halfSizeX, rect.halfSizeY) * (1.0 - rect.isAffectedForZoomSize));
+    let fixRadius = (rect.radius * rect.isAffectedForZoomSize * camera.zoom) + (rect.radius * (1.0 - rect.isAffectedForZoomSize));
     let q = abs(texCoord) - (fixSize - vec2(fixRadius));
     let outsideDist = length(max(q, vec2(0.0)));
     let insideDist = min(max(q.x, q.y), 0.0);
     let dist = outsideDist + insideDist - fixRadius;
     if (dist <= 0.0) {
-        let fixStrokeWidth = (rect.strokeWidth * rect.isAffectedForZoom.stroke * camera.zoom) + (rect.strokeWidth * (1.0 - rect.isAffectedForZoom.stroke));
+        let fixStrokeWidth = (rect.strokeWidth * rect.isAffectedForZoomStroke * camera.zoom) + (rect.strokeWidth * (1.0 - rect.isAffectedForZoomStroke));
         if (dist >= -fixStrokeWidth) {
-            output.color = rect.strokeColor;
+            output.color = vec4<f32>(rect.strokeColorR, rect.strokeColorG, rect.strokeColorB, rect.strokeColorA);
         } else {
-            output.color = rect.color;
+            output.color = vec4<f32>(rect.colorR, rect.colorG, rect.colorB, rect.colorA);
         }
     } else {
         discard;

@@ -68,6 +68,18 @@ class AppOptions {
                     vertices: [[0,0, 0,100]]
                 },
             },
+            "BlendShape": {
+                "normal": {
+                    type: "BlendShape",
+                    name: "名称未設定",
+                    dimension: 2,
+                    max: [10,10],
+                    min: [-10,-10],
+                    points: [],
+                    triangles: [],
+                    shapeKeys: []
+                }
+            },
             "BezierModifier": {
                 "normal": {
                     type: "BezierModifier",
