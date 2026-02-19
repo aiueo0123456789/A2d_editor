@@ -35,7 +35,7 @@ export class Area_BlendShape {
                                     }, options: {initValue: ""}
                                 },
                                 {tagType: "operatorButton", label: "Add", onClick: () => {
-                                    app.operator.appendCommand(new CreateObjectCommand({type: "BlendShape", name: "名称未設定", dimension: 2, max: [10,10], min: [-10,-10], points: [], triangles: [], shapeKeys: []}));
+                                    app.operator.appendCommand(new CreateObjectCommand({type: "BlendShape", name: "名称未設定", max: [10,10], min: [-10,-10], points: [], triangles: [], shapeKeys: []}));
                                     app.operator.execute();
                                 }},
                             ]}
@@ -54,7 +54,7 @@ export class Area_BlendShape {
         this.jTag.create(area.main, this.struct);
 
         this.sideBarOperator = new SideBarOperator(this.jTag.getDOMFromID("main").element, {});
-        this.sideBarOperator.changeShelfes({"BlendShap": BlendShapePanel, "BlendShapePointPanel": BlendShapePointPanel});
+        this.sideBarOperator.changeShelfes({"BlendShape": BlendShapePanel, "BlendShapePointPanel": BlendShapePointPanel});
         this.modalOperator = new ModalOperator();
 
         this.box = this.jTag.getDOMFromID("canvasContainer").element;

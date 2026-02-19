@@ -3,6 +3,8 @@ import Camera;
 struct TextUniform {
     positionX: f32,         // X
     positionY: f32,         // Y
+    startX: f32,         // X
+    startY: f32,         // Y
     scale: f32,             // 大きさ
     colorR: f32,            // 色R
     colorG: f32,            // 色G
@@ -22,10 +24,10 @@ struct VertexOutput {
 }
 
 const pointData = array<vec2<f32>, 4>(
-    vec2<f32>(-0.5, -0.5), // 左下
-    vec2<f32>(-0.5,  0.5), // 左上
-    vec2<f32>( 0.5, -0.5), // 右下
-    vec2<f32>( 0.5,  0.5), // 右上
+    vec2<f32>(0.0, 0.0), // 左下
+    vec2<f32>(0.0, 1.0), // 左上
+    vec2<f32>(1.0, 0.0), // 右下
+    vec2<f32>(1.0, 1.0), // 右上
 );
 
 // バーテックスシェーダー
@@ -43,16 +45,18 @@ fn vmain(
         (
             (
                 point * aspect * text.scale * text.isAffectedForZoom +
+                aspect * text.scale * text.isAffectedForZoom * vec2<f32>(text.startX, text.startY) +
                 vec2<f32>(text.positionX, text.positionY) - camera.position
             ) * camera.zoom +
             (
-                point * aspect * text.scale * (1.0 - text.isAffectedForZoom)
+                point * aspect * text.scale * (1.0 - text.isAffectedForZoom) +
+                aspect * text.scale * (1.0 - text.isAffectedForZoom) * vec2<f32>(text.startX, text.startY)
             )
         ) * camera.cvsSize,
         0,
         1.0
         );
-    output.texCoord = point + 0.5;
+    output.texCoord = point;
     output.texCoord.y = 1.0 - output.texCoord.y;
     return output;
 }

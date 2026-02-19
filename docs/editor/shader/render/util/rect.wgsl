@@ -46,7 +46,7 @@ const pointData = array<vec2<f32>, 4>(
 fn vmain(
     @builtin(instance_index) instanceIndex: u32, // インスタンスのインデックス
     @builtin(vertex_index) vertexIndex: u32
-    ) -> VertexOutput {
+) -> VertexOutput {
     var output: VertexOutput;
 
     let point = pointData[vertexIndex % 4u];

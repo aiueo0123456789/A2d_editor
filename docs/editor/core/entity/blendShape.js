@@ -53,8 +53,7 @@ export class BlendShape {
             if (shapeKey instanceof ShapeKeyMetaData) return shapeKey;
             else return app.scene.objects.getObjectByID(shapeKey);
         })
-        this.dimension = data.dimension;
-        this.value = createArrayNAndFill(this.dimension, 0);
+        this.value = [0,0];
         /** @type {Point[]} */
         this.points = data.points.map(point => this.createPoint(point.co, point.weights));
         this.max = data.max;
@@ -65,15 +64,15 @@ export class BlendShape {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.value,
-                parameters: data.keyframeBlockManager.parameters.slice(0, this.dimension),
-                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks.slice(0, this.dimension),
+                parameters: data.keyframeBlockManager.parameters.slice(0, 2),
+                keyframeBlocks: data.keyframeBlockManager.keyframeBlocks.slice(0, 2),
             });
         } else {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
                 object: this.value,
-                parameters: createArrayN(this.dimension),
-                keyframeBlocks: createArrayN(this.dimension).map(x => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}))
+                parameters: createArrayN(2),
+                keyframeBlocks: createArrayN(2).map(x => app.scene.objects.createAndAppendObject({type: "KeyframeBlock"}))
             });
         }
         // エディターデータ
@@ -132,7 +131,6 @@ export class BlendShape {
             type: this.type,
             min: this.min,
             max: this.max,
-            dimension: this.dimension,
             shapeKeys: this.shapeKeys.map(shapeKey => shapeKey.id),
             points: this.points.map(point => point.getSaveData()),
             triangles: this.triangles,

@@ -34,6 +34,9 @@ import { ChangeParentModal } from '../../../modals/changeParent.js';
 import { ResizeModal } from '../../../modals/resize.js';
 import { WeightPaintModal } from '../../../modals/weightpaint.js';
 import { KeyframeInsertModal } from '../../../modals/KeyframeInsertModal.js';
+import { ChangeBlendShapeValueCommand } from '../../../../commands/object/blendShape.js';
+import { BlendShape } from '../../../../core/entity/blendShape.js';
+import { BBlendShape } from '../../../../core/edit/entity/BBlendShape.js';
 
 // レイキャストよう
 const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
@@ -79,6 +82,53 @@ const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.ge
 const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s", "");
 const rectRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/rect.wgsl"), [], "2d", "s", "");
 const textRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("VFu_Ft")], await loadFile("./editor/shader/render/util/text.wgsl"), [], "2d", "s", "");
+
+function rectRender(renderPass, position, halfSize, radius, color, isAffectedForZoomSize = 1, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1) {
+    renderPass.setPipeline(rectRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        GPU.createUniformBuffer((16) * 4, [
+            ...position,
+            ...halfSize,
+            radius,
+            ...color,
+            isAffectedForZoomSize,
+            strokeWidth,
+            ...strokeColor,
+            isAffectedForZoomStroke,
+        ], ["f32"]),
+    ]));
+    renderPass.draw(4, 1, 0, 0);
+}
+function circleRender(renderPass, position, radius, color, isAffectedForZoomRadius = 1, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1) {
+    renderPass.setPipeline(circleRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        GPU.createUniformBuffer((16) * 4, [
+            ...position,
+            radius,
+            ...color,
+            isAffectedForZoomRadius,
+            strokeWidth,
+            ...strokeColor,
+            isAffectedForZoomStroke,
+        ], ["f32"]),
+    ]));
+    renderPass.draw(4, 1, 0, 0);
+}
+function textRender(renderPass, text, start, position, scale, color, isAffectedForZoomRadius = 1) {
+    const textTexture = GPU.getTextTexture(text);
+    renderPass.setPipeline(textRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        GPU.createUniformBuffer((16) * 4, [
+            ...position,
+            ...start,
+            scale,
+            ...color,
+            isAffectedForZoomRadius,
+        ], ["f32"]),
+    ]));
+    renderPass.setBindGroup(2, textTexture.group);
+    renderPass.draw(4, 1, 0, 0);
+}
 
 const useingSideBarPanelInMode = {
     "メッシュ編集": {
@@ -134,7 +184,7 @@ export class Area_Viewer {
                                                     ], false: [
                                                         {tagType: "if", formula: {source: "/type", conditions: "==", value: "BlendShape"},
                                                             true: [
-                                                                {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト", "編集"], options: {initValue: "オブジェクト"}},
+                                                                {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト", "ブレンドシェイプ編集"], options: {initValue: "オブジェクト"}},
                                                             ], false: [
                                                                 {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト"], options: {initValue: "オブジェクト"}},
                                                             ]
@@ -541,6 +591,34 @@ export class Area_Viewer {
         return result;
     }
 
+    getPointsRayCast(ray) {
+        const blendShapes = app.scene.editData.allEditObjects.filter(editData => editData instanceof BBlendShape);
+        let minDis = Infinity;
+        let selectIndexs = [];
+        let selectPointIncludesObjectIDs = [];
+        for (const blendShape of blendShapes) {
+            for (const point of blendShape.points) {
+                const dist = MathVec2.distanceR(MathVec2.addR(blendShape.position, MathVec2.scaleR(point.co, blendShape.scale)), ray);
+                if (dist <= minDis) {
+                    if (dist < minDis) { // ==じゃないなら配列の長さをリセット
+                        selectIndexs.length = 0;
+                        selectPointIncludesObjectIDs.length = 0;
+                    }
+                    minDis = dist;
+                    selectIndexs.push(blendShape.points.indexOf(point));
+                    selectPointIncludesObjectIDs.push(blendShape.id);
+                }
+            }
+        }
+        const result = {};
+        if (selectPointIncludesObjectIDs.length > 0 && selectIndexs.length > 0) {
+            let index = Math.floor(Math.random() * selectPointIncludesObjectIDs.length); // 同じ位置に複数あった場合どれを選択するか使うか
+            result[selectPointIncludesObjectIDs[index]] = [selectIndexs[index]];
+        }
+
+        return result;
+    }
+
     getShortcuts() {
         const context = app.context;
         if (context.activeObject) {
@@ -708,6 +786,17 @@ export class Area_Viewer {
                 app.operator.appendCommand(new SelectBonesCommand(this.getBonesRayCast(this.inputs.position), false));
                 app.operator.execute();
             }
+        } else if (context.currentMode == "ブレンドシェイプ編集") {
+            const activeObject = app.context.activeObject;
+            if (activeObject instanceof BlendShape) {
+                console.log(this.getPointsRayCast(this.inputs.position));
+                if (this.getPointsRayCast(this.inputs.position)) {
+
+                } else {
+                }
+                app.operator.appendCommand(new ChangeBlendShapeValueCommand(activeObject, MathVec2.reverseScaleR(MathVec2.subR(this.inputs.position, activeObject.position), activeObject.scale)));
+                app.operator.execute();
+            }
         }
     }
     async mousemove(inputManager) {
@@ -821,20 +910,7 @@ export class Renderer {
                         } else {
                             return ;
                         }
-                        selectObjectOutlineRenderPass.setPipeline(rectRenderPipeline);
-                        selectObjectOutlineRenderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                            GPU.createUniformBuffer((16) * 4, [
-                                ...MathVec2.addR(blendShape.position, [0, 10]),
-                                ...MathVec2.addR(MathVec2.scaleR(blendShape.halfSize, blendShape.scale), [10,20]),
-                                5,
-                                0.2,0.2,0.2,1,
-                                1,
-                                2,
-                                0.05,0.05,0.05,1,
-                                0,
-                            ], ["f32"]),
-                        ]));
-                        selectObjectOutlineRenderPass.draw(4, 1, 0, 0);
+                        rectRender(selectObjectOutlineRenderPass, MathVec2.addR(object.position, [0, 10]), MathVec2.addR(MathVec2.scaleR(object.halfSize, object.scale), [10,20]), 5, [0.2,0.2,0.2,1], 1, 2, [0.05,0.05,0.05,1], 0);
                     } else {
                         if (object == app.context.activeObject) {
                             selectObjectOutlineRenderPass.setBindGroup(3, GPU.createGroup(GPU.getGroupLayout("Vu_Fu"), [object.objectDataBuffer, GPU.createUniformBuffer(4 * 4, [1 / 255, 0, 0, 1], ["f32"])]));
@@ -1062,62 +1138,25 @@ export class Renderer {
         }
         if (app.scene.objects.blendShapes.length) {
             for (const blendShape of app.scene.objects.blendShapes) {
+                let containerTop = blendShape.position[1] + blendShape.halfSize[1] * blendShape.scale;
+                let containerBottom = blendShape.position[1] - blendShape.halfSize[1] * blendShape.scale;
+                let containerRight = blendShape.position[0] + blendShape.halfSize[0] * blendShape.scale;
+                let containerLeft = blendShape.position[0] - blendShape.halfSize[0] * blendShape.scale;
                 if (true) {
                     // 外枠
-                    renderPass.setPipeline(rectRenderPipeline);
-                    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                        GPU.createUniformBuffer((16) * 4, [
-                            ...MathVec2.addR(blendShape.position, [0, 10]),
-                            ...MathVec2.addR(MathVec2.scaleR(blendShape.halfSize, blendShape.scale), [10,20]),
-                            5,
-                            0.2,0.2,0.2,1,
-                            1,
-                            2,
-                            0.05,0.05,0.05,1,
-                            0,
-                        ], ["f32"]),
-                    ]));
-                    renderPass.draw(4, 1, 0, 0);
+                    rectRender(renderPass, MathVec2.addR(blendShape.position, [0, 10]), MathVec2.addR(MathVec2.scaleR(blendShape.halfSize, blendShape.scale), [10,20]), 5, [0.2,0.2,0.2,1], 1, 2, [0.05,0.05,0.05,1], 0);
                     // 右上の最小化ボタン
-                    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                        GPU.createUniformBuffer((16) * 4, [
-                            ...MathVec2.addR(MathVec2.addR(blendShape.position, MathVec2.scaleR(blendShape.halfSize, blendShape.scale)), [-5, 15]),
-                            5, 1,
-                            0,
-                            1,1,1,1,
-                            1,
-                            0,
-                            0,0,0,1,
-                            0,
-                        ], ["f32"]),
-                    ]));
-                    renderPass.draw(4, 1, 0, 0);
+                    rectRender(renderPass, MathVec2.addR([containerRight, containerTop], [-5, 15]), [5,1], 0, [1,1,1,1], 1);
                     // キャンバス
-                    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                        GPU.createUniformBuffer((2 + 2 + 1 + 1 + 1 + 1 + 4 + 4) * 4, [
-                            ...blendShape.position,
-                            ...MathVec2.scaleR(blendShape.halfSize, blendShape.scale),
-                            0,
-                            1,1,1,1,
-                            1,
-                            2,
-                            0.05,0.05,0.05,1,
-                            0,
-                        ], ["f32"]),
-                    ]));
-                    renderPass.draw(4, 1, 0, 0);
+                    rectRender(renderPass, blendShape.position, MathVec2.scaleR(blendShape.halfSize, blendShape.scale), 0, [1,1,1,1], 1, 2, [0.05,0.05,0.05,1], 0);
+                    for (const point of blendShape.points) {
+                        circleRender(renderPass, MathVec2.addR(blendShape.position, MathVec2.scaleR(point.co, blendShape.scale)), 5, [1,0.5,0,1], 1, 0, [0,0,0,1], 0);
+                    }
+                    if (blendShape.value) {
+                        circleRender(renderPass, MathVec2.addR(blendShape.position, MathVec2.scaleR(blendShape.value, blendShape.scale)), 5, [1,0,0,1], 1, 0, [0,0,0,1], 0);
+                    }
                     // 文字
-                    renderPass.setPipeline(textRenderPipeline);
-                    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                        GPU.createUniformBuffer((2 + 1 + 1 + 4) * 4, [
-                            ...MathVec2.addR(blendShape.position, MathVec2.mulR(MathVec2.scaleR(blendShape.halfSize, blendShape.scale), [-1, 1])),
-                            10,
-                            1,0,0,1,
-                            1
-                        ], ["f32"]),
-                    ]));
-                    renderPass.setBindGroup(2, GPU.getTextTexture(blendShape.name).group);
-                    renderPass.draw(4, 1, 0, 0);
+                    textRender(renderPass, blendShape.name, [0, 0], MathVec2.set(MathVec2.create(), [containerLeft, containerTop]), 10, [1,1,1,1], 1);
                 }
             }
         }

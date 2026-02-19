@@ -6,13 +6,17 @@ import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 
 class Point {
     constructor(data) {
-        this.co = data.co;
+        this.co = MathVec2.create();
         /** @type {Number[]} */
-        this.weights = data.weights;
+        this.weights = [];
+        if (data) {
+            MathVec2.set(this.co, data.co);
+            this.weights = data.weights;
+        }
     }
 
     fromPoint(/** @type {Point} */ object) {
-        this.co = object.co;
+        MathVec2.set(this.co, object.co);
         this.weights = object.weights;
         return this;
     }
@@ -27,7 +31,6 @@ export class BBlendShape {
         this.blendShape = null;
         /** @type {ShapeKeyMetaData[]} */
         this.shapeKeys = []
-        this.dimension = 0;
         this.value = [];
         /** @type {Point[]} */
         this.points = [];
@@ -84,7 +87,6 @@ export class BBlendShape {
 
     fromBlendShape(/** @type {BlendShape} */ object) {
         this.blendShape = object;
-        this.dimension = object.dimension;
         this.points = object.points.map(point => (new Point()).fromPoint(point));
         this.triangles = [...object.triangles];
         this.max = [...object.max];

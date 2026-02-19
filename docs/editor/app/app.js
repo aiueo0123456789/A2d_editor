@@ -72,7 +72,6 @@ class AppOptions {
                 "normal": {
                     type: "BlendShape",
                     name: "名称未設定",
-                    dimension: 2,
                     max: [10,10],
                     min: [-10,-10],
                     points: [],
