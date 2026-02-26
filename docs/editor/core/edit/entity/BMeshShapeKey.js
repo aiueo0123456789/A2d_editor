@@ -1,4 +1,5 @@
 import { app } from "../../../../main.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
 import { createID } from "../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { useEffect } from "../../../utils/ui/util.js";
@@ -161,5 +162,35 @@ export class BMeshShapeKey {
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         graphicMeshData.update(this.object);
         useEffect.update({o: this.object.shapeKeyMetaDatas})
+    }
+
+    render(renderPass) {
+        if (this.activeShapeKey) {
+            for (const mesh of this.meshes) {
+                triangleRender(renderPass, this.activeShapeKey.data[mesh.indexs[0]].co, this.activeShapeKey.data[mesh.indexs[1]].co, this.activeShapeKey.data[mesh.indexs[2]].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
+            }
+            for (const vertex of this.vertices) {
+                if (this.activeVertex === vertex) {
+                    circleRender(renderPass, this.activeShapeKey.data[vertex.index].co, 4, [1,1,1,1], 0, 1, [0,0,0,1], 0);
+                } else if (vertex.selected) {
+                    circleRender(renderPass, vertex.co, 4, [1,0.5,0,1], 0, 1, [0,0,0,1], 0);
+                } else {
+                    circleRender(renderPass, vertex.co, 4, [0.2,0.2,0.2,1], 0, 1, [0,0,0,1], 0);
+                }
+            }
+        } else {
+            for (const mesh of this.meshes) {
+                triangleRender(renderPass, this.vertices[mesh.indexs[0]].co, this.vertices[mesh.indexs[1]].co, this.vertices[mesh.indexs[2]].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
+            }
+            for (const vertex of this.vertices) {
+                if (this.activeVertex === vertex) {
+                    circleRender(renderPass, vertex.co, 4, [1,1,1,1], 0, 1, [0,0,0,1], 0);
+                } else if (vertex.selected) {
+                    circleRender(renderPass, vertex.co, 4, [1,0.5,0,1], 0, 1, [0,0,0,1], 0);
+                } else {
+                    circleRender(renderPass, vertex.co, 4, [0.2,0.2,0.2,1], 0, 1, [0,0,0,1], 0);
+                }
+            }
+        }
     }
 }

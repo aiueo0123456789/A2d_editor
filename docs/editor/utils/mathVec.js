@@ -120,8 +120,17 @@ export class MathVec2 {
         return a[0] == b[0] && a[1] == b[1];
     }
 
-    static max(a) {
-        return Math.max(a[0], a[1]);
+    static max(t,a,b) {
+        return this.set(t, [Math.max(a[0], b[0]), Math.max(a[1], b[1])]);
+    }
+    static maxR(a,b) {
+        return this.set(this.create(), [Math.max(a[0], b[0]), Math.max(a[1], b[1])]);
+    }
+    static min(t, a,b) {
+        return this.set(t, [Math.min(a[0], b[0]), Math.min(a[1], b[1])]);
+    }
+    static minR(a,b) {
+        return this.set(this.create(), [Math.min(a[0], b[0]), Math.min(a[1], b[1])]);
     }
 
     static createBBox(points) {

@@ -1,4 +1,5 @@
 import { app } from "../../../../main.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
 import { MathMat3x3 } from "../../../utils/mathMat.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { useEffect } from "../../../utils/ui/util.js";
@@ -165,5 +166,14 @@ export class BMeshWeight {
         }
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         graphicMeshData.update(this.object);
+    }
+
+    render(renderPass) {
+        for (const mesh of this.meshes) {
+            triangleRender(renderPass, mesh.vertices[0].co, mesh.vertices[1].co, mesh.vertices[2].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
+        }
+        for (const vertex of this.vertices) {
+            circleRender(renderPass, vertex.co, 4, [0.2,0.2,0.2,1], 0, 1, [0,0,0,1], 0);
+        }
     }
 }

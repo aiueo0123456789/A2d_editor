@@ -37,6 +37,7 @@ import { KeyframeInsertModal } from '../../../modals/KeyframeInsertModal.js';
 import { ChangeBlendShapeValueCommand } from '../../../../commands/object/blendShape.js';
 import { BlendShape } from '../../../../core/entity/blendShape.js';
 import { BBlendShape } from '../../../../core/edit/entity/BBlendShape.js';
+import { Flag, FlagOperator } from '../../../../operators/flagOperator.js';
 
 // レイキャストよう
 const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
@@ -79,11 +80,28 @@ const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.get
 const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/vertices.wgsl"), [], "2d", "t", "");
 const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s", "");
 
+const triangleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/triangle.wgsl"), [], "2d", "t", "");
 const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s", "");
 const rectRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/rect.wgsl"), [], "2d", "s", "");
 const textRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("VFu_Ft")], await loadFile("./editor/shader/render/util/text.wgsl"), [], "2d", "s", "");
 
-function rectRender(renderPass, position, halfSize, radius, color, isAffectedForZoomSize = 1, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1) {
+export function triangleRender(renderPass, pointA, pointB, pointC, color, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1, strokePosition = 0) {
+    renderPass.setPipeline(triangleRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        GPU.createUniformBuffer((17) * 4, [
+            ...pointA,
+            ...pointB,
+            ...pointC,
+            ...color,
+            strokeWidth,
+            ...strokeColor,
+            isAffectedForZoomStroke, // 0 1 影響を受けない 影響を受ける
+            strokePosition, // 0 -0.5 -1 外側 中間 内側
+        ], ["f32"]),
+    ]));
+    renderPass.draw(3, 1, 0, 0);
+}
+export function rectRender(renderPass, position, halfSize, radius, color, isAffectedForZoomSize = 1, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1) {
     renderPass.setPipeline(rectRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((16) * 4, [
@@ -99,7 +117,7 @@ function rectRender(renderPass, position, halfSize, radius, color, isAffectedFor
     ]));
     renderPass.draw(4, 1, 0, 0);
 }
-function circleRender(renderPass, position, radius, color, isAffectedForZoomRadius = 1, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1) {
+export function circleRender(renderPass, position, radius, color, isAffectedForZoomRadius = 1, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1) {
     renderPass.setPipeline(circleRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((16) * 4, [
@@ -114,11 +132,11 @@ function circleRender(renderPass, position, radius, color, isAffectedForZoomRadi
     ]));
     renderPass.draw(4, 1, 0, 0);
 }
-function textRender(renderPass, text, start, position, scale, color, isAffectedForZoomRadius = 1) {
+export function textRender(renderPass, text, start, position, scale, color, isAffectedForZoomRadius = 1) {
     const textTexture = GPU.getTextTexture(text);
     renderPass.setPipeline(textRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-        GPU.createUniformBuffer((16) * 4, [
+        GPU.createUniformBuffer((10) * 4, [
             ...position,
             ...start,
             scale,
@@ -355,6 +373,21 @@ export class Area_Viewer {
         this.adjustPanel = this.jTag.getDOMFromID("adjustPanel"); // これがadjustPanelが作られるタグ
         this.modalOperator = new ModalOperator();
 
+        this.flagOperator = new FlagOperator();
+        this.flagOperator.setFlag(new Flag(
+            "test",
+            () => {
+                // console.log("TestFlag call start");
+            },
+            () => {
+                // console.log("TestFlag call update");
+            },
+            () => {
+                // console.log("TestFlag call finish");
+            },
+            {}
+        ));
+
         this.canvas = this.jTag.getDOMFromID("renderingCanvas");
         this.canvasRect = this.canvas.getBoundingClientRect();
 
@@ -380,11 +413,12 @@ export class Area_Viewer {
         const modeChangeEvent = () => {
             this.sideBarOperator.changeShelfes(useingSideBarPanelInMode[app.context.currentMode]);
         }
-        useEffect.set({o: app.context, i: "currentMode"}, modeChangeEvent)
+        useEffect.set({o: app.context, i: "currentMode"}, modeChangeEvent);
         modeChangeEvent();
     }
 
     async update() {
+        this.flagOperator.update();
         this.renderer.rendering();
     }
 
@@ -791,11 +825,9 @@ export class Area_Viewer {
             if (activeObject instanceof BlendShape) {
                 console.log(this.getPointsRayCast(this.inputs.position));
                 if (this.getPointsRayCast(this.inputs.position)) {
-
                 } else {
                 }
-                app.operator.appendCommand(new ChangeBlendShapeValueCommand(activeObject, MathVec2.reverseScaleR(MathVec2.subR(this.inputs.position, activeObject.position), activeObject.scale)));
-                app.operator.execute();
+                this.testCommand = new ChangeBlendShapeValueCommand(activeObject, MathVec2.reverseScaleR(MathVec2.subR(this.inputs.position, activeObject.position), activeObject.scale));
             }
         }
     }
@@ -811,6 +843,14 @@ export class Area_Viewer {
             this.modalOperator.start(resultShortcuts);
             return ;
         }
+
+        const context = app.context;
+        if (context.currentMode == "ブレンドシェイプ編集") {
+            const activeObject = app.context.activeObject;
+            if (activeObject instanceof BlendShape) {
+                if (this.testCommand) this.testCommand.update(MathVec2.reverseScaleR(MathVec2.subR(this.inputs.position, activeObject.position), activeObject.scale));
+            }
+        }
     }
     async mouseup(inputManager) {
         if (await this.modalOperator.mouseup(this.inputs)) return ;
@@ -818,6 +858,16 @@ export class Area_Viewer {
         if (resultShortcuts) {
             this.modalOperator.start(resultShortcuts);
             return ;
+        }
+
+        const context = app.context;
+        if (context.currentMode == "ブレンドシェイプ編集") {
+            const activeObject = app.context.activeObject;
+            if (activeObject instanceof BlendShape) {
+                app.operator.appendCommand(this.testCommand);
+                app.operator.execute();
+                this.testCommand = null;
+            }
         }
     }
 
@@ -1039,30 +1089,35 @@ export class Renderer {
                 for (const graphicMesh of app.scene.renderingOrder) {
                     if (graphicMesh.visible) {
                         // モード別
-                        if (graphicMesh.mode == "メッシュ編集") {
-                            const bm = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            renderPass.setBindGroup(2, bm.renderingGroup);
-                            renderPass.setPipeline(BMeshMeshRenderPipeline);
-                            renderPass.draw(3 * 4, bm.meshesNum, 0, 0); // 3つの辺を4つの頂点から四角形で表示する
-                            renderPass.setPipeline(BMeshEdgeRenderPipeline);
-                            renderPass.draw(4, bm.manualEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
-                            renderPass.setPipeline(BMeshSilhouetteEdgeRenderPipeline);
-                            renderPass.draw(4, bm.autoEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
-                            renderPass.setPipeline(BMeshVerticesRenderPipeline);
-                            renderPass.draw(4, bm.verticesNum, 0, 0); // 4つの頂点から四角形を表示
-                        } else if (graphicMesh.mode == "メッシュウェイト編集") {
-                            const bmw = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            renderPass.setBindGroup(2, bmw.renderingGroup);
-                            renderPass.setPipeline(BMWWeightsRenderPipeline);
-                            renderPass.draw(4, bmw.verticesNum, 0, 0);
-                        } else if (graphicMesh.mode == "メッシュシェイプキー編集") {
-                            const bms = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            renderPass.setBindGroup(2, bms.renderingGroup);
-                            renderPass.setPipeline(BMSMeshsRenderPipeline);
-                            renderPass.draw(3 * 4, bms.meshesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
-                            renderPass.setPipeline(BMSVerticesRenderPipeline);
-                            renderPass.draw(4, bms.verticesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
-                        } else if (graphicMesh.mode == "オブジェクト") {
+                        // if (graphicMesh.mode == "メッシュ編集") {
+                        //     const bm = app.scene.editData.getEditObjectByObject(graphicMesh);
+                        //     renderPass.setBindGroup(2, bm.renderingGroup);
+                        //     renderPass.setPipeline(BMeshMeshRenderPipeline);
+                        //     renderPass.draw(3 * 4, bm.meshesNum, 0, 0); // 3つの辺を4つの頂点から四角形で表示する
+                        //     renderPass.setPipeline(BMeshEdgeRenderPipeline);
+                        //     renderPass.draw(4, bm.manualEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
+                        //     renderPass.setPipeline(BMeshSilhouetteEdgeRenderPipeline);
+                        //     renderPass.draw(4, bm.autoEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
+                        //     renderPass.setPipeline(BMeshVerticesRenderPipeline);
+                        //     renderPass.draw(4, bm.verticesNum, 0, 0); // 4つの頂点から四角形を表示
+                        // } else if (graphicMesh.mode == "メッシュウェイト編集") {
+                        //     const bmw = app.scene.editData.getEditObjectByObject(graphicMesh);
+                        //     renderPass.setBindGroup(2, bmw.renderingGroup);
+                        //     renderPass.setPipeline(BMWWeightsRenderPipeline);
+                        //     renderPass.draw(4, bmw.verticesNum, 0, 0);
+                        // } else if (graphicMesh.mode == "メッシュシェイプキー編集") {
+                        //     const bms = app.scene.editData.getEditObjectByObject(graphicMesh);
+                        //     renderPass.setBindGroup(2, bms.renderingGroup);
+                        //     renderPass.setPipeline(BMSMeshsRenderPipeline);
+                        //     renderPass.draw(3 * 4, bms.meshesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
+                        //     renderPass.setPipeline(BMSVerticesRenderPipeline);
+                        //     renderPass.draw(4, bms.verticesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
+                        // } else if (graphicMesh.mode == "オブジェクト") {
+                        // }
+                        if (graphicMesh.mode == "オブジェクト") {
+                        } else {
+                            const b = app.scene.editData.getEditObjectByObject(graphicMesh);
+                            b.render(renderPass);
                         }
                     }
                 }

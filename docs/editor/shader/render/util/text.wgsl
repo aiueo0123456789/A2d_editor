@@ -3,8 +3,8 @@ import Camera;
 struct TextUniform {
     positionX: f32,         // X
     positionY: f32,         // Y
-    startX: f32,         // X
-    startY: f32,         // Y
+    startX: f32,         // X(オフセット)
+    startY: f32,         // Y(オフセット)
     scale: f32,             // 大きさ
     colorR: f32,            // 色R
     colorG: f32,            // 色G
@@ -44,13 +44,13 @@ fn vmain(
     output.position = vec4f(
         (
             (
-                point * aspect * text.scale * text.isAffectedForZoom +
-                aspect * text.scale * text.isAffectedForZoom * vec2<f32>(text.startX, text.startY) +
+                (point * aspect * text.scale * text.isAffectedForZoom) -
+                (vec2<f32>(1.0) * aspect * text.scale * text.isAffectedForZoom) * vec2<f32>(text.startX, text.startY) +
                 vec2<f32>(text.positionX, text.positionY) - camera.position
             ) * camera.zoom +
             (
-                point * aspect * text.scale * (1.0 - text.isAffectedForZoom) +
-                aspect * text.scale * (1.0 - text.isAffectedForZoom) * vec2<f32>(text.startX, text.startY)
+                (point * aspect * text.scale * (1.0 - text.isAffectedForZoom)) -
+                (aspect * text.scale * (1.0 - text.isAffectedForZoom)) * vec2<f32>(text.startX, text.startY)
             )
         ) * camera.cvsSize,
         0,

@@ -343,7 +343,7 @@ export async function createEdgeFromTexture(texture, pixelDensity, padding, simp
     collectedLines = connectLines(collectedLines); // 重複頂点を接続
 
     collectedLines = collectedLines.map((x) => {
-        return simplifyPolygon(x, simplEpsilon, MathVec2.max(imageBufferSize) / 3);
+        return simplifyPolygon(x, simplEpsilon, Math.max(...imageBufferSize) / 3);
     });
 
     let maxLengthLine = [];

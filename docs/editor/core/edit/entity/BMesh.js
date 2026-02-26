@@ -1,4 +1,5 @@
 import { app } from "../../../../main.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
@@ -15,6 +16,7 @@ class Vert {
 
 class Mesh {
     constructor(data) {
+        /** @type { Vert[] } */
         this.vertices = data.vertices;
         this.selected = false;
     }
@@ -60,8 +62,6 @@ export class BMesh {
         this.autoEdges = [];
         this.texture = null;
         this.zIndex = 0;
-
-        this.activeBone = null;
     }
 
     // object.id
@@ -157,7 +157,7 @@ export class BMesh {
             vertex.selected = false;
             GPU.writeBuffer(this.vertexSelectedBuffer, GPU.createBitData([0], ["u32"]), this.getVertexIndexByVertex(vertex) * 4);
         });
-        this.activeBone = null;
+        this.activeVertex = null;
     }
 
     // 頂点選択
@@ -284,5 +284,20 @@ export class BMesh {
         }
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         graphicMeshData.update(this.object);
+    }
+
+    render(renderPass) {
+        for (const mesh of this.meshes) {
+            triangleRender(renderPass, mesh.vertices[0].co, mesh.vertices[1].co, mesh.vertices[2].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
+        }
+        for (const vertex of this.vertices) {
+            if (this.activeVertex === vertex) {
+                circleRender(renderPass, vertex.co, 4, [1,1,1,1], 0, 1, [0,0,0,1], 0);
+            } else if (vertex.selected) {
+                circleRender(renderPass, vertex.co, 4, [1,0.5,0,1], 0, 1, [0,0,0,1], 0);
+            } else {
+                circleRender(renderPass, vertex.co, 4, [0.2,0.2,0.2,1], 0, 1, [0,0,0,1], 0);
+            }
+        }
     }
 }
