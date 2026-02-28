@@ -1,7 +1,7 @@
 import { app } from "../../../main.js";
 import { BArmatureAnimation } from "../../core/edit/entity/BArmatureAnimation.js";
 import { BKeyframeBlock, BKeyframeBlockManager } from "../../core/edit/entity/BKeyframeBlockManager.js";
-import { KeyframeBlock } from "../../core/entity/keyframeBlock.js";
+import { KeyframeBlock } from "../../core/entity/KeyframeBlock.js";
 
 export class KeyframeInsertInSelectedElementCommand {
     constructor() {

@@ -5,7 +5,7 @@ import { BBezier } from "../../core/edit/entity/BBezier.js";
 import { BBezierShapeKey } from "../../core/edit/entity/BBezierShapeKey.js";
 import { BMesh } from "../../core/edit/entity/BMesh.js";
 import { BMeshShapeKey } from "../../core/edit/entity/BMeshShapeKey.js";
-import { Armature } from "../../core/entity/armature.js";
+import { Armature } from "../../core/entity/Armature.js";
 import { MathMat3x3 } from "../../utils/mathMat.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { useEffect } from "../../utils/ui/util.js";

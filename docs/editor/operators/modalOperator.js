@@ -1,4 +1,4 @@
-import { InputManager } from "../app/inputManager/inputManager.js";
+import { InputManager } from "../app/InputManager.js";
 import { isFunction } from "../utils/utility.js";
 
 /**

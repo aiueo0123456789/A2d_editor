@@ -1,11 +1,11 @@
-import { AdjustPanelOperator } from "../../operators/adjustPanelOperator.js";
-import { Area } from "../../ui/area/Area.js";
-import { createID } from "../../utils/idGenerator.js";
-import { JTag } from "../../utils/JTag/JTag.js";
-import { AutoGrid } from "../../utils/ui/grid.js";
-import { createTag } from "../../utils/ui/util.js";
-import { indexOfSplice } from "../../utils/utility.js";
-import { Application } from "../app.js";
+import { AdjustPanelOperator } from "../operators/adjustPanelOperator.js";
+import { Area } from "../ui/area/Area.js";
+import { createID } from "../utils/idGenerator.js";
+import { JTag } from "../utils/JTag/JTag.js";
+import { AutoGrid } from "../utils/ui/grid.js";
+import { createTag } from "../utils/ui/util.js";
+import { indexOfSplice } from "../utils/utility.js";
+import { Application } from "./Application.js";
 
 export class UI {
     constructor(/** @type {Application} */ app) {

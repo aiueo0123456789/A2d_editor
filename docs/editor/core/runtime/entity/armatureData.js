@@ -1,8 +1,8 @@
-import { Application } from "../../../app/app.js";
+import { Application } from "../../../app/Application.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { Armature } from "../../entity/armature.js";
-import { BufferManager } from "../bufferManager.js";
-import { RuntimeDataBase } from "../runtimeDataBase.js";
+import { Armature } from "../../entity/Armature.js";
+import { BufferManager } from "../BufferManager.js";
+import { RuntimeDataBase } from "../RuntimeDataBase.js";
 
 export class ArmatureData extends RuntimeDataBase {
     constructor(/** @type {Application} */ app) {

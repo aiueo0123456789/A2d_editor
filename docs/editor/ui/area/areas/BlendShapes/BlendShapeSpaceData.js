@@ -1,5 +1,5 @@
 import { app } from "../../../../../main.js";
-import { BlendShape } from "../../../../core/entity/blendShape.js";
+import { BlendShape } from "../../../../core/entity/BlendShape.js";
 
 export class Area_BlendShapeSpaceData {
     constructor() {

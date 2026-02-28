@@ -1,12 +1,14 @@
 import { app } from "../../../../../main.js";
-import { InputManager } from "../../../../app/inputManager/inputManager.js";
+import { InputManager } from "../../../../app/InputManager.js";
 import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
-import { AdjustPanelOperator } from "../../../../operators/adjustPanelOperator.js";
-import { createID } from "../../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
+import { OutlinerTag } from "../../../../utils/JTag/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
-import { useEffect } from "../../../../utils/ui/util.js";
-import { calculateLocalMousePosition, changeParameter, errorCut, isPointInEllipse } from "../../../../utils/utility.js";
+import { calculateLocalMousePosition, changeParameter, errorCut } from "../../../../utils/utility.js";
+import { TimelineSpaceData } from "../Graph/TimelineSpaceData.js";
+import { createID } from "../../../../utils/idGenerator.js";
+import { ModalOperator } from "../../../../operators/modalOperator.js";
+import { TranslateModal } from "../../../modals/translate.js";
 
 const targetValueToColor = {
     "x": "rgb(0, 0, 255)",
@@ -19,19 +21,17 @@ const targetValueToColor = {
     "1": "rgb(0, 255, 0)",
 }
 
-export class Area_Graph {
+export class Area_Timeline {
     constructor(area) {
         this.dom = area.main;
+        /** @type {TimelineSpaceData} */
         this.spaceData = app.appConfig.areasConfig["Timeline"];
 
         this.camera = [0,0];
         // this.zoom = [1,1];
-        this.zoom = [5,5];
+        this.zoom = [5,1];
 
         this.selectedOnly = false;
-
-        this.spaceData.mode = "select";
-        this.spaceData.mode = "move";
 
         this.frameBarDrag = false;
 
@@ -68,23 +68,28 @@ export class Area_Graph {
                             ]}
                         ]}
                     ]},
-                    {tagType: "grid", axis: "c", child1: [
+                    {tagType: "grid", axis: "c", template: "30%", child1: [
                         {tagType: "outliner", name: "outliner", id: "overview",
-                            updateEventTarget: "選択物",
                             options: {
                                 clickEventFn: (event, object) => {
+                                    // app.context.setSelectedObject(object, app.input.keysDown["Ctrl"]);
+                                    // app.context.setActiveObject(object);
                                     event.stopPropagation();
                                 }, rangeonSelectFn: (event, array, startIndex, endIndex) => {
-                                    event.stopPropagation();
+                                    // let minIndex = Math.min(startIndex, endIndex);
+                                    // let maxIndex = Math.max(startIndex, endIndex);
+                                    // for (let i = minIndex; i < maxIndex; i ++) {
+                                    //     app.context.setSelectedObject(array[i], true);
+                                    // }
+                                    // app.context.setActiveObject(array[endIndex]);
                                 },
-                                activeSource: {object: "context", parameter: "activeObject"}, selectSource: {object: "context/selectedObjects"},
+                                activeSource: {object: "context", parameter: "activeObject"}, selectSource: {object: "context/selectedObjects"}
                             },
                             withObject: "spaceData/outlineData",
-                            updateEventTarget: ["頂点選択","ボーン選択","オブジェクト選択"],
+                            updateEventTarget: ["頂点選択","ボーン選択","オブジェクト選択","キーフレームブロックマネージャー追加"],
                             loopTarget: {
                                 parameter: "type",
                                 loopTargets: {
-                                    // "キーフレームブロックマネージャー": ["blocks"],
                                     others: ["/children"],
                                 }
                             },
@@ -96,7 +101,7 @@ export class Area_Graph {
                                                 {tagType: "color", src: "colorData/{/parameter}"},
                                             ]},
                                             {tagType: "icon", src: {path: "/type"}},
-                                            {tagType: "input", type: "checkbox", checked: "/object/visible", look: {check: "display", uncheck: "hide"}},
+                                            {tagType: "input", type: "checkbox", checked: "/visible", look: {check: "display", uncheck: "hide"}},
                                             {tagType: "dblClickInput", value: "/parameter"},
                                         ]}
                                     ],
@@ -124,7 +129,8 @@ export class Area_Graph {
         this.jTag = area.jTag;
         this.jTag.create(area.main, this.struct);
 
-        this.toolPanelOperator = new AdjustPanelOperator();
+        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel"); // これがadjustPanelが作られるタグ
+        this.modalOperator = new ModalOperator();
 
         /** @type {OutlinerTag} */
         this.overview = this.jTag.getDOMFromID("overview");
@@ -134,7 +140,7 @@ export class Area_Graph {
 
         this.canvasSize = [this.canvas.width,this.canvas.height];
 
-        this.inputs = {click: [0,0], position: [0,0], movement: [0,0], clickPosition: [0,0], lastPosition: [0,0]};
+        this.inputs = {click: [0,0], position: [0,0], movement: [0,0], clickPosition: [0,0], lastPosition: [0,0], keysDown: {}, keysPush: {}};
 
         this.pixelDensity = 5;
 
@@ -181,20 +187,11 @@ export class Area_Graph {
                 const wx = this.worldToCanvas([x + leftDown[0] + decimalOffset[0] + offset[0],0])[0];
                 line([wx, this.canvas.height], [wx,0], width, color);
             }
-            for (let y = 0; y < this.canvas.height / this.zoom[1]; y += gap[1]) {
-                const wy = this.worldToCanvas([0,y + leftDown[1] + decimalOffset[1] + offset[1]])[1];
-                line([this.canvas.width, wy], [0, wy], width, color);
-            }
             if (string) {
-                for (let y = 0; y < this.canvas.height / this.zoom[1]; y += gap[1]) {
-                    const wy = this.worldToCanvas([0, y + leftDown[1] + decimalOffset[1]])[1];
-                    line([0, wy], [40, wy], 10, "rgb(255,255,255)");
-                    text([50, wy], `${errorCut(y + leftDown[1] + decimalOffset[1])}`, 70, "rgb(255, 255, 255)", "left", "middle");
-                }
                 for (let x = 0; x < this.canvas.width / this.zoom[0]; x += gap[0]) {
                     const wx = this.worldToCanvas([x + leftDown[0] + decimalOffset[0], 0])[0];
-                    line([wx, 0], [wx, 40], 10, "rgb(255,255,255)");
-                    text([wx, 50], `${errorCut(x + leftDown[0] + decimalOffset[0])}`, 70, "rgb(255, 255, 255)", "center", "top");
+                    line([wx, 15 * this.pixelDensity], [wx, 25 * this.pixelDensity], width, "rgb(255,255,255)");
+                    text([wx, 10 * this.pixelDensity], `${errorCut(x + leftDown[0] + decimalOffset[0])}`, 10 * this.pixelDensity, "rgb(156, 156, 156)", "center", "middle");
                 }
             }
         }
@@ -222,8 +219,15 @@ export class Area_Graph {
         const gap = [getGridStep(this.zoom[0]),getGridStep(this.zoom[1])];
         const bigGap = MathVec2.scaleR(gap, 5);
 
-        gridRender(gap, [0,0], 4, "rgb(72, 72, 72)");
-        gridRender(bigGap, [0,0], 5, "rgb(18, 18, 18)", true);
+        this.spaceData.outlineKefyframeData.forEach((keyframeBlock, index) => {
+            const displayHeight = this.getKeyFrameBlockDisplayTop(keyframeBlock.pathID);
+            // line([0, displayHeight], [o.canvasSize[0], displayHeight], 15 * o.pixelDensity - 1 * o.pixelDensity, targetValueToColor[keyframeBlock.parameter]);
+            line([0, displayHeight], [this.canvasSize[0], displayHeight], 15 * this.pixelDensity - 1 * this.pixelDensity, "rgb(65, 65, 65)");
+        })
+
+        // gridRender(gap, [0,0], 4, "rgb(72, 72, 72)");
+        line([0, 25 * this.pixelDensity / 2], [this.canvas.width, 25 * this.pixelDensity / 2], 25 * this.pixelDensity, "rgb(0, 0, 0)");
+        gridRender(bigGap, [0,0], 2, "rgb(0, 0, 0)", true);
 
         if (true) {
             const wx = this.worldToCanvas([app.scene.frame_current,0]);
@@ -236,48 +240,33 @@ export class Area_Graph {
             this.context.arc(...p, radius, 0, Math.PI * 2);
             this.context.fill();
         }
-
-        const circleStroke = (p, radius, color, lineWidth) => {
-            this.context.strokeStyle = color;
-            this.context.lineWidth = lineWidth;
-            this.context.beginPath();
-            this.context.arc(...p, radius, 0, Math.PI * 2);
-            // object.context.fill();
-            this.context.stroke();
-        }
-        this.spaceData.outlineKefyframeData.forEach((keyframeBlockData, index) => {
-            const keyframeBlock = keyframeBlockData.object;
-            if (!keyframeBlock.visible) return ;
-            const getColor = (b) => {
-                return b ? "rgb(255, 174, 0)" : targetValueToColor[keyframeBlockData.parameter];
-            }
-            this.context.strokeStyle = targetValueToColor[keyframeBlockData.parameter];
-            this.context.lineWidth = 10;
-            const keys = keyframeBlock.keys;
-            let lastData = keys[0];
-            for (const keyData of keys.slice(1)) {
-                // ベジェ曲線を描く
-                this.context.beginPath();
-                this.context.moveTo(...this.worldToCanvas(lastData.point));
-                this.context.bezierCurveTo(
-                    ...this.worldToCanvas(lastData.rightHandle),
-                    ...this.worldToCanvas(keyData.leftHandle),
-                    ...this.worldToCanvas(keyData.point)
-                );
-                this.context.strokeStyle = this.strokeStyle;
-                this.context.stroke();
-                lastData = keyData;
-            }
-            for (const keyData of keys) {
+        this.spaceData.outlineKefyframeData.forEach((keyframeBlock, index) => {
+            const displayHeight = this.getKeyFrameBlockDisplayTop(keyframeBlock.pathID);
+            for (const keyframe of keyframeBlock.object.keys) {
                 // 制御点と線
-                line(this.worldToCanvas(keyData.point),this.worldToCanvas(keyData.leftHandle),10, getColor(keyData.selectedPoint && keyData.selectedLeftHandle));
-                line(this.worldToCanvas(keyData.point),this.worldToCanvas(keyData.rightHandle),10, getColor(keyData.selectedPoint && keyData.selectedRightHandle));
-                circle(this.worldToCanvas(keyData.point), 20, getColor(keyData.selectedPoint));
-                circleStroke(this.worldToCanvas(keyData.leftHandle), 15, getColor(keyData.selectedLeftHandle), 7);
-                circleStroke(this.worldToCanvas(keyData.rightHandle), 15, getColor(keyData.selectedRightHandle), 7);
+                const getColor = (b) => {
+                    return b ? "rgb(255, 174, 0)" : "rgb(200, 200, 200)";
+                }
+                circle([this.getKeyframeDisplayLeft(keyframe), displayHeight], 15, getColor(keyframe.selectedPoint));
             }
         })
         circle(this.worldToCanvas(this.inputs.position), 20, "rgb(255, 0, 0)");
+    }
+
+    // キーフレームブロックの表示高さ
+    getKeyFrameBlockDisplayTop(keyframeBlockPathID) {
+        const overviewBoundingbox = this.overview.scrollableContainer.getBoundingClientRect();
+        const tag = this.jTag.getDOMFromID(keyframeBlockPathID);
+        const boundingbox = tag.element.getBoundingClientRect();
+        return (boundingbox.top + boundingbox.height - overviewBoundingbox.top + 7.5) * this.pixelDensity;
+    }
+
+    getKeyframeDisplayLeft(keyframe) {
+        return this.worldToCanvas([keyframe.point[0], 0])[0];
+    }
+
+    getKeyframeDisplayPosition(keyframeBlockPathID, keyframe) {
+        return [this.getKeyframeDisplayLeft(keyframe), this.getKeyFrameBlockDisplayTop(keyframeBlockPathID)];
     }
 
     clipToCanvas(p) {
@@ -314,12 +303,17 @@ export class Area_Graph {
         return this.clipToCanvas(this.worldToClip(p));
     }
 
+    getShortcuts() {
+        if (this.inputs.keysDown["g"]) {
+            return TranslateModal;
+        }
+    }
+
     async keyInput(/** @type {InputManager} */inputManager) {
-        if (await this.toolPanelOperator.keyInput(inputManager)) return ;
-        if (inputManager.consumeKeys(["a"])) {
-            for (const key of this.spaceData.getAllKeyframe) {
-                key.pointSelected = true;
-            }
+        if (await this.modalOperator.keyInput(inputManager)) return ;
+        if (this.getShortcuts()) {
+            this.modalOperator.start(this.getShortcuts());
+            return ;
         }
     }
 
@@ -327,42 +321,29 @@ export class Area_Graph {
         const mouseLocalPoint = calculateLocalMousePosition(this.canvas, inputManager.position, this.pixelDensity);
         const world = this.canvasToWorld(mouseLocalPoint);
         this.inputs.position = world;
-        if (await this.toolPanelOperator.mousedown(this.inputs)) return ;
+        if (await this.modalOperator.mousedown(this.inputs)) return ;
         if (true) { // 最短のキーフレーム
             let selectKeyframes = [];
             let minDist = 15 * 5;
-            for (const keyframeBlockData of this.spaceData.outlineKefyframeData) {
-                const keyframeBlock = keyframeBlockData.object;
-                if (keyframeBlock.visible) {
-                    for (const keyframe of keyframeBlock.keys) {
-                        const pointDist = MathVec2.distanceR(this.worldToCanvas(keyframe.point), mouseLocalPoint);
-                        if (pointDist < minDist) {
-                            minDist = pointDist;
-                            selectKeyframes.length = 0;
-                            selectKeyframes.push({keyframe: keyframe, point: true});
-                        }
-                        const leftDist = MathVec2.distanceR(this.worldToCanvas(keyframe.leftHandle), mouseLocalPoint);
-                        if (leftDist < minDist) {
-                            minDist = leftDist;
-                            selectKeyframes.length = 0;
-                            selectKeyframes.push({keyframe: keyframe, left: true});
-                        }
-                        const rightDist = MathVec2.distanceR(this.worldToCanvas(keyframe.rightHandle), mouseLocalPoint);
-                        if (rightDist < minDist) {
-                            minDist = rightDist;
-                            selectKeyframes.length = 0;
-                            selectKeyframes.push({keyframe: keyframe, right: true});
-                        }
+            for (const keyframeBlock of this.spaceData.outlineKefyframeData) {
+                for (const keyframe of keyframeBlock.object.keys) {
+                    const dist = MathVec2.distanceR(this.getKeyframeDisplayPosition(keyframeBlock.pathID, keyframe), mouseLocalPoint);
+                    if (dist < minDist) {
+                        minDist = dist;
+                        selectKeyframes.length = 0;
+                        selectKeyframes.push({keyframe: keyframe, point: true, left: true, right: true});
                     }
                 }
             }
-            if (app.operator.appendCommand(new SelectKeyframesCommand(selectKeyframes, !inputManager.keysDown["Shift"]))) {
-                if (app.operator.execute()) return ;
+            if (selectKeyframes.length) {
+                if (app.operator.appendCommand(new SelectKeyframesCommand(selectKeyframes, !inputManager.keysDown["Shift"]))) {
+                    if (app.operator.execute()) return ; // うまくいったら止める
+                }
             }
         }
-        if (Math.abs(world[0] - app.scene.frame_current) < 1) {
+        console.log("kそあこdかおwd")
+        if (Math.abs(world[0] - app.scene.frame_current) < 1) { // フレームバーを選択したか
             this.frameBarDrag = true;
-            return ;
         }
     }
     async mousemove(inputManager) {
@@ -372,33 +353,30 @@ export class Area_Graph {
         MathVec2.sub(this.inputs.movement, world, this.inputs.position);
         this.inputs.position = world;
 
-        if (this.frameBarDrag) {
+        if (this.frameBarDrag) { // フレームバーの移動
             app.scene.frame_current += this.inputs.movement[0];
-            useEffect.update({o: "タイムライン-canvas", g: this.groupID});
             document.body.style.cursor = "col-resize";
             return ;
         }
 
-        useEffect.update({o: "タイムライン-canvas", g: this.groupID});
-        if (await this.toolPanelOperator.mousemove(this.inputs)) return ;
+        if (await this.modalOperator.mousemove(this.inputs)) return ;
     }
-    mouseup(inputManager) {
+    async mouseup(inputManager) {
+        if (await this.modalOperator.mouseup(this.inputs)) return ;
         if (this.frameBarDrag) {
             this.frameBarDrag = false;
             document.body.style.cursor = "default";
         }
     }
 
-    wheel(inputManager) {
+    async wheel(inputManager) {
+        if (await this.modalOperator.wheel(this.inputs)) return ;
         if (app.input.keysDown["Alt"]) {
             this.zoom[0] -= inputManager.wheelDelta[0] / 25;
-            this.zoom[1] += inputManager.wheelDelta[1] / 25;
             this.zoom[0] = Math.max(0.1,this.zoom[0]);
-            this.zoom[1] = Math.max(0.1,this.zoom[1]);
         } else {
             this.camera[0] += inputManager.wheelDelta[0] / this.zoom[0];
-            this.camera[1] -= inputManager.wheelDelta[1] / this.zoom[1];
+            this.camera[1] = -this.overview.scrollable.scrollTop;
         }
-        useEffect.update({o: "タイムライン-canvas", g: this.groupID});
     }
 }

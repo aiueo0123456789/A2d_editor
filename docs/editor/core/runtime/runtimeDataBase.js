@@ -1,6 +1,6 @@
-import { Application } from "../../app/app.js";
+import { Application } from "../../app/Application.js";
 import { objectInit } from "../../utils/utility.js";
-import { BufferManager } from "./bufferManager.js";
+import { BufferManager } from "./BufferManager.js";
 
 // そのうち動的ストレージバッファ（dynamic storage buffer）を使うかも
 export class RuntimeDataBase {

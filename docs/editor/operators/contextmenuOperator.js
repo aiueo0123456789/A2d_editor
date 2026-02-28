@@ -1,4 +1,4 @@
-import { Application } from "../app/app.js";
+import { Application } from "../app/Application.js";
 import { JTag } from "../utils/JTag/JTag.js";
 import { createTag } from "../utils/ui/util.js";
 import { looper } from "../utils/utility.js";

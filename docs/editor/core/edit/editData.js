@@ -1,9 +1,9 @@
-import { Application } from "../../app/app.js";
-import { Armature } from "../entity/armature.js";
-import { BezierModifier } from "../entity/bezierModifier.js";
-import { BlendShape } from "../entity/blendShape.js";
-import { GraphicMesh } from "../entity/graphicMesh.js";
-import { KeyframeBlockManager } from "../entity/keyframeBlockManager.js";
+import { Application } from "../../app/Application.js";
+import { Armature } from "../entity/Armature.js";
+import { BezierModifier } from "../entity/BezierModifier.js";
+import { BlendShape } from "../entity/BlendShape.js";
+import { GraphicMesh } from "../entity/GraphicMesh.js";
+import { KeyframeBlockManager } from "../entity/KeyframeBlockManager.js";
 import { BArmature } from "./entity/BArmature.js";
 import { BArmatureAnimation } from "./entity/BArmatureAnimation.js";
 import { BBezier } from "./entity/BBezier.js";

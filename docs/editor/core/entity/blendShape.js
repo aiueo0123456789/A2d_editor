@@ -5,7 +5,7 @@ import { cdt } from "../../utils/objects/graphicMesh/createMesh/cdt.js";
 import { UnfixedReference } from "../../utils/objects/util.js";
 import { copyToArray, createArrayN, createArrayNAndFill, hitTestPointTriangle, IsString, lerpTriangle } from "../../utils/utility.js";
 import { GPU } from "../../utils/webGPU.js";
-import { KeyframeBlockManager } from "./keyframeBlockManager.js";
+import { KeyframeBlockManager } from "./KeyframeBlockManager.js";
 
 export class ShapeKeyMetaData {
     constructor(data) {

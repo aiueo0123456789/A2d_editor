@@ -1,7 +1,7 @@
 import { app } from "../../../../main.js";
 import { roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { BezierModifier } from "../../entity/bezierModifier.js";
+import { BezierModifier } from "../../entity/BezierModifier.js";
 
 class Vert {
     constructor(data) {

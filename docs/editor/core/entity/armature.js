@@ -1,6 +1,6 @@
 import { GPU } from "../../utils/webGPU.js";
 import { ObjectBase, sharedDestroy, UnfixedReference } from "../../utils/objects/util.js";
-import { KeyframeBlockManager } from "./keyframeBlockManager.js";
+import { KeyframeBlockManager } from "./KeyframeBlockManager.js";
 import { app } from "../../../main.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { MathMat3x3 } from "../../utils/mathMat.js";

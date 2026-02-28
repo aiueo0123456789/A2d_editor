@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { GraphicMesh } from "../../core/entity/graphicMesh.js";
+import { GraphicMesh } from "../../core/entity/GraphicMesh.js";
 
 // 追加のコマンド
 export class CreateObjectCommand {

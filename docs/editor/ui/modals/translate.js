@@ -1,8 +1,8 @@
 import { app } from "../../../main.js";
-import { InputManager } from "../../app/inputManager/inputManager.js";
+import { InputManager } from "../../app/InputManager.js";
 import { TranslateCommand } from "../../commands/transform/transform.js";
-import { circleRender, rectRender, triangleRender } from "../area/areas/Viewer/area_Viewer.js";
-import { ViewerSpaceData } from "../area/areas/Viewer/area_ViewerSpaceData.js";
+import { circleRender, rectRender, triangleRender } from "../area/areas/Viewer/Viewer.js";
+import { ViewerSpaceData } from "../area/areas/Viewer/ViewerSpaceData.js";
 
 export class TranslateModal {
     constructor() {

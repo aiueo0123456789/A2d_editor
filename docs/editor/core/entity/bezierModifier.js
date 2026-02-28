@@ -1,7 +1,7 @@
 import { GPU } from "../../utils/webGPU.js";
 import { ObjectBase, sharedDestroy, UnfixedReference } from "../../utils/objects/util.js";
 import { app } from "../../../main.js";
-import { ShapeKeyMetaData } from "./blendShape.js";
+import { ShapeKeyMetaData } from "./BlendShape.js";
 import { copyToArray, createArrayNAndFill } from "../../utils/utility.js";
 
 export class BezierModifier extends ObjectBase {

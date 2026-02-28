@@ -1,11 +1,11 @@
-import { Application } from "../../../app/app.js";
-import { objectToNumber } from "../../../app/scene/scene.js";
+import { Application } from "../../../app/Application.js";
+import { objectToNumber } from "../../../app/scene/Scene.js";
 import { UnfixedReference } from "../../../utils/objects/util.js";
 import { changeParameter } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { GraphicMesh } from "../../entity/graphicMesh.js";
-import { BufferManager } from "../bufferManager.js";
-import { RuntimeDataBase } from "../runtimeDataBase.js";
+import { GraphicMesh } from "../../entity/GraphicMesh.js";
+import { BufferManager } from "../BufferManager.js";
+import { RuntimeDataBase } from "../RuntimeDataBase.js";
 
 export class GraphicMeshData extends RuntimeDataBase {
     constructor(/** @type {Application} */ app) {

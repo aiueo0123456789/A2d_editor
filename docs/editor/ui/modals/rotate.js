@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { InputManager } from "../../app/inputManager/inputManager.js";
+import { InputManager } from "../../app/InputManager.js";
 import { RotateCommand } from "../../commands/transform/transform.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 

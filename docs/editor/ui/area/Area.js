@@ -1,8 +1,9 @@
 import { app } from "../../../main.js";
-import { useClassFromAreaType } from "../../app/app.js";
+import { useClassFromAreaType } from "../../app/Application.js";
 import { JTag } from "../../utils/JTag/JTag.js";
-import { createIcon, createTag } from "../../utils/ui/util.js";
+import { createTag } from "../../utils/ui/util.js";
 import { isFunction } from "../../utils/utility.js";
+
 // UIのエリア管理
 export class Area {
     constructor(type, /** @type {HTMLElement} */ dom) {

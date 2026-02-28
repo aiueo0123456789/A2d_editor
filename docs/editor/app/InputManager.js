@@ -1,4 +1,4 @@
-import { Application } from "../app.js";
+import { Application } from "./Application.js";
 
 export class InputManager {
     constructor(/** @type {Application} **/app) {

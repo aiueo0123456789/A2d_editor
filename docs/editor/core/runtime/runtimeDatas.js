@@ -1,8 +1,8 @@
-import { Application } from "../../app/app.js";
-import { ArmatureData } from "./entity/armatureData.js";
-import { BezierModifierData } from "./entity/bezierModifierData.js";
-import { GraphicMeshData } from "./entity/graphicMeshData.js";
-import { ParticleData } from "./entity/particle.js";
+import { Application } from "../../app/Application.js";
+import { ArmatureData } from "./entity/ArmatureData.js";
+import { BezierModifierData } from "./entity/BezierModifierData.js";
+import { GraphicMeshData } from "./entity/GraphicMeshData.js";
+import { ParticleData } from "./entity/Particle.js";
 
 export class RuntimeDatas {
     constructor(/** @type {Application} */ app) {

@@ -1,6 +1,6 @@
-import { createGrid } from "../../utils/ui/grid.js";
-import { createTag } from "../../utils/ui/util.js";
-import { Application } from "../app.js";
+import { createGrid } from "../utils/ui/grid.js";
+import { createTag } from "../utils/ui/util.js";
+import { Application } from "./Application.js";
 
 export class SpacesStructure {
     constructor(workSpaces,spaceName, struct) {

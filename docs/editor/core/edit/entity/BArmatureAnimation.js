@@ -1,11 +1,11 @@
 import { app } from "../../../../main.js";
-import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { MathMat3x3 } from "../../../utils/mathMat.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { changeParameter, range, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { Armature } from "../../entity/armature.js";
-import { KeyframeBlockManager } from "../../entity/keyframeBlockManager.js";
+import { Armature } from "../../entity/Armature.js";
+import { KeyframeBlockManager } from "../../entity/KeyframeBlockManager.js";
 import { BBezierWeight } from "./BBezierWeight.js";
 import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 import { BMeshWeight } from "./BMeshWeight.js";

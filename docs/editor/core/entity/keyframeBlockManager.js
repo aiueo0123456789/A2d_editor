@@ -2,7 +2,7 @@ import { app } from "../../../main.js";
 import { createID } from "../../utils/idGenerator.js";
 import { UnfixedReference } from "../../utils/objects/util.js";
 import { copyToArray } from "../../utils/utility.js";
-import { KeyframeBlock } from "./keyframeBlock.js";
+import { KeyframeBlock } from "./KeyframeBlock.js";
 
 export class KeyframeBlockManager {
     constructor(data = {object: null, parameters: null, keyframeBlocks: null}) {

@@ -1,4 +1,4 @@
-import { ParameterManager } from "../../core/entity/parameterManager.js";
+import { ParameterManager } from "../../core/entity/ParameterManager.js";
 import { indexOfSplice, insertToArray, pushToArray } from "../../utils/utility.js";
 
 export class AppendParameterInParameterManager {

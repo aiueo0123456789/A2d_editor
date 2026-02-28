@@ -1,30 +1,30 @@
-import { FaileIOManager } from "./faileIOManager/faileIOManager.js";
-import { Scene } from "./scene/scene.js";
+import { FaileIOManager } from "./FaileIOManager.js";
+import { Scene } from "./Scene.js";
 import { Operator } from "../operators/commandOperator.js";
-import { Area_Viewer } from "../ui/area/areas/Viewer/area_Viewer.js";
-import { Area_Outliner } from "../ui/area/areas/Outliner/area_Outliner.js";
-import { Area_Inspector } from "../ui/area/areas/Inspector/area_Inspector.js";
-import { Area_Graph } from "../ui/area/areas/Graph/area_Graph.js";
-import { ViewerSpaceData } from "../ui/area/areas/Viewer/area_ViewerSpaceData.js";
-import { TimelineSpaceData } from "../ui/area/areas/Graph/area_TimelineSpaceData.js";
-import { InputManager } from "./inputManager/inputManager.js";
+import { Area_Viewer } from "../ui/area/areas/Viewer/Viewer.js";
+import { Area_Outliner } from "../ui/area/areas/Outliner/Outliner.js";
+import { Area_Inspector } from "../ui/area/areas/Inspector/Inspector.js";
+import { Area_Graph } from "../ui/area/areas/Graph/Graph.js";
+import { ViewerSpaceData } from "../ui/area/areas/Viewer/ViewerSpaceData.js";
+import { TimelineSpaceData } from "../ui/area/areas/Graph/TimelineSpaceData.js";
+import { InputManager } from "./InputManager.js";
 import { changeParameter, createArrayNAndFill, loadFile } from "../utils/utility.js";
 import { ContextmenuOperator } from "../operators/contextmenuOperator.js";
-import { OutlinerSpaceData } from "../ui/area/areas/Outliner/area_OutlinerSpaceData.js";
-import { Area_Property } from "../ui/area/areas/Property/area_Property.js";
+import { OutlinerSpaceData } from "../ui/area/areas/Outliner/OutlinerSpaceData.js";
+import { Area_Property } from "../ui/area/areas/Property/Property.js";
 import { GPU } from "../utils/webGPU.js";
-import { NodeEditorSpaceData } from "../ui/area/areas/NodeEditor/area_NodeEditorSpaceData.js";
-import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/area_NodeEditor.js";
-import { Area_Previewer } from "../ui/area/areas/Previewer/area_Previewer.js";
-import { PreviewerSpaceData } from "../ui/area/areas/Previewer/area_PreviewerSpaceData.js";
-import { WorkSpaces } from "./workSpaces/workSpaces.js";
-import { Area_Timeline } from "../ui/area/areas/Timeline/area_Timeline.js";
-import { UI } from "./ui/ui.js";
-import { Context } from "./context/context.js";
-import { Area_BlendShape } from "../ui/area/areas/BlendShapes/area_BlendShape.js";
-import { Area_BlendShapeSpaceData } from "../ui/area/areas/BlendShapes/area_BlendShapeSpaceData.js";
-import { BezierModifier } from "../core/entity/bezierModifier.js";
-import { GraphicMesh } from "../core/entity/graphicMesh.js";
+import { NodeEditorSpaceData } from "../ui/area/areas/NodeEditor/NodeEditorSpaceData.js";
+import { Area_NodeEditor } from "../ui/area/areas/NodeEditor/NodeEditor.js";
+import { Area_Previewer } from "../ui/area/areas/Previewer/Previewer.js";
+import { PreviewerSpaceData } from "../ui/area/areas/Previewer/PreviewerSpaceData.js";
+import { WorkSpaces } from "./WorkSpaces.js";
+import { Area_Timeline } from "../ui/area/areas/Timeline/Timeline.js";
+import { UI } from "./UI.js";
+import { Context } from "./Context.js";
+import { Area_BlendShape } from "../ui/area/areas/BlendShapes/BlendShape.js";
+import { Area_BlendShapeSpaceData } from "../ui/area/areas/BlendShapes/BlendShapeSpaceData.js";
+import { BezierModifier } from "../core/entity/BezierModifier.js";
+import { GraphicMesh } from "../core/entity/GraphicMesh.js";
 import { Area } from "../ui/area/Area.js";
 
 const allLanguageData = await loadFile("./config/language/language.json");
@@ -256,7 +256,7 @@ class AppPerformance {
     }
 }
 
-export class Application { // 全てをまとめる
+export class Application {
     constructor(/** @type {HTMLElement} **/ dom) {
         this.usedIDs = new Map();
 

@@ -1,10 +1,10 @@
-import { Application } from "../../../app/app.js";
-import { objectToNumber } from "../../../app/scene/scene.js";
+import { Application } from "../../../app/Application.js";
+import { objectToNumber } from "../../../app/scene/Scene.js";
 import { UnfixedReference } from "../../../utils/objects/util.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { BezierModifier } from "../../entity/bezierModifier.js";
-import { BufferManager } from "../bufferManager.js";
-import { RuntimeDataBase } from "../runtimeDataBase.js";
+import { BezierModifier } from "../../entity/BezierModifier.js";
+import { BufferManager } from "../BufferManager.js";
+import { RuntimeDataBase } from "../RuntimeDataBase.js";
 
 export class BezierModifierData extends RuntimeDataBase {
     constructor(/** @type {Application} */ app) {

@@ -1,5 +1,5 @@
-import { KeyframeBlockManager } from "../../entity/keyframeBlockManager.js";
-import { Keyframe, KeyframeBlock } from "../../entity/keyframeBlock.js";
+import { KeyframeBlockManager } from "../../entity/KeyframeBlockManager.js";
+import { Keyframe, KeyframeBlock } from "../../entity/KeyframeBlock.js";
 import { useEffect } from "../../../utils/ui/util.js";
 import { changeParameter, copyToArray } from "../../../utils/utility.js";
 

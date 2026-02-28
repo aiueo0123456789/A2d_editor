@@ -1,5 +1,5 @@
 import { app } from "../../../../../main.js";
-import { Layer } from "../../../../app/scene/scene.js";
+import { Layer } from "../../../../app/Scene.js";
 
 export class Area_Outliner {
     constructor(area) {

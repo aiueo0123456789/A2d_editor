@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { InputManager } from "../../app/inputManager/inputManager.js";
+import { InputManager } from "../../app/InputManager.js";
 import { BoneExtrudeMoveCommand } from "../../commands/bone/bone.js";
 
 export class ExtrudeMoveModal {

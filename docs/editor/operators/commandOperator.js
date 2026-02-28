@@ -1,4 +1,4 @@
-import { Application } from "../app/app.js";
+import { Application } from "../app/Application.js";
 import { createID } from "../utils/idGenerator.js";
 import { useEffect } from "../utils/ui/util.js";
 import { isFunction } from "../utils/utility.js";

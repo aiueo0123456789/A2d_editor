@@ -1,9 +1,9 @@
 import { app } from "../../../../main.js";
-import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { GraphicMesh } from "../../entity/graphicMesh.js";
+import { GraphicMesh } from "../../entity/GraphicMesh.js";
 
 class Vert {
     constructor(data) {

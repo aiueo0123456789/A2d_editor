@@ -1,9 +1,9 @@
 import { app } from "../../../../main.js";
-import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { createArrayN, createArrayNAndFill, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { Armature } from "../../entity/armature.js";
+import { Armature } from "../../entity/Armature.js";
 import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 
 class Vert {

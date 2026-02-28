@@ -1,7 +1,7 @@
-import { Application } from "../app.js";
-import { changeParameter, isFunction } from "../../utils/utility.js";
-import { GPU } from "../../utils/webGPU.js";
-import { useEffect } from "../../utils/ui/util.js";
+import { Application } from "./Application.js";
+import { changeParameter, isFunction } from "../utils/utility.js";
+import { GPU } from "../utils/webGPU.js";
+import { useEffect } from "../utils/ui/util.js";
 const { ZipWriter, BlobWriter, BlobReader, TextReader, ZipReader, TextWriter } = zip;
 
 // 入力を受け取って指示を出す

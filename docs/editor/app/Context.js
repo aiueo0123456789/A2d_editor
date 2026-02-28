@@ -1,7 +1,7 @@
-import { ChangeEditModeCommand } from "../../commands/utile/changeEditMode.js";
-import { SelectObjectsCommand, SetActiveObjectsCommand } from "../../commands/utile/selectObject.js";
-import { Armature } from "../../core/entity/armature.js";
-import { Application } from "../app.js";
+import { ChangeEditModeCommand } from "../commands/utile/changeEditMode.js";
+import { SelectObjectsCommand, SetActiveObjectsCommand } from "../commands/utile/selectObject.js";
+import { Armature } from "../core/entity/Armature.js";
+import { Application } from "./Application.js";
 
 export class Context {
     constructor(/** @type {Application} */app) {

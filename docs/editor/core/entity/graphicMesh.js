@@ -3,9 +3,9 @@ import { changeParameter, copyToArray, range } from "../../utils/utility.js";
 import { GPU } from "../../utils/webGPU.js";
 import { useEffect } from "../../utils/ui/util.js";
 import { app } from "../../../main.js";
-import { Texture } from "./texture.js";
-import { MaskTexture } from "./maskTexture.js";
-import { ShapeKeyMetaData } from "./blendShape.js";
+import { Texture } from "./Texture.js";
+import { MaskTexture } from "./MaskTexture.js";
+import { ShapeKeyMetaData } from "./BlendShape.js";
 
 export class GraphicMesh extends ObjectBase {
     createShapeKeyMetaData(name, index, id = undefined) {

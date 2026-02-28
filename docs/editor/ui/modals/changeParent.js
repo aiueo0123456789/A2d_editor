@@ -1,5 +1,5 @@
 import { app } from "../../../main.js";
-import { InputManager } from "../../app/inputManager/inputManager.js";
+import { InputManager } from "../../app/InputManager.js";
 import { ChangeParentCommand } from "../../commands/object/object.js";
 
 export class ChangeParentModal {

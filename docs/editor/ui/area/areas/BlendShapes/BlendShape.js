@@ -1,12 +1,12 @@
 import { app } from "../../../../../main.js";
-import { InputManager } from "../../../../app/inputManager/inputManager.js";
+import { InputManager } from "../../../../app/InputManager.js";
 import { CreateObjectCommand } from "../../../../commands/object/object.js";
 import { ChangeParameterCommand } from "../../../../commands/utile/utile.js";
 import { ModalOperator } from "../../../../operators/modalOperator.js";
 import { SideBarOperator } from "../../../../operators/sideBarOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { calculateLocalMousePosition, changeParameter, copyToArray } from "../../../../utils/utility.js";
-import { Area_BlendShapeSpaceData } from "./area_BlendShapeSpaceData.js";
+import { Area_BlendShapeSpaceData } from "./BlendShapeSpaceData.js";
 import { BlendShapePanel } from "./panel/blendShape.js";
 import { BlendShapePointPanel } from "./panel/blendShapePoint.js";
 

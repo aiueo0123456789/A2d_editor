@@ -4,7 +4,7 @@ import { MathVec2 } from "../../../utils/mathVec.js";
 import { useEffect } from "../../../utils/ui/util.js";
 import { pushToArray, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
-import { BezierModifier } from "../../entity/bezierModifier.js";
+import { BezierModifier } from "../../entity/BezierModifier.js";
 
 class Vert {
     constructor(data) {

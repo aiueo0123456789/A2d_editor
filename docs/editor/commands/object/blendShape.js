@@ -1,4 +1,4 @@
-import { BlendShape } from "../../core/entity/blendShape.js";
+import { BlendShape } from "../../core/entity/BlendShape.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { changeParameter } from "../../utils/utility.js";
 
