@@ -1,5 +1,5 @@
 import { app } from "../../../../main.js";
-import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
+import { circleRender, dottedLineRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { createArrayN, createArrayNAndFill, roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
@@ -228,6 +228,9 @@ export class BArmature {
             triangleRender(renderPass, bone.polygon[3], bone.polygon[1], bone.polygon[2], color, 0);
             circleRender(renderPass, bone.headVertex.co, 4, hcolor, 1, 0);
             circleRender(renderPass, bone.tailVertex.co, 4, tcolor, 1, 0);
+            if (bone.parent) {
+                dottedLineRender(renderPass, bone.parent.headVertex.co, bone.headVertex.co, 1, 5, 5, [1,0,0,1], 1);
+            }
         }
     }
 }
