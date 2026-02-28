@@ -3,7 +3,7 @@ import { InputManager } from "../../app/inputManager/inputManager.js";
 import { ChangeParentCommand } from "../../commands/object/object.js";
 
 export class ChangeParentModal {
-    constructor(/** @type {InputManager} */inputManager) {
+    constructor() {
         this.command = new ChangeParentCommand(app.context.selectedObjects, null);
         app.operator.appendCommand(this.command);
         this.hoverObject = null;

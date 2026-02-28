@@ -1,4 +1,5 @@
 import { app } from "../../../../main.js";
+import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/area_Viewer.js";
 import { MathMat3x3 } from "../../../utils/mathMat.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { changeParameter, range, roundUp } from "../../../utils/utility.js";
@@ -245,5 +246,13 @@ export class BArmatureAnimation {
         this.object.keyframeBlockManager.setKeyframeBlocks(range(0, keyframeBlocks.length), keyframeBlocks);
         const armatureData = app.scene.runtimeData.armatureData;
         armatureData.update(this.object);
+    }
+
+    render(renderPass) {
+        for (const bone of this.bones) {
+            const color = this.activeBone === bone ? [1,1,1,1] : bone.selected ? [1,0.5,0,1] : bone.color;
+            triangleRender(renderPass, bone.polygon[0], bone.polygon[1], bone.polygon[2], color, 0);
+            triangleRender(renderPass, bone.polygon[3], bone.polygon[1], bone.polygon[2], color, 0);
+        }
     }
 }

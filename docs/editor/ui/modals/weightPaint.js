@@ -3,7 +3,7 @@ import { InputManager } from "../../app/inputManager/inputManager.js";
 import { WeightPaintCommand } from "../../commands/mesh/weightPaint.js";
 
 export class WeightPaintModal {
-    constructor(/** @type {InputManager} */inputManager) {
+    constructor() {
         this.command = new WeightPaintCommand();
         app.operator.appendCommand(this.command);
     }

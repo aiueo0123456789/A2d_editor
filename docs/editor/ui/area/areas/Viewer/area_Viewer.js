@@ -1,7 +1,7 @@
 import { ConvertCoordinate } from '../../../../utils/convertCoordinate.js';
 import { resizeObserver } from '../../../../utils/ui/resizeObserver.js';
 import { device, format, GPU } from "../../../../utils/webGPU.js";
-import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, isPlainObject, loadFile, range } from '../../../../utils/utility.js';
+import { calculateLocalMousePosition, chunk, distancePointToSegment, hitTestPointTriangle, isEmpty, isFunction, isPlainObject, loadFile, range } from '../../../../utils/utility.js';
 import { MathVec2 } from '../../../../utils/mathVec.js';
 import { Camera } from '../../../../core/entity/camera.js';
 import { InputManager } from '../../../../app/inputManager/inputManager.js';
@@ -1129,30 +1129,37 @@ export class Renderer {
             renderPass.setPipeline(boneBoneRenderPipeline);
             for (const armature of app.scene.objects.armatures) {
                 if (armature.visible) {
-                    if (armature.mode == "ボーン編集") {
-                        const ba = app.scene.editData.getEditObjectByObject(armature);
-                        renderPass.setBindGroup(2, ba.renderingGroup);
-                        renderPass.setPipeline(BArmatureBonesRenderPipeline);
-                        renderPass.draw(4, ba.bonesNum, 0, 0);
-                        renderPass.setPipeline(BArmatureVerticesRenderPipeline);
-                        renderPass.draw(6 * 2, ba.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
-                        // renderPass.setPipeline(boneRelationshipsRenderPipeline);
-                        // renderPass.draw(4, bm.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
-
-                        renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
-                        renderPass.setPipeline(boneBoneRenderPipeline);
-                    } else if (armature.mode == "ボーンアニメーション編集" || armature.mode == "メッシュウェイト編集" || armature.mode == "ベジェウェイト編集") {
-                        const baa = app.scene.editData.getEditObjectByObject(armature);
-                        renderPass.setBindGroup(2, baa.renderingGroup);
-                        renderPass.setPipeline(BAABoneRenderPipeline);
-                        renderPass.draw(4, baa.bonesNum, 0, 0);
-
-                        renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
-                        renderPass.setPipeline(boneBoneRenderPipeline);
-                    } else {
+                    if (armature.mode == "オブジェクト") {
                         renderPass.setBindGroup(3, armature.objectDataGroup);
                         renderPass.draw(4, armature.bonesNum, 0, 0);
+                    } else {
+                        const b = app.scene.editData.getEditObjectByObject(armature);
+                        b.render(renderPass);
                     }
+                    // if (armature.mode == "ボーン編集") {
+                    //     const ba = app.scene.editData.getEditObjectByObject(armature);
+                    //     renderPass.setBindGroup(2, ba.renderingGroup);
+                    //     renderPass.setPipeline(BArmatureBonesRenderPipeline);
+                    //     renderPass.draw(4, ba.bonesNum, 0, 0);
+                    //     renderPass.setPipeline(BArmatureVerticesRenderPipeline);
+                    //     renderPass.draw(6 * 2, ba.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
+                    //     // renderPass.setPipeline(boneRelationshipsRenderPipeline);
+                    //     // renderPass.draw(4, bm.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
+
+                    //     renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
+                    //     renderPass.setPipeline(boneBoneRenderPipeline);
+                    // } else if (armature.mode == "ボーンアニメーション編集" || armature.mode == "メッシュウェイト編集" || armature.mode == "ベジェウェイト編集") {
+                    //     const baa = app.scene.editData.getEditObjectByObject(armature);
+                    //     renderPass.setBindGroup(2, baa.renderingGroup);
+                    //     renderPass.setPipeline(BAABoneRenderPipeline);
+                    //     renderPass.draw(4, baa.bonesNum, 0, 0);
+
+                    //     renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
+                    //     renderPass.setPipeline(boneBoneRenderPipeline);
+                    // } else {
+                    //     renderPass.setBindGroup(3, armature.objectDataGroup);
+                    //     renderPass.draw(4, armature.bonesNum, 0, 0);
+                    // }
                 }
             }
         }
@@ -1225,41 +1232,44 @@ export class Renderer {
         //     renderPass.setPipeline(devMaskTexturePipeline);
         //     renderPass.draw(4, 1, 0, 0);
         // }
-        if (true) { // マウスのポインター
-            if (["ベジェウェイト編集", "メッシュウェイト編集"].includes(app.context.currentMode)) {
-                renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                    GPU.createUniformBuffer((2 + 1 + 1 + 2 + 4 + 4 + 2) * 4, [
-                        ...this.viewer.inputs.position,
-                        this.viewer.spaceData.weightPaintMetaData.decaySize,
-                        1,0,0,0.1,
-                        1,
-                        2,
-                        0.7,0.2,0.2,1,
-                        0,
-                    ], ["f32"]),
-                ]));
-                renderPass.setPipeline(circleRenderPipeline);
-                renderPass.draw(4, 1, 0, 0);
-            } else if (["ベジェ編集", "メッシュ編集", "ボーン編集"].includes(app.context.currentMode) && this.viewer.spaceData.proportionalMetaData.use) {
-                renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
-                    GPU.createUniformBuffer((2 + 1 + 1 + 2 + 4 + 4 + 2) * 4, [
-                        ...this.viewer.inputs.position,
-                        this.viewer.spaceData.proportionalMetaData.size,
-                        1,0,0,0.1,
-                        1,
-                        2,
-                        0.7,0.2,0.2,1,
-                        0,
-                    ], ["f32"]),
-                ]));
-                renderPass.setPipeline(circleRenderPipeline);
-                renderPass.draw(4, 1, 0, 0);
-            }
-        }
+        // if (true) { // マウスのポインター
+        //     if (["ベジェウェイト編集", "メッシュウェイト編集"].includes(app.context.currentMode)) {
+        //         renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        //             GPU.createUniformBuffer((2 + 1 + 1 + 2 + 4 + 4 + 2) * 4, [
+        //                 ...this.viewer.inputs.position,
+        //                 this.viewer.spaceData.weightPaintMetaData.decaySize,
+        //                 1,0,0,0.1,
+        //                 1,
+        //                 2,
+        //                 0.7,0.2,0.2,1,
+        //                 0,
+        //             ], ["f32"]),
+        //         ]));
+        //         renderPass.setPipeline(circleRenderPipeline);
+        //         renderPass.draw(4, 1, 0, 0);
+        //     } else if (["ベジェ編集", "メッシュ編集", "ボーン編集"].includes(app.context.currentMode) && this.viewer.spaceData.proportionalMetaData.use) {
+        //         renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        //             GPU.createUniformBuffer((2 + 1 + 1 + 2 + 4 + 4 + 2) * 4, [
+        //                 ...this.viewer.inputs.position,
+        //                 this.viewer.spaceData.proportionalMetaData.size,
+        //                 1,0,0,0.1,
+        //                 1,
+        //                 2,
+        //                 0.7,0.2,0.2,1,
+        //                 0,
+        //             ], ["f32"]),
+        //         ]));
+        //         renderPass.setPipeline(circleRenderPipeline);
+        //         renderPass.draw(4, 1, 0, 0);
+        //     }
+        // }
         if (app.context.currentMode == "オブジェクト") {
             renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft_Fu"), [GPU.sampler, this.selectObjectMaskTextureView, GPU.createUniformBuffer(4 * 4, [1, 0.4, 0.2, 1], ["f32", "f32", "f32", "f32"])]));
             renderPass.setPipeline(selectObjectOutlineMixPipeline);
             renderPass.draw(4, 1, 0, 0);
+        }
+        if (isFunction(this.viewer.modalOperator.nowModal?.render)) {
+            this.viewer.modalOperator.nowModal.render(renderPass);
         }
         // if (app.scene.runtimeData.graphicMeshData.textureAtls) {
         //     renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft"), [GPU.sampler, app.scene.runtimeData.graphicMeshData.textureAtls.createView()]));

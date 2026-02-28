@@ -4,7 +4,7 @@ import { RotateCommand } from "../../commands/transform/transform.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 
 export class RotateModal {
-    constructor(/** @type {InputManager} */inputManager) {
+    constructor() {
         this.command = new RotateCommand();
         app.operator.appendCommand(this.command);
         this.values = [

@@ -3,7 +3,7 @@ import { InputManager } from "../../app/inputManager/inputManager.js";
 import { BoneExtrudeMoveCommand } from "../../commands/bone/bone.js";
 
 export class ExtrudeMoveModal {
-    constructor(/** @type {InputManager} */inputManager) {
+    constructor() {
         this.command = new BoneExtrudeMoveCommand();
         app.operator.appendCommand(this.command);
         this.values = [

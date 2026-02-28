@@ -4,7 +4,7 @@ import { ResizeCommand } from "../../commands/transform/transform.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 
 export class ResizeModal {
-    constructor(/** @type {InputManager} */inputManager) {
+    constructor() {
         this.command = new ResizeCommand();
         app.operator.appendCommand(this.command);
         this.values = [

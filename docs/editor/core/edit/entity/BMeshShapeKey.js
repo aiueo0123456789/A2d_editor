@@ -193,4 +193,8 @@ export class BMeshShapeKey {
             }
         }
     }
+
+    hitTest() {
+        
+    }
 }
