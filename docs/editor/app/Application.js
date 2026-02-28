@@ -1,6 +1,6 @@
 import { FaileIOManager } from "./FaileIOManager.js";
 import { Scene } from "./Scene.js";
-import { Operator } from "../operators/commandOperator.js";
+import { Operator } from "../operators/CommandOperator.js";
 import { Area_Viewer } from "../ui/area/areas/Viewer/Viewer.js";
 import { Area_Outliner } from "../ui/area/areas/Outliner/Outliner.js";
 import { Area_Inspector } from "../ui/area/areas/Inspector/Inspector.js";
@@ -9,7 +9,7 @@ import { ViewerSpaceData } from "../ui/area/areas/Viewer/ViewerSpaceData.js";
 import { TimelineSpaceData } from "../ui/area/areas/Graph/TimelineSpaceData.js";
 import { InputManager } from "./InputManager.js";
 import { changeParameter, createArrayNAndFill, loadFile } from "../utils/utility.js";
-import { ContextmenuOperator } from "../operators/contextmenuOperator.js";
+import { ContextmenuOperator } from "../operators/ContextmenuOperator.js";
 import { OutlinerSpaceData } from "../ui/area/areas/Outliner/OutlinerSpaceData.js";
 import { Area_Property } from "../ui/area/areas/Property/Property.js";
 import { GPU } from "../utils/webGPU.js";

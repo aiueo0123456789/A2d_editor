@@ -1,4 +1,4 @@
-import { AdjustPanelOperator } from "../operators/adjustPanelOperator.js";
+import { AdjustPanelOperator } from "../operators/AdjustPanelOperator.js";
 import { Area } from "../ui/area/Area.js";
 import { createID } from "../utils/idGenerator.js";
 import { JTag } from "../utils/JTag/JTag.js";

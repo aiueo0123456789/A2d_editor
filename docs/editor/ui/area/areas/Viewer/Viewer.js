@@ -25,9 +25,9 @@ import { BMeshShapeKey } from '../../../../core/edit/entity/BMeshShapeKey.js';
 import { BMesh } from '../../../../core/edit/entity/BMesh.js';
 import { SelectOnlyEdgeCommand } from '../../../../commands/utile/selectEdge.js';
 import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand, JoinObjectCommand } from '../../../../commands/object/object.js';
-import { ModalOperator } from '../../../../operators/modalOperator.js';
+import { ModalOperator } from '../../../../operators/ModalOperator.js';
 import { TranslateModal } from '../../../modals/translate.js';
-import { SideBarOperator } from '../../../../operators/sideBarOperator.js';
+import { SideBarOperator } from '../../../../operators/SideBarOperator.js';
 import { RotateModal } from '../../../modals/rotate.js';
 import { ExtrudeMoveModal } from '../../../modals/extrudeMove.js';
 import { ChangeParentModal } from '../../../modals/changeParent.js';
@@ -37,7 +37,7 @@ import { KeyframeInsertModal } from '../../../modals/KeyframeInsertModal.js';
 import { ChangeBlendShapeValueCommand } from '../../../../commands/object/blendShape.js';
 import { BlendShape } from '../../../../core/entity/BlendShape.js';
 import { BBlendShape } from '../../../../core/edit/entity/BBlendShape.js';
-import { Flag, FlagOperator } from '../../../../operators/flagOperator.js';
+import { Flag, FlagOperator } from '../../../../operators/FlagOperator.js';
 
 // レイキャストよう
 const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
@@ -81,8 +81,9 @@ const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.g
 const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s", "");
 
 const triangleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/triangle.wgsl"), [], "2d", "t", "");
-const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s", "");
 const rectRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/rect.wgsl"), [], "2d", "s", "");
+const dottedLineRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/dottedLine.wgsl"), [], "2d", "s", "");
+const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s", "");
 const textRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("VFu_Ft")], await loadFile("./editor/shader/render/util/text.wgsl"), [], "2d", "s", "");
 
 export function triangleRender(renderPass, pointA, pointB, pointC, color, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1, strokePosition = 0) {
@@ -113,6 +114,21 @@ export function rectRender(renderPass, position, halfSize, radius, color, isAffe
             strokeWidth,
             ...strokeColor,
             isAffectedForZoomStroke,
+        ], ["f32"]),
+    ]));
+    renderPass.draw(4, 1, 0, 0);
+}
+export function dottedLineRender(renderPass, start, end, width, size, gap, color, isAffectedForZoomWidth = 1) {
+    renderPass.setPipeline(dottedLineRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        GPU.createUniformBuffer((16) * 4, [
+            ...start,
+            ...end,
+            width,
+            size,
+            gap,
+            ...color,
+            isAffectedForZoomWidth,
         ], ["f32"]),
     ]));
     renderPass.draw(4, 1, 0, 0);

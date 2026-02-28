@@ -1,7 +1,7 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/InputManager.js";
 import { TranslateCommand } from "../../commands/transform/transform.js";
-import { circleRender, rectRender, triangleRender } from "../area/areas/Viewer/Viewer.js";
+import { circleRender, dottedLineRender, rectRender, triangleRender } from "../area/areas/Viewer/Viewer.js";
 import { ViewerSpaceData } from "../area/areas/Viewer/ViewerSpaceData.js";
 
 export class TranslateModal {
@@ -45,6 +45,7 @@ export class TranslateModal {
     render(renderPass) {
         // triangleRender(renderPass, );
         circleRender(renderPass, this.command.pivotPoint, 2, [1,0,0,1], 0, 0);
+        dottedLineRender(renderPass, this.command.pivotPoint, this.mousePosition, 2, 10, 10, [0,0,0,1],0);
         /** @type {ViewerSpaceData} */
         const viewerSpaceData = app.appConfig.areasConfig["Viewer"];
         if (viewerSpaceData.proportionalMetaData.use) {

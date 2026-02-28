@@ -7,7 +7,7 @@ import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
 import { calculateLocalMousePosition, changeParameter, errorCut } from "../../../../utils/utility.js";
 import { TimelineSpaceData } from "../Graph/TimelineSpaceData.js";
 import { createID } from "../../../../utils/idGenerator.js";
-import { ModalOperator } from "../../../../operators/modalOperator.js";
+import { ModalOperator } from "../../../../operators/ModalOperator.js";
 import { TranslateModal } from "../../../modals/translate.js";
 
 const targetValueToColor = {

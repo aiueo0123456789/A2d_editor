@@ -1,7 +1,7 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/InputManager.js";
 import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
-import { AdjustPanelOperator } from "../../../../operators/adjustPanelOperator.js";
+import { AdjustPanelOperator } from "../../../../operators/AdjustPanelOperator.js";
 import { createID } from "../../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";
