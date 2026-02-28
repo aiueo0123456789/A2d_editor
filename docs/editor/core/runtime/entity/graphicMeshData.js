@@ -1,5 +1,5 @@
 import { Application } from "../../../app/Application.js";
-import { objectToNumber } from "../../../app/scene/Scene.js";
+import { objectToNumber } from "../../../app/Scene.js";
 import { UnfixedReference } from "../../../utils/objects/util.js";
 import { changeParameter } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
