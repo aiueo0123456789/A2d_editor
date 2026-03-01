@@ -113,12 +113,12 @@ export class Armature extends ObjectBase {
         // 物理演算パラメーター
         this.allPhysics = [];
         // 頂点
-        this.allVertices = [];
+        this.verticesData = [];
         // 名前など
         /** @type {BoneMetaData[]} */
         this.boneMetaDatas = [];
 
-        this.allAnimations = [];
+        this.animationsData = [];
 
         this.mode = "オブジェクト";
 
@@ -130,24 +130,24 @@ export class Armature extends ObjectBase {
             this.boneMetaDatas.push(Armature.createBoneMetaData(boneMetaData.name, boneMetaData.index, boneMetaData.parentIndex, boneMetaData.depth, false));
         }
         copyToArray(this.allBone, data.bones.flat());
-        copyToArray(this.allAnimations, createArrayNAndFill(this.allBone.length, 0));
+        copyToArray(this.animationsData, createArrayNAndFill(this.allBone.length, 0));
         copyToArray(this.allBoneWorldMatrix, data.worldMatrix.flat());
         copyToArray(this.allColors, data.boneColors.flat());
         copyToArray(this.allPhysics, data.physicsDatas.flat().map(x => Math.abs(x - 0.4) < 0.01 ? 0.2 : x));
-        copyToArray(this.allVertices, data.vertices.flat());
+        copyToArray(this.verticesData, data.vertices.flat());
 
         if (data.keyframeBlockManager) { // セーブデータから
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
-                object: this.allAnimations,
+                object: this.animationsData,
                 parameters: data.keyframeBlockManager.parameters,
                 keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
             });
         } else {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
-                object: this.allAnimations,
-                parameters: createArrayN(this.allAnimations.length),
+                object: this.animationsData,
+                parameters: createArrayN(this.animationsData.length),
             });
         }
         console.log(this)
@@ -173,7 +173,7 @@ export class Armature extends ObjectBase {
     }
 
     get verticesNum() {
-        return this.allVertices.length / 2;
+        return this.verticesData.length / 2;
     }
     get bonesNum() {
         return this.allBone.length / 6;

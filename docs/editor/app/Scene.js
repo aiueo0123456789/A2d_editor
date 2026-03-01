@@ -400,13 +400,13 @@ export class Scene {
             particle.update();
         }
         for (const graphicMesh of this.objects.graphicMeshs) {
-            GPU.writeBuffer(this.runtimeData.graphicMeshData.shapeKeyWights.buffer, new Float32Array(graphicMesh.allShapeKeyWeights), graphicMesh.runtimeOffsetData.start.shapeKeyWeightsOffset * 4);
+            GPU.writeBuffer(this.runtimeData.graphicMeshData.shapeKeyWights.buffer, new Float32Array(graphicMesh.shapeKeyWeightsData), graphicMesh.runtimeOffsetData.start.shapeKeyWeightsOffset * 4);
         }
         for (const bezierModifier of this.objects.bezierModifiers) {
-            GPU.writeBuffer(this.runtimeData.bezierModifierData.shapeKeyWights.buffer, new Float32Array(bezierModifier.allShapeKeyWeights), bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset * 4);
+            GPU.writeBuffer(this.runtimeData.bezierModifierData.shapeKeyWights.buffer, new Float32Array(bezierModifier.shapeKeyWeightsData), bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset * 4);
         }
         for (const armature of this.objects.armatures) {
-            GPU.writeBuffer(this.runtimeData.armatureData.runtimeAnimationData.buffer, new Float32Array(armature.allAnimations), armature.runtimeOffsetData.start.boneOffset * this.runtimeData.armatureData.boneBlockByteLength);
+            GPU.writeBuffer(this.runtimeData.armatureData.runtimeAnimationData.buffer, new Float32Array(armature.animationsData), armature.runtimeOffsetData.start.boneOffset * this.runtimeData.armatureData.boneBlockByteLength);
         }
         const computeCommandEncoder = device.createCommandEncoder();
         const computePassEncoder = computeCommandEncoder.beginComputePass();

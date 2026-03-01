@@ -18,10 +18,10 @@ export class BezierModifier extends ObjectBase {
 
         /** @type {ShapeKeyMetaData[]} */
         this.shapeKeyMetaDatas = [];
-        this.allVertices = [];
-        this.allShapeKeys = [];
-        this.allShapeKeyWeights = [];
-        this.allWeightBlocks = [];
+        this.verticesData = [];
+        this.shapeKeysData = [];
+        this.shapeKeyWeightsData = [];
+        this.weightBlocksData = [];
 
         this.objectDataBuffer = GPU.createUniformBuffer(8 * 4, undefined, ["u32"]); // GPUでオブジェクトを識別するためのデータを持ったbuffer
         this.objectDataGroup = GPU.createGroup(GPU.getGroupLayout("Vu"), [this.objectDataBuffer]);
@@ -31,11 +31,11 @@ export class BezierModifier extends ObjectBase {
 
         this.autoWeight = "autoWeight" in data ? data.autoWeight : true;
         this.changeParent(app.scene.objects.getObjectByID(data.parent));
-        copyToArray(this.allVertices, data.vertices.flat());
-        copyToArray(this.allWeightBlocks, data.weightBcloks.flat());
+        copyToArray(this.verticesData, data.vertices.flat());
+        copyToArray(this.weightBlocksData, data.weightBcloks.flat());
         copyToArray(this.shapeKeyMetaDatas, data.shapeKeyMetaDatas.map(shapeKeyMetaData => this.createShapeKeyMetaData(shapeKeyMetaData.name, shapeKeyMetaData.index, shapeKeyMetaData.id)));
-        copyToArray(this.allShapeKeyWeights, createArrayNAndFill(this.shapeKeyMetaDatas.length, 0));
-        copyToArray(this.allShapeKeys, data.shapeKeys.flat());
+        copyToArray(this.shapeKeyWeightsData, createArrayNAndFill(this.shapeKeyMetaDatas.length, 0));
+        copyToArray(this.shapeKeysData, data.shapeKeys.flat());
         console.log(this);
     }
 
@@ -44,11 +44,11 @@ export class BezierModifier extends ObjectBase {
     }
 
     get verticesNum() {
-        return this.allVertices.length / 2;
+        return this.verticesData.length / 2;
     }
 
     get pointsNum() {
-        return this.allVertices.length / 2 / 3;
+        return this.verticesData.length / 2 / 3;
     }
 
     // gc対象にしてメモリ解放

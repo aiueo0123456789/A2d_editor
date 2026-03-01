@@ -79,7 +79,7 @@ export class ArmatureData extends RuntimeDataBase {
         map.set(this.baseBoneMatrix, armature.allBoneWorldMatrix);
         map.set(this.renderingBoneMatrix, null);
         // 頂点の更新
-        map.set(this.baseVertices, armature.allVertices);
+        map.set(this.baseVertices, armature.verticesData);
         map.set(this.renderingVertices, null);
         // その他
         map.set(this.baseBone, armature.allBone);

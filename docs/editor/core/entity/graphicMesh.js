@@ -32,12 +32,12 @@ export class GraphicMesh extends ObjectBase {
         /** @type {ShapeKeyMetaData[]} */
         this.shapeKeyMetaDatas = [];
 
-        this.allVertices = [];
-        this.allShapeKeys = []; // 変形データ
-        this.allShapeKeyWeights = []; // 重み
-        this.allTexCoords = [];
-        this.allWeightBlocks = [];
-        this.allMeshes = [];
+        this.verticesData = [];
+        this.shapeKeysData = []; // 変形データ
+        this.shapeKeyWeightsData = []; // 重み
+        this.texCoordsData = [];
+        this.weightBlocksData = [];
+        this.meshesData = [];
 
         this.baseEdges = [];
         this.baseSilhouetteEdges = [];
@@ -59,12 +59,12 @@ export class GraphicMesh extends ObjectBase {
         this.changeLayer(app.scene.layers.getLayerByID(data.layer));
         this.zIndex = data.zIndex;
         GPU.writeBuffer(this.zIndexBuffer, new Float32Array([1 / (this.zIndex + 1)]));
-        copyToArray(this.allVertices, data.vertices.flat());
-        copyToArray(this.allTexCoords, data.texCoords.flat());
-        copyToArray(this.allMeshes, data.meshes.flat());
-        copyToArray(this.allWeightBlocks, data.weightBlocks.flat());
+        copyToArray(this.verticesData, data.vertices.flat());
+        copyToArray(this.texCoordsData, data.texCoords.flat());
+        copyToArray(this.meshesData, data.meshes.flat());
+        copyToArray(this.weightBlocksData, data.weightBlocks.flat());
         copyToArray(this.shapeKeyMetaDatas, data.shapeKeyMetaDatas.map(shapeKeyMetaData => this.createShapeKeyMetaData(shapeKeyMetaData.name, shapeKeyMetaData.index, shapeKeyMetaData.id)));
-        copyToArray(this.allShapeKeys, data.shapeKeys.flat());
+        copyToArray(this.shapeKeysData, data.shapeKeys.flat());
         this.changeTexture(app.scene.objects.getObjectByID(data.texture));
         if (data.renderingTarget) {
             this.changeRenderingTarget(app.scene.objects.getObjectByID(data.renderingTarget));
@@ -115,10 +115,10 @@ export class GraphicMesh extends ObjectBase {
     }
 
     get verticesNum() {
-        return this.allVertices.length / 2;
+        return this.verticesData.length / 2;
     }
     get meshesNum() {
-        return this.allMeshes.length / 3;
+        return this.meshesData.length / 3;
     }
 
     // gc対象にしてメモリ解放

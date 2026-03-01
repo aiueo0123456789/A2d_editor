@@ -270,17 +270,17 @@ export class BMesh {
     }
 
     toRutime() {
-        this.object.allVertices.length = 0;
-        this.object.allTexCoords.length = 0;
-        this.object.allWeightBlocks.length = 0;
-        this.object.allMeshes.length = 0;
+        this.object.verticesData.length = 0;
+        this.object.texCoordsData.length = 0;
+        this.object.weightBlocksData.length = 0;
+        this.object.meshesData.length = 0;
         for (const vert of this.vertices) {
-            this.object.allVertices.push(...vert.co);
-            this.object.allTexCoords.push(...vert.texCoord);
-            this.object.allWeightBlocks.push(...vert.weightBlock);
+            this.object.verticesData.push(...vert.co);
+            this.object.texCoordsData.push(...vert.texCoord);
+            this.object.weightBlocksData.push(...vert.weightBlock);
         }
         for (const mesh of this.meshes) {
-            this.object.allMeshes.push(...this.getMeshLoop(mesh));
+            this.object.meshesData.push(...this.getMeshLoop(mesh));
         }
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         graphicMeshData.update(this.object);

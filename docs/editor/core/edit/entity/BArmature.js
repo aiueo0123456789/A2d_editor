@@ -181,20 +181,20 @@ export class BArmature {
 
     toRutime() {
         this.object.boneMetaDatas.length = 0;
-        this.object.allVertices.length = 0;
+        this.object.verticesData.length = 0;
         this.object.allPhysics.length = 0;
         this.object.allBone.length = 0;
         this.object.allBoneWorldMatrix.length = 0;
         this.object.allColors.length = 0;
         this.object.root.length = 0;
-        this.object.allAnimations.length = 0;
+        this.object.animationsData.length = 0;
         const keyframeBlocks = [];
         for (const bone of this.bones) {
             const parent = bone.parent;
             this.object.boneMetaDatas.push(Armature.createBoneMetaData(bone.name, this.getBoneIndex(bone), this.getBoneIndex(parent), bone.depth, false));
             const boneData = Armature.getLocalBoneDataByVertices(bone.headVertex.co, bone.tailVertex.co, parent?.headVertex?.co, parent?.tailVertex?.co);
-            this.object.allVertices.push(...bone.headVertex.co);
-            this.object.allVertices.push(...bone.tailVertex.co);
+            this.object.verticesData.push(...bone.headVertex.co);
+            this.object.verticesData.push(...bone.tailVertex.co);
             this.object.allPhysics.push(...bone.physics,
                 0, 1, 0,
 
@@ -211,10 +211,10 @@ export class BArmature {
             this.object.allBone.push(...boneData.bone);
             this.object.allBoneWorldMatrix.push(...boneData.worldMatrix.flat());
             this.object.allColors.push(...bone.color);
-            this.object.allAnimations.push(0,0,0,0,0,0); // x y sx sy r l
+            this.object.animationsData.push(0,0,0,0,0,0); // x y sx sy r l
             keyframeBlocks.push(...bone.keyframeBlocks);
         }
-        this.object.keyframeBlockManager.setKeyframeBlocks(createArrayN(this.object.allAnimations.length), keyframeBlocks);
+        this.object.keyframeBlockManager.setKeyframeBlocks(createArrayN(this.object.animationsData.length), keyframeBlocks);
         const armatureData = app.scene.runtimeData.armatureData;
         armatureData.update(this.object);
     }

@@ -183,16 +183,16 @@ fn fmain(
 ) -> FragmentOutput {
 
     var output: FragmentOutput;
-    let pointA = vec2<f32>(bezier.pointAX, bezier.pointAY);
-    let pointB = vec2<f32>(bezier.pointBX, bezier.pointBY);
-    let pointC = vec2<f32>(bezier.pointCX, bezier.pointCY);
-    let pointD = vec2<f32>(bezier.pointDX, bezier.pointDY);
+    let pointA = vec2<f32>(bezier.pointAX, bezier.pointAY); // pointA
+    let pointB = vec2<f32>(bezier.pointBX, bezier.pointBY); // controllerA
+    let pointC = vec2<f32>(bezier.pointCX, bezier.pointCY); // pointB
+    let pointD = vec2<f32>(bezier.pointDX, bezier.pointDY); // controllerB
 
     let dist = neighbor_bezier(array<vec2<f32>, 4>(
         pointA,
         pointB,
+        pointD,
         pointC,
-        pointD
     ), texCoord, 0, 1);
 
     let fixWidth = bezier.width * bezier.isAffectedForZoomWidth + (bezier.width / camera.zoom) * (1.0 - bezier.isAffectedForZoomWidth);

@@ -81,7 +81,7 @@ export class BBlendShape {
         }
         for (let i = 0; i < this.shapeKeys.length; i ++) {
             const object = this.shapeKeys[i].object;
-            object.allShapeKeyWeights[this.shapeKeys[i].index] = this.weights[i];
+            object.shapeKeyWeightsData[this.shapeKeys[i].index] = this.weights[i];
         }
     }
 

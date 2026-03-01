@@ -70,7 +70,7 @@ export class Context {
                     }
                 }
             } else if (object.type == "GraphicMesh") {
-                result.push(...object.allVertices.filter(vertex => vertex && vertex.selected));
+                result.push(...object.verticesData.filter(vertex => vertex && vertex.selected));
             } else if (object.type == "BezierModifier") {
                 for (const point of object.allPoint) {
                     if (point.basePoint.selected) {
@@ -96,7 +96,7 @@ export class Context {
                     if (bone.selected) result.push(bone);
                 }
             } else if (object.type == "GraphicMesh") {
-                result.push(...object.allVertices.filter(vertex => vertex && vertex.selected));
+                result.push(...object.verticesData.filter(vertex => vertex && vertex.selected));
             } else if (object.type == "BezierModifier") {
                 for (const point of object.allPoint) {
                     if (point.basePoint.selected) {

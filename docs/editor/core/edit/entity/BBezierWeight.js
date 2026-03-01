@@ -128,7 +128,7 @@ export class BBezierWeight {
     }
 
     toRutime() {
-        this.object.allWeightBlocks.length = 0;
+        this.object.weightBlocksData.length = 0;
         for (let vertexIndex = 0; vertexIndex < this.verticesNum; vertexIndex ++) {
             // 上位4つの重みをデータにする
             let upToFourTh = [];
@@ -137,7 +137,7 @@ export class BBezierWeight {
                 upToFourTh = upToFourTh.sort((a,b) => b.weight - a.weight);
                 upToFourTh.splice(4,1);
             }
-            this.object.allWeightBlocks.push(...upToFourTh.map(x => x.index), ...upToFourTh.map(x => x.weight));
+            this.object.weightBlocksData.push(...upToFourTh.map(x => x.index), ...upToFourTh.map(x => x.weight));
         }
         console.log(this.object);
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;

@@ -1,5 +1,5 @@
 import { app } from "../../../../main.js";
-import { bezierRender, circleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
+import { bezierRender, circleRender, dottedLineRender, rectRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { BezierModifier } from "../../entity/BezierModifier.js";
@@ -108,11 +108,11 @@ export class BBezier {
     }
 
     toRutime() {
-        this.object.allVertices.length = 0;
-        this.object.allWeightBlocks.length = 0;
+        this.object.verticesData.length = 0;
+        this.object.weightBlocksData.length = 0;
         for (const vert of this.vertices) {
-            this.object.allVertices.push(...vert.co);
-            this.object.allWeightBlocks.push(...vert.weightBlock);
+            this.object.verticesData.push(...vert.co);
+            this.object.weightBlocksData.push(...vert.weightBlock);
         }
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;
         bezierModifierData.update(this.object);
@@ -127,9 +127,11 @@ export class BBezier {
             function getColorFromFlag(active, selected) {
                 return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
             }
-            circleRender(renderPass, anchorPoint.point.co, 4, getColorFromFlag(false, anchorPoint.point.selected), 0, 1, [0,0,0,1], 0);
+            rectRender(renderPass, anchorPoint.point.co, [4,4], 0, getColorFromFlag(false, anchorPoint.point.selected), 0, 1, [0,0,0,1], 0);
             circleRender(renderPass, anchorPoint.leftControlHandle.co, 4, getColorFromFlag(false, anchorPoint.leftControlHandle.selected), 0, 1, [0,0,0,1], 0);
             circleRender(renderPass, anchorPoint.rightControlHandle.co, 4, getColorFromFlag(false, anchorPoint.rightControlHandle.selected), 0, 1, [0,0,0,1], 0);
+            dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.leftControlHandle.co, 2, 5, 5, [0,0,0,1], 0);
+            dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.rightControlHandle.co, 2, 5, 5, [0,0,0,1], 0);
         }
     }
 }

@@ -54,31 +54,15 @@ const renderParticlePipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroup
 const maskRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Ft"), GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/mask.wgsl"), [["u"]], "mask", "t", "");
 
 const BMSMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/main.wgsl"), [], "2d", "t", "");
-const BMSMeshsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/meshes.wgsl"), [], "2d", "s", "");
-const BMSVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bms/vertices.wgsl"), [], "2d", "s", "");
 
 const BMWMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bmw/main.wgsl"), [], "2d", "t", "");
-const BMWWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bmw/weights.wgsl"), [], "2d", "s", "");
 
 const BMeshMainRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/main.wgsl"), [], "2d", "t", "");
-const BMeshVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/vertices.wgsl"), [], "2d", "s", "");
-const BMeshMeshRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/meshes.wgsl"), [], "2d", "s", "");
-const BMeshEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/manualEdges.wgsl"), [], "2d", "s", "");
-const BMeshSilhouetteEdgeRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft")], await loadFile("./editor/shader/render/graphicMesh/bm/autoEdges.wgsl"), [], "2d", "s", "");
-
-const BAABoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr")], await loadFile("./editor/shader/render/bone/baa/bones.wgsl"), [], "2d", "s", "");
-const BArmatureVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/vertices.wgsl"), [], "2d", "t", "");
-const BArmatureBonesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr_Vsr")], await loadFile("./editor/shader/render/bone/ba/bones.wgsl"), [], "2d", "s", "");
-
 const selectObjectOutlineBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBoneRenderPipeline.wgsl"), [], "2d", "t", "");
 const boneBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/bones.wgsl"), [], "2d", "s", "");
-const boneRelationshipsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/relationships.wgsl"), [], "2d", "s", "");
 
 const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "2d", "s", "");
 const bezierModifierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/curve.wgsl"), [], "2d", "s", "");
-const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/curve.wgsl"), [], "2d", "s", "");
-const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/vertices.wgsl"), [], "2d", "t", "");
-const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s", "");
 
 const triangleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/triangle.wgsl"), [], "2d", "t", "");
 const rectRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/rect.wgsl"), [], "2d", "s", "");
@@ -108,7 +92,7 @@ export function rectRender(renderPass, position, halfSize, radius, color, isAffe
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((16) * 4, [
             position[0],position[1],
-            halfSize[0],halfSize[1],,
+            halfSize[0],halfSize[1],
             radius,
             ...color,
             isAffectedForZoomSize,
@@ -1120,32 +1104,6 @@ export class Renderer {
                 renderPass.setBindGroup(1, this.viewer.spaceData.GPUDataForVisualSettings.mesh.group);
                 for (const graphicMesh of app.scene.renderingOrder) {
                     if (graphicMesh.visible) {
-                        // モード別
-                        // if (graphicMesh.mode == "メッシュ編集") {
-                        //     const bm = app.scene.editData.getEditObjectByObject(graphicMesh);
-                        //     renderPass.setBindGroup(2, bm.renderingGroup);
-                        //     renderPass.setPipeline(BMeshMeshRenderPipeline);
-                        //     renderPass.draw(3 * 4, bm.meshesNum, 0, 0); // 3つの辺を4つの頂点から四角形で表示する
-                        //     renderPass.setPipeline(BMeshEdgeRenderPipeline);
-                        //     renderPass.draw(4, bm.manualEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
-                        //     renderPass.setPipeline(BMeshSilhouetteEdgeRenderPipeline);
-                        //     renderPass.draw(4, bm.autoEdgesNum, 0, 0); // 4つの頂点から四角形で表示する
-                        //     renderPass.setPipeline(BMeshVerticesRenderPipeline);
-                        //     renderPass.draw(4, bm.verticesNum, 0, 0); // 4つの頂点から四角形を表示
-                        // } else if (graphicMesh.mode == "メッシュウェイト編集") {
-                        //     const bmw = app.scene.editData.getEditObjectByObject(graphicMesh);
-                        //     renderPass.setBindGroup(2, bmw.renderingGroup);
-                        //     renderPass.setPipeline(BMWWeightsRenderPipeline);
-                        //     renderPass.draw(4, bmw.verticesNum, 0, 0);
-                        // } else if (graphicMesh.mode == "メッシュシェイプキー編集") {
-                        //     const bms = app.scene.editData.getEditObjectByObject(graphicMesh);
-                        //     renderPass.setBindGroup(2, bms.renderingGroup);
-                        //     renderPass.setPipeline(BMSMeshsRenderPipeline);
-                        //     renderPass.draw(3 * 4, bms.meshesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
-                        //     renderPass.setPipeline(BMSVerticesRenderPipeline);
-                        //     renderPass.draw(4, bms.verticesNum, 0, 0); // 3つの頂点から三角形を表示する * meshNum
-                        // } else if (graphicMesh.mode == "オブジェクト") {
-                        // }
                         if (graphicMesh.mode == "オブジェクト") {
                         } else {
                             const b = app.scene.editData.getEditObjectByObject(graphicMesh);
@@ -1171,30 +1129,6 @@ export class Renderer {
                         renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
                         renderPass.setPipeline(boneBoneRenderPipeline);
                     }
-                    // if (armature.mode == "ボーン編集") {
-                    //     const ba = app.scene.editData.getEditObjectByObject(armature);
-                    //     renderPass.setBindGroup(2, ba.renderingGroup);
-                    //     renderPass.setPipeline(BArmatureBonesRenderPipeline);
-                    //     renderPass.draw(4, ba.bonesNum, 0, 0);
-                    //     renderPass.setPipeline(BArmatureVerticesRenderPipeline);
-                    //     renderPass.draw(6 * 2, ba.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
-                    //     // renderPass.setPipeline(boneRelationshipsRenderPipeline);
-                    //     // renderPass.draw(4, bm.bonesNum, 0, 0); // 4つの頂点から四角形で表示する
-
-                    //     renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
-                    //     renderPass.setPipeline(boneBoneRenderPipeline);
-                    // } else if (armature.mode == "ボーンアニメーション編集" || armature.mode == "メッシュウェイト編集" || armature.mode == "ベジェウェイト編集") {
-                    //     const baa = app.scene.editData.getEditObjectByObject(armature);
-                    //     renderPass.setBindGroup(2, baa.renderingGroup);
-                    //     renderPass.setPipeline(BAABoneRenderPipeline);
-                    //     renderPass.draw(4, baa.bonesNum, 0, 0);
-
-                    //     renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
-                    //     renderPass.setPipeline(boneBoneRenderPipeline);
-                    // } else {
-                    //     renderPass.setBindGroup(3, armature.objectDataGroup);
-                    //     renderPass.draw(4, armature.bonesNum, 0, 0);
-                    // }
                 }
             }
         }
@@ -1214,32 +1148,6 @@ export class Renderer {
                         renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
                         renderPass.setPipeline(bezierModifierRenderPipeline);
                     }
-                    // if (bezierModifier.mode == "ベジェ編集" || bezierModifier.mode == "ベジェシェイプキー編集") {
-                    //     /** @type {BBezier} */
-                    //     const bb = app.scene.editData.getEditObjectByObject(bezierModifier);
-                    //     renderPass.setBindGroup(2, bb.renderingGroup);
-                    //     renderPass.setPipeline(BBezierVerticesRenderPipeline);
-                    //     renderPass.draw(2 * 3 * 3, bb.pointsNum, 0, 0);
-                    //     renderPass.setPipeline(BBezierBezierRenderPipeline);
-                    //     renderPass.draw(2 * 50, bb.pointsNum - 1, 0, 0);
-
-                    //     renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
-                    //     renderPass.setPipeline(bezierModifierRenderPipeline);
-                    // } else if (bezierModifier.mode == "ベジェウェイト編集") {
-                    //     /** @type {BBezierWeight} */
-                    //     const bbw = app.scene.editData.getEditObjectByObject(bezierModifier);
-                    //     renderPass.setBindGroup(2, bbw.renderingGroup);
-                    //     renderPass.setPipeline(BBezierWeightsRenderPipeline);
-                    //     renderPass.draw(4, bbw.verticesNum, 0, 0);
-                    //     renderPass.setPipeline(BBezierBezierRenderPipeline);
-                    //     renderPass.draw(2 * 50, bbw.pointsNum - 1, 0, 0);
-
-                    //     renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
-                    //     renderPass.setPipeline(bezierModifierRenderPipeline);
-                    // } else {
-                    //     renderPass.setBindGroup(3, bezierModifier.objectDataGroup);
-                    //     renderPass.draw(2 * 50, bezierModifier.pointsNum - 1, 0, 0);
-                    // }
                 }
             }
         }

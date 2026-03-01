@@ -151,12 +151,12 @@ export class BMeshShapeKey {
     }
 
     toRutime() {
-        this.object.allShapeKeys.length = 0;
-        this.object.allShapeKeyWeights.length = 0;
+        this.object.shapeKeysData.length = 0;
+        this.object.shapeKeyWeightsData.length = 0;
         this.object.shapeKeyMetaDatas.length = 0;
         this.shapeKeys.forEach((shapeKey, shapeKeyIndex) => {
-            this.object.allShapeKeyWeights.push(1);
-            this.object.allShapeKeys.push(...shapeKey.data.map((vertex, vertexIndex) => MathVec2.subR(vertex.co, this.vertices[vertexIndex].co)).flat());
+            this.object.shapeKeyWeightsData.push(1);
+            this.object.shapeKeysData.push(...shapeKey.data.map((vertex, vertexIndex) => MathVec2.subR(vertex.co, this.vertices[vertexIndex].co)).flat());
             this.object.shapeKeyMetaDatas.push(this.object.createShapeKeyMetaData(shapeKey.name, shapeKeyIndex, shapeKey.id));
         })
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;

@@ -33,14 +33,14 @@ export class GraphicMeshData extends RuntimeDataBase {
 
     getObjectDataForGPU(/** @type {GraphicMesh} */graphicMesh) {
         const map = new Map();
-        map.set(this.baseVertices, graphicMesh.allVertices);
-        map.set(this.texCoords, graphicMesh.allTexCoords);
-        map.set(this.weightBlocks, graphicMesh.allWeightBlocks);
-        map.set(this.meshes, graphicMesh.allMeshes);
-        map.set(this.shapeKeys, graphicMesh.allShapeKeys);
+        map.set(this.baseVertices, graphicMesh.verticesData);
+        map.set(this.texCoords, graphicMesh.texCoordsData);
+        map.set(this.weightBlocks, graphicMesh.weightBlocksData);
+        map.set(this.meshes, graphicMesh.meshesData);
+        map.set(this.shapeKeys, graphicMesh.shapeKeysData);
         map.set(this.shapeKeyWights, null);
         map.set(this.texCoordOffsets, null);
-        map.set(this.renderingVertices, graphicMesh.allVertices);
+        map.set(this.renderingVertices, graphicMesh.verticesData);
         map.set(this.renderingMetaDatas, [1, 0]);
         return map;
     }

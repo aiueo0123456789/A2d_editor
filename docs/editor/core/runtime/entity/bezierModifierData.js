@@ -42,9 +42,9 @@ export class BezierModifierData extends RuntimeDataBase {
 
     getObjectDataForGPU(/** @type {BezierModifier} */bezierModifier) {
         const map = new Map();
-        map.set(this.baseVertices, bezierModifier.allVertices);
-        map.set(this.weightBlocks, bezierModifier.allWeightBlocks);
-        map.set(this.shapeKeys, bezierModifier.allShapeKeys);
+        map.set(this.baseVertices, bezierModifier.verticesData);
+        map.set(this.weightBlocks, bezierModifier.weightBlocksData);
+        map.set(this.shapeKeys, bezierModifier.shapeKeysData);
         map.set(this.shapeKeyWights, null);
         console.log(bezierModifier);
         return map;
