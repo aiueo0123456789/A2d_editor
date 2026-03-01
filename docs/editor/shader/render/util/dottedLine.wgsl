@@ -55,7 +55,7 @@ fn vmain(
     }
 
     output.position = vec4f(
-        ((offset - camera.position) * camera.zoom) * camera.cvsSize,
+        (offset - camera.position) * camera.zoom * camera.cvsSize,
         0,
         1.0
         );

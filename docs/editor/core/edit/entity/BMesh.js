@@ -291,13 +291,10 @@ export class BMesh {
             triangleRender(renderPass, mesh.vertices[0].co, mesh.vertices[1].co, mesh.vertices[2].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
         }
         for (const vertex of this.vertices) {
-            if (this.activeVertex === vertex) {
-                circleRender(renderPass, vertex.co, 4, [1,1,1,1], 0, 1, [0,0,0,1], 0);
-            } else if (vertex.selected) {
-                circleRender(renderPass, vertex.co, 4, [1,0.5,0,1], 0, 1, [0,0,0,1], 0);
-            } else {
-                circleRender(renderPass, vertex.co, 4, [0.2,0.2,0.2,1], 0, 1, [0,0,0,1], 0);
+            function getColorFromFlag(active, selected) {
+                return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
             }
+            circleRender(renderPass, vertex.co, 4, getColorFromFlag(this.activeVertex === vertex, vertex.selected), 0, 1, [0,0,0,1], 0);
         }
     }
 }

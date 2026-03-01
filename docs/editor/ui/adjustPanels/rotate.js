@@ -14,8 +14,7 @@ export class AdjustPanel_Rotate {
         this.uiModel = {
             inputObject: {"values": this.values},
             DOM: [
-                {tagType: "div", class: "shelfe", children: [
-                    {tagType: "title", text: "rotate", class: "shelfeTitle"},
+                {tagType: "panel", name: "RotateCommand", style: "width: fit-content;", children: [
                     {tagType: "label", text: "r", children: [
                         {tagType: "input", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
                     ]},

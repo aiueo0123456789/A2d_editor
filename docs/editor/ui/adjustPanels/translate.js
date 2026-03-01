@@ -15,8 +15,7 @@ export class AdjustPanel_Translate {
         this.uiModel = {
             inputObject: {"values": this.values},
             DOM: [
-                {tagType: "div", class: "shelfe", children: [
-                    {tagType: "title", text: "translate", class: "shelfeTitle"},
+                {tagType: "panel", name: "TranslateCommand", style: "width: fit-content;", children: [
                     {tagType: "label", text: "x", children: [
                         {tagType: "input", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
                     ]},

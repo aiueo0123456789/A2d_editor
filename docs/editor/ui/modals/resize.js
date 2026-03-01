@@ -2,6 +2,8 @@ import { app } from "../../../main.js";
 import { InputManager } from "../../app/InputManager.js";
 import { ResizeCommand } from "../../commands/transform/transform.js";
 import { MathVec2 } from "../../utils/mathVec.js";
+import { circleRender, dottedLineRender } from "../area/areas/Viewer/Viewer.js";
+import { ViewerSpaceData } from "../area/areas/Viewer/ViewerSpaceData.js";
 
 export class ResizeModal {
     constructor() {
@@ -17,9 +19,11 @@ export class ResizeModal {
         this.sumScale = MathVec2.create();
         MathVec2.set(this.sumScale, [1,1])
         this.startPosition = null;
+        this.mousePosition = MathVec2.create();
     }
 
     mousemove(/** @type {InputManager} */inputManager) {
+        MathVec2.set(this.mousePosition, inputManager.position);
         if (this.startPosition == null) {
             this.startPosition = MathVec2.create();
             MathVec2.set(this.startPosition, inputManager.position)
@@ -43,9 +47,19 @@ export class ResizeModal {
         this.command.transform([this.values[0],this.values[1]], this.values[2], this.values[3], this.values[4]);
         return "RUNNING";
     }
-1
+
     mousedown(/** @type {InputManager} */inputManager) {
         app.operator.execute();
         return "FINISHED";
+    }
+
+    render(renderPass) {
+        circleRender(renderPass, this.command.pivotPoint, 2, [1,0,0,1], 0, 0);
+        dottedLineRender(renderPass, this.command.pivotPoint, this.mousePosition, 2, 10, 10, [0,0,0,1],0);
+        /** @type {ViewerSpaceData} */
+        const viewerSpaceData = app.appConfig.areasConfig["Viewer"];
+        if (viewerSpaceData.proportionalMetaData.use) {
+            circleRender(renderPass, this.mousePosition, viewerSpaceData.proportionalMetaData.size, [1,0,0,0.1], 1, 1, [1,0,0,1], 0);
+        }
     }
 }

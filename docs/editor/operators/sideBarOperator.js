@@ -15,7 +15,15 @@ export class SideBarOperator {
         /** @type {HTMLElement} */
         this.domForMainContainer = createTag(this.dom, "div", {style: "width: 100%; height: 100%; pointerEvents: none;"});
         setStyle(new ResizerForDOM(this.domForMainContainer, "l", 100, 500).resizer, "backgroundColor: rgba(0,0,0,0);");
-        this.domForMain = createTag(this.domForMainContainer, "div", {style: "width: 100%; height: 100%; pointerEvents: all; overflow-y: auto;"});
+        this.domForMain = createTag(this.domForMainContainer, "div", {style: `
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            display: flex;
+            flex-flow: column;
+            gap: 4px;
+            padding: 5px`
+        });
         /** @type {HTMLElement} */
         this.domForSideBar = createTag(this.dom, "div", {style: `
             width: 20px;
@@ -50,11 +58,11 @@ export class SideBarOperator {
                 {tagType: "div", children: [
                     {tagType: "div", options: {textContent: shelfeName}, style: "writingMode: vertical-rl;"},
                 ], style: `
-                padding: 5px 0px;
-                background-color: rgb(36, 36, 36);
-                border: 1px solid var(--color-border);
-                border-top-left-radius: 0px;
-                border-bottom-left-radius: 0px;
+                    padding: 5px 0px;
+                    background-color: rgb(36, 36, 36);
+                    border: 1px solid var(--color-border);
+                    border-top-left-radius: 0px;
+                    border-bottom-left-radius: 0px;
                 `}
             ], {});
             // パネル

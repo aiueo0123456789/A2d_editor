@@ -35,11 +35,6 @@ struct Bezier {
 @group(0) @binding(3) var<storage, read> modifierVertices: array<Bezier>; // モディファイアの頂点位置
 @group(0) @binding(4) var<uniform> allocationBezier: AllocationBezier; // 配分
 
-// 内積
-fn dot(a: vec2<f32>, b: vec2<f32>) -> f32 {
-    return a.x * b.x + a.y * b.y;
-}
-
 // ベクトルのノルムの二乗
 fn norm_squared(a: vec2<f32>) -> f32 {
     return dot(a, a);

@@ -1,11 +1,5 @@
 import Camera;
 
-
-struct AffectedForZoom {
-    size: f32,
-    stroke: f32,
-}
-
 struct RectUniform {
     positionX: f32,         // X
     positionY: f32,         // Y

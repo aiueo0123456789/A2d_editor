@@ -15,10 +15,6 @@ import Camera;
 @group(0) @binding(5) var<uniform> point: vec2<f32>; // 距離を計算する座標
 const size = 3.0;
 
-// 内積
-fn dot(a: vec2<f32>, b: vec2<f32>) -> f32 {
-    return a.x * b.x + a.y * b.y;
-}
 
 // ベクトルのノルムの二乗
 fn norm_squared(a: vec2<f32>) -> f32 {

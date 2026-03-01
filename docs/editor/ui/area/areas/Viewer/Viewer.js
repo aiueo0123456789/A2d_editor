@@ -75,7 +75,7 @@ const boneBoneRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroup
 const boneRelationshipsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_VFsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bone/relationships.wgsl"), [], "2d", "s", "");
 
 const selectObjectOutlineBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"), GPU.getGroupLayout("Vu_Fu")], await loadFile("./editor/shader/render/selectObjectOutline/selectObjectOutlineBezierRenderPipeline.wgsl"), [], "2d", "s", "");
-const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/curve.wgsl"), [], "2d", "s", "");
+const bezierModifierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr"),GPU.getGroupLayout("Vu")], await loadFile("./editor/shader/render/bezier/curve.wgsl"), [], "2d", "s", "");
 const BBezierBezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/curve.wgsl"), [], "2d", "s", "");
 const BBezierVerticesRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bb/vertices.wgsl"), [], "2d", "t", "");
 const BBezierWeightsRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("Vsr_Vsr")], await loadFile("./editor/shader/render/bezier/bbw/weights.wgsl"), [], "2d", "s", "");
@@ -84,15 +84,16 @@ const triangleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroup
 const rectRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/rect.wgsl"), [], "2d", "s", "");
 const dottedLineRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/dottedLine.wgsl"), [], "2d", "s", "");
 const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s", "");
+const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/bezier.wgsl"), [], "2d", "s", "");
 const textRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("VFu_Ft")], await loadFile("./editor/shader/render/util/text.wgsl"), [], "2d", "s", "");
 
 export function triangleRender(renderPass, pointA, pointB, pointC, color, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1, strokePosition = 0) {
     renderPass.setPipeline(triangleRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((17) * 4, [
-            ...pointA,
-            ...pointB,
-            ...pointC,
+            pointA[0], pointA[1],
+            pointB[0], pointB[1],
+            pointC[0], pointC[1],
             ...color,
             strokeWidth,
             ...strokeColor,
@@ -106,8 +107,8 @@ export function rectRender(renderPass, position, halfSize, radius, color, isAffe
     renderPass.setPipeline(rectRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((16) * 4, [
-            ...position,
-            ...halfSize,
+            position[0],position[1],
+            halfSize[0],halfSize[1],,
             radius,
             ...color,
             isAffectedForZoomSize,
@@ -122,8 +123,8 @@ export function dottedLineRender(renderPass, start, end, width, size, gap, color
     renderPass.setPipeline(dottedLineRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((16) * 4, [
-            ...start,
-            ...end,
+            start[0],start[1],
+            end[0],end[1],
             width,
             size,
             gap,
@@ -137,7 +138,7 @@ export function circleRender(renderPass, position, radius, color, isAffectedForZ
     renderPass.setPipeline(circleRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((16) * 4, [
-            ...position,
+            position[0],position[1],
             radius,
             ...color,
             isAffectedForZoomRadius,
@@ -148,12 +149,27 @@ export function circleRender(renderPass, position, radius, color, isAffectedForZ
     ]));
     renderPass.draw(4, 1, 0, 0);
 }
+export function bezierRender(renderPass, pointA, controllerA, pointB, controllerB, width, color, isAffectedForZoomWidth = 1) {
+    renderPass.setPipeline(bezierRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
+        GPU.createUniformBuffer((16) * 4, [
+            pointA[0],pointA[1],
+            controllerA[0],controllerA[1],
+            pointB[0],pointB[1],
+            controllerB[0],controllerB[1],
+            width,
+            ...color,
+            isAffectedForZoomWidth,
+        ], ["f32"]),
+    ]));
+    renderPass.draw(4, 1, 0, 0);
+}
 export function textRender(renderPass, text, start, position, scale, color, isAffectedForZoomRadius = 1) {
     const textTexture = GPU.getTextTexture(text);
     renderPass.setPipeline(textRenderPipeline);
     renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu"), [
         GPU.createUniformBuffer((10) * 4, [
-            ...position,
+            position[0],position[1],
             ...start,
             scale,
             ...color,
@@ -319,7 +335,7 @@ export class Area_Viewer {
                     ]},
                     {tagType: "box", id: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
                         {tagType: "html", tag: "canvas", id: "renderingCanvas", style: "width: 100%; height: 100%; position: absolute;"},
-                        {tagType: "html", tag: "div", id: "adjustPanel", style: "width: 100%; height: 100%; position: absolute; pointerEvents: none;"},
+                        {tagType: "html", tag: "div", id: "adjustPanel", style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: flex; alignItems: flex-end; padding: 5px;"},
                     ], contextmenu: () => {
                         if (app.context.currentMode == "オブジェクト") {
                             return [
@@ -1151,6 +1167,9 @@ export class Renderer {
                     } else {
                         const b = app.scene.editData.getEditObjectByObject(armature);
                         b.render(renderPass);
+
+                        renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
+                        renderPass.setPipeline(boneBoneRenderPipeline);
                     }
                     // if (armature.mode == "ボーン編集") {
                     //     const ba = app.scene.editData.getEditObjectByObject(armature);
@@ -1182,35 +1201,45 @@ export class Renderer {
         if (this.viewer.spaceData.selectabilityAndVisbility.bezierModifier.visible && app.scene.objects.bezierModifiers.length) {
             renderPass.setBindGroup(1, this.viewer.spaceData.GPUDataForVisualSettings.bezier.group);
             renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
-            renderPass.setPipeline(bezierRenderPipeline);
+            renderPass.setPipeline(bezierModifierRenderPipeline);
             for (const bezierModifier of app.scene.objects.bezierModifiers) {
                 if (bezierModifier.visible) {
-                    if (bezierModifier.mode == "ベジェ編集" || bezierModifier.mode == "ベジェシェイプキー編集") {
-                        /** @type {BBezier} */
-                        const bb = app.scene.editData.getEditObjectByObject(bezierModifier);
-                        renderPass.setBindGroup(2, bb.renderingGroup);
-                        renderPass.setPipeline(BBezierVerticesRenderPipeline);
-                        renderPass.draw(2 * 3 * 3, bb.pointsNum, 0, 0);
-                        renderPass.setPipeline(BBezierBezierRenderPipeline);
-                        renderPass.draw(2 * 50, bb.pointsNum - 1, 0, 0);
-
-                        renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
-                        renderPass.setPipeline(bezierRenderPipeline);
-                    } else if (bezierModifier.mode == "ベジェウェイト編集") {
-                        /** @type {BBezierWeight} */
-                        const bbw = app.scene.editData.getEditObjectByObject(bezierModifier);
-                        renderPass.setBindGroup(2, bbw.renderingGroup);
-                        renderPass.setPipeline(BBezierWeightsRenderPipeline);
-                        renderPass.draw(4, bbw.verticesNum, 0, 0);
-                        renderPass.setPipeline(BBezierBezierRenderPipeline);
-                        renderPass.draw(2 * 50, bbw.pointsNum - 1, 0, 0);
-
-                        renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
-                        renderPass.setPipeline(bezierRenderPipeline);
-                    } else {
+                    if (bezierModifier.mode == "オブジェクト") {
                         renderPass.setBindGroup(3, bezierModifier.objectDataGroup);
                         renderPass.draw(2 * 50, bezierModifier.pointsNum - 1, 0, 0);
+                    } else {
+                        const b = app.scene.editData.getEditObjectByObject(bezierModifier);
+                        b.render(renderPass);
+
+                        renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
+                        renderPass.setPipeline(bezierModifierRenderPipeline);
                     }
+                    // if (bezierModifier.mode == "ベジェ編集" || bezierModifier.mode == "ベジェシェイプキー編集") {
+                    //     /** @type {BBezier} */
+                    //     const bb = app.scene.editData.getEditObjectByObject(bezierModifier);
+                    //     renderPass.setBindGroup(2, bb.renderingGroup);
+                    //     renderPass.setPipeline(BBezierVerticesRenderPipeline);
+                    //     renderPass.draw(2 * 3 * 3, bb.pointsNum, 0, 0);
+                    //     renderPass.setPipeline(BBezierBezierRenderPipeline);
+                    //     renderPass.draw(2 * 50, bb.pointsNum - 1, 0, 0);
+
+                    //     renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
+                    //     renderPass.setPipeline(bezierModifierRenderPipeline);
+                    // } else if (bezierModifier.mode == "ベジェウェイト編集") {
+                    //     /** @type {BBezierWeight} */
+                    //     const bbw = app.scene.editData.getEditObjectByObject(bezierModifier);
+                    //     renderPass.setBindGroup(2, bbw.renderingGroup);
+                    //     renderPass.setPipeline(BBezierWeightsRenderPipeline);
+                    //     renderPass.draw(4, bbw.verticesNum, 0, 0);
+                    //     renderPass.setPipeline(BBezierBezierRenderPipeline);
+                    //     renderPass.draw(2 * 50, bbw.pointsNum - 1, 0, 0);
+
+                    //     renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
+                    //     renderPass.setPipeline(bezierModifierRenderPipeline);
+                    // } else {
+                    //     renderPass.setBindGroup(3, bezierModifier.objectDataGroup);
+                    //     renderPass.draw(2 * 50, bezierModifier.pointsNum - 1, 0, 0);
+                    // }
                 }
             }
         }

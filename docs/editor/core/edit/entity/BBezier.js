@@ -1,4 +1,5 @@
 import { app } from "../../../../main.js";
+import { bezierRender, circleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
 import { BezierModifier } from "../../entity/BezierModifier.js";
@@ -115,5 +116,20 @@ export class BBezier {
         }
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;
         bezierModifierData.update(this.object);
+    }
+
+    render(renderPass) {
+        for (let i = 1; i < this.anchorPoints.length; i ++) {
+            bezierRender(renderPass, this.anchorPoints[i - 1].point.co, this.anchorPoints[i - 1].rightControlHandle.co, this.anchorPoints[i].point.co, this.anchorPoints[i].leftControlHandle.co, 4, [0,0,1,1], 0);
+        }
+
+        for (const anchorPoint of this.anchorPoints) {
+            function getColorFromFlag(active, selected) {
+                return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
+            }
+            circleRender(renderPass, anchorPoint.point.co, 4, getColorFromFlag(false, anchorPoint.point.selected), 0, 1, [0,0,0,1], 0);
+            circleRender(renderPass, anchorPoint.leftControlHandle.co, 4, getColorFromFlag(false, anchorPoint.leftControlHandle.selected), 0, 1, [0,0,0,1], 0);
+            circleRender(renderPass, anchorPoint.rightControlHandle.co, 4, getColorFromFlag(false, anchorPoint.rightControlHandle.selected), 0, 1, [0,0,0,1], 0);
+        }
     }
 }

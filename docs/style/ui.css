@@ -123,6 +123,7 @@ canvas {
     /* background-color: var(--color-tertiary); */
     display: flex;
     flex-flow: column;
+    pointer-events: all;
     /* gap: 5px; */
     /* padding: 5px; */
 }
@@ -148,21 +149,7 @@ canvas {
     flex-flow: column;
     overflow-y: hidden;
     gap: 5px;
-}
-
-.shelfe {
-    position: absolute;
-    bottom: 0;
-    background-color: var(--color-shelfe-bg);
-    display: flex;
-    flex-flow: column;
-    width: fit-content;
-    pointer-events: all;
-    padding: 5px;
-    gap: 3px;
-}
-.shelfe .shelfeTitle {
-    padding: 3px;
+    background-color: var(--areaBack);
 }
 
 .nowrap {

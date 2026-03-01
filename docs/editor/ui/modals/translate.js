@@ -1,6 +1,7 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/InputManager.js";
 import { TranslateCommand } from "../../commands/transform/transform.js";
+import { MathVec2 } from "../../utils/mathVec.js";
 import { circleRender, dottedLineRender, rectRender, triangleRender } from "../area/areas/Viewer/Viewer.js";
 import { ViewerSpaceData } from "../area/areas/Viewer/ViewerSpaceData.js";
 
@@ -15,13 +16,13 @@ export class TranslateModal {
             app.appConfig.areasConfig["Viewer"].proportionalMetaData.size // proportionalSize
         ];
         this.command.transform([this.values[0],this.values[1]], this.values[2], this.values[3], this.values[4]);
-        this.sumMovement = [0,0];
-        this.mousePosition = [0,0];
+        this.sumMovement = MathVec2.create();
+        this.mousePosition = MathVec2.create();
     }
 
     mousemove(/** @type {InputManager} */inputManager) {
-        this.sumMovement[0] += inputManager.movement[0];
-        this.sumMovement[1] += inputManager.movement[1];
+        MathVec2.set(this.mousePosition, inputManager.position);
+        MathVec2.add(this.sumMovement, this.sumMovement, inputManager.movement);
         if (app.input.keysDown["y"]) {
             this.values[0] = 0;
             this.values[1] = this.sumMovement[1];
@@ -32,7 +33,6 @@ export class TranslateModal {
             this.values[0] = this.sumMovement[0];
             this.values[1] = this.sumMovement[1];
         }
-        this.mousePosition = inputManager.position;
         this.command.transform([this.values[0],this.values[1]], this.values[2], this.values[3], this.values[4]);
         return "RUNNING";
     }
@@ -45,7 +45,6 @@ export class TranslateModal {
     render(renderPass) {
         // triangleRender(renderPass, );
         circleRender(renderPass, this.command.pivotPoint, 2, [1,0,0,1], 0, 0);
-        dottedLineRender(renderPass, this.command.pivotPoint, this.mousePosition, 2, 10, 10, [0,0,0,1],0);
         /** @type {ViewerSpaceData} */
         const viewerSpaceData = app.appConfig.areasConfig["Viewer"];
         if (viewerSpaceData.proportionalMetaData.use) {

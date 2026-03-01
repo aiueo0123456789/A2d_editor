@@ -11,8 +11,8 @@ export class AdjustPanel_ChangeParent {
         this.uiModel = {
             inputObject: {"value": this.values},
             DOM: [
-                {tagType: "div", class: "shelfe", children: [
-                    {tagType: "title", text: "親要素の変更", class: "shelfeTitle"},
+                {tagType: "panel", name: "ChangeParentCommand", style: "width: fit-content;", children: [
+                    
                 ]}
             ]
         };
