@@ -1,6 +1,9 @@
+import { Command } from "../operators/CommandOperator.js";
+
 // 親要素の変更
-export class ChangeParentCommand {
+export class ChangeParentCommand extends Command {
     constructor(targets, newParent) {
+        super();
         this.targets = [...targets];
         this.originalParent = targets.map(target => target.parent);
         this.newParent = newParent;

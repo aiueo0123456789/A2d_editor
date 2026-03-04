@@ -6,13 +6,15 @@ import { BBezierShapeKey } from "../core/edit/entity/BBezierShapeKey.js";
 import { BMesh } from "../core/edit/entity/BMesh.js";
 import { BMeshShapeKey } from "../core/edit/entity/BMeshShapeKey.js";
 import { Armature } from "../core/entity/Armature.js";
+import { Command } from "../operators/CommandOperator.js";
 import { MathMat3x3 } from "../utils/mathMat.js";
 import { MathVec2 } from "../utils/mathVec.js";
 import { useEffect } from "../utils/ui/util.js";
 import { roundUp } from "../utils/utility.js";
 
-class TransformCommand {
+class TransformCommand extends Command {
     constructor(pivotType, useProportionalEdit, proportionalType, proportionalSize) {
+        super();
         this.error = false;
         this.value = [0,0];
         this.useProportional = useProportionalEdit;

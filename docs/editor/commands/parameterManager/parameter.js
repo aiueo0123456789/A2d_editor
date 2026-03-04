@@ -1,8 +1,10 @@
 import { ParameterManager } from "../../core/entity/ParameterManager.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { indexOfSplice, insertToArray, pushToArray } from "../../utils/utility.js";
 
-export class AppendParameterInParameterManager {
+export class AppendParameterInParameterManager extends Command {
     constructor(/** @type {ParameterManager} */parameterManager) {
+        super();
         this.parameterManager = parameterManager;
         this.newParameter = ParameterManager.createParameter();
     }

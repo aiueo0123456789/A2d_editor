@@ -1,9 +1,11 @@
 import { app } from "../../../main.js";
-import { Keyframe } from "../../core/entity/keyframeBlock.js";
+import { Keyframe } from "../../core/entity/KeyframeBlock.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 
-class KeyframeTransformCommand {
+class KeyframeTransformCommand extends Command {
     constructor(mode) {
+        super();
         this.mode = mode;
         /** @type {Keyframe[]} */
         this.targetPoints = app.appConfig.areasConfig["Timeline"].keyframes.filter(keyframe => keyframe.selectedPoint || keyframe.selectedLeftHandle || keyframe.selectedRightHandle);

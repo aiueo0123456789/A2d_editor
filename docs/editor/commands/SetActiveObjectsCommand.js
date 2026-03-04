@@ -1,9 +1,11 @@
 import { app } from "../../main.js";
+import { Command } from "../operators/CommandOperator.js";
 import { useEffect } from "../utils/ui/util.js";
 import { changeParameter } from "../utils/utility.js";
 
-export class SetActiveObjectsCommand {
+export class SetActiveObjectsCommand extends Command {
     constructor(object) {
+        super();
         this.object = object;
         this.originalObject = app.context.activeObject;
     }

@@ -17,7 +17,6 @@ import { ActiveBonePanelFromBA, ActiveBonePanelFromBAA } from './toolBar/panel/b
 import { ActiveMeshPanel } from './toolBar/panel/mesh.js';
 import { ActiveEdgePanel } from './toolBar/panel/edge.js';
 import { WeightPaintPanel } from './toolBar/panel/weight.js';
-import { BBezierWeight } from '../../../../core/edit/entity/BBezierWeight.js';
 import { BArmatureAnimation } from '../../../../core/edit/entity/BArmatureAnimation.js';
 import { BArmature } from '../../../../core/edit/entity/BArmature.js';
 import { BBezierShapeKey } from '../../../../core/edit/entity/BBezierShapeKey.js';
@@ -42,6 +41,8 @@ import { JoinObjectCommand } from '../../../../commands/JoinObjectCommand.js';
 import { DeleteObjectCommand } from '../../../../commands/DeleteObjectCommand.js';
 import { CreateObjectCommand } from '../../../../commands/CreateObjectCommand.js';
 import { CopyObjectCommand } from '../../../../commands/CopyObjectCommand.js';
+import { DeleteBoneCommand } from '../../../../commands/object/bone.js';
+import { Command } from '../../../../operators/CommandOperator.js';
 
 // レイキャストよう
 const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
@@ -700,6 +701,7 @@ export class Area_Viewer {
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
                 if (app.input.consumeKeys(["i"])) return KeyframeInsertModal;
+                if (app.input.consumeKeys(["x"])) return DeleteBoneCommand;
             }
             if (context.currentMode == "ベジェ編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
@@ -721,7 +723,12 @@ export class Area_Viewer {
         if (await this.modalOperator.keyInput(this.inputs)) return ;
         const resultShortcuts = this.getShortcuts();
         if (resultShortcuts) {
-            this.modalOperator.start(resultShortcuts);
+            if (resultShortcuts instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts());
+                app.operator.execute();
+            } else {
+                this.modalOperator.start(resultShortcuts);
+            }
             return ;
         }
         const context = app.context;
@@ -789,7 +796,12 @@ export class Area_Viewer {
         if (await this.modalOperator.mousedown(this.inputs)) return ;
         const resultShortcuts = this.getShortcuts();
         if (resultShortcuts) {
-            this.modalOperator.start(resultShortcuts);
+            if (resultShortcuts instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts());
+                app.operator.execute();
+            } else {
+                this.modalOperator.start(resultShortcuts);
+            }
             return ;
         }
 
@@ -860,7 +872,12 @@ export class Area_Viewer {
         if (await this.modalOperator.mousemove(this.inputs)) return ;
         const resultShortcuts = this.getShortcuts();
         if (resultShortcuts) {
-            this.modalOperator.start(resultShortcuts);
+            if (resultShortcuts instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts());
+                app.operator.execute();
+            } else {
+                this.modalOperator.start(resultShortcuts);
+            }
             return ;
         }
 
@@ -876,7 +893,12 @@ export class Area_Viewer {
         if (await this.modalOperator.mouseup(this.inputs)) return ;
         const resultShortcuts = this.getShortcuts();
         if (resultShortcuts) {
-            this.modalOperator.start(resultShortcuts);
+            if (resultShortcuts instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts());
+                app.operator.execute();
+            } else {
+                this.modalOperator.start(resultShortcuts);
+            }
             return ;
         }
 
@@ -895,7 +917,12 @@ export class Area_Viewer {
         if (await this.modalOperator.wheel(this.inputs)) return ;
         const resultShortcuts = this.getShortcuts();
         if (resultShortcuts) {
-            this.modalOperator.start(resultShortcuts);
+            if (resultShortcuts instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts());
+                app.operator.execute();
+            } else {
+                this.modalOperator.start(resultShortcuts);
+            }
             return ;
         }
         if (app.input.keysDown["Alt"]) {

@@ -1,10 +1,12 @@
 import { app } from "../../../main.js";
 import { BMeshShapeKey } from "../../core/edit/entity/BMeshShapeKey.js";
 import { BlendShape, ShapeKeyMetaData } from "../../core/entity/BlendShape.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { pushToArray, indexOfSplice, insertToArray, indexRemoveToArray } from "../../utils/utility.js";
 
-export class DeleteShapeKeyInBlendShapeCommand {
+export class DeleteShapeKeyInBlendShapeCommand extends Command {
     constructor(/** @type {BlendShape} */blendShape, /** @type {ShapeKeyMetaData} */ shapeKey) {
+        super();
         this.blendShape = blendShape;
         this.shapeKey = shapeKey;
         this.insertIndex = 0;
@@ -21,8 +23,9 @@ export class DeleteShapeKeyInBlendShapeCommand {
     }
 }
 
-export class AppendShapeKeyInBlendShapeCommand {
+export class AppendShapeKeyInBlendShapeCommand extends Command {
     constructor(/** @type {BlendShape} */blendShape, /** @type {ShapeKeyMetaData} */ shapeKey) {
+        super();
         this.blendShape = blendShape;
         this.shapeKey = shapeKey;
     }

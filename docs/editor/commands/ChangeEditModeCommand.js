@@ -1,9 +1,11 @@
 import { app } from "../../main.js";
+import { Command } from "../operators/CommandOperator.js";
 import { useEffect } from "../utils/ui/util.js";
 import { changeParameter } from "../utils/utility.js";
 
-export class ChangeEditModeCommand {
+export class ChangeEditModeCommand extends Command {
     constructor(mode) {
+        super();
         this.targetObjects = app.context.selectedObjects;
         this.originalMode = app.context.currentMode;
         this.newMode = mode;

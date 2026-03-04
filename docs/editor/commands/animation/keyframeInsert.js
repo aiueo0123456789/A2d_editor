@@ -2,9 +2,11 @@ import { app } from "../../../main.js";
 import { BArmatureAnimation } from "../../core/edit/entity/BArmatureAnimation.js";
 import { BKeyframeBlock, BKeyframeBlockManager } from "../../core/edit/entity/BKeyframeBlockManager.js";
 import { KeyframeBlock } from "../../core/entity/KeyframeBlock.js";
+import { Command } from "../../operators/CommandOperator.js";
 
-export class KeyframeInsertInSelectedElementCommand {
+export class KeyframeInsertInSelectedElementCommand extends Command {
     constructor() {
+        super();
         this.editObjects = app.scene.editData.allEditObjects;
         if (this.editObjects[0] instanceof BArmatureAnimation) {
             this.isBArmatureAnimation = true;
@@ -42,8 +44,9 @@ export class KeyframeInsertInSelectedElementCommand {
     }
 }
 
-export class KeyframeInsertInKeyframeBlockCommand {
+export class KeyframeInsertInKeyframeBlockCommand extends Command {
     constructor(/** @type {KeyframeBlock} */ keyframeBlock, frame, value) {
+        super();
         this.keyframeBlock = keyframeBlock;
         this.newKey = KeyframeBlock.createKeyframe(frame, value);
     }

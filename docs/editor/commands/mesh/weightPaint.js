@@ -1,6 +1,7 @@
 import { app } from "../../../main.js";
 import { BBezierWeight } from "../../core/edit/entity/BBezierWeight.js";
 import { BMeshWeight } from "../../core/edit/entity/BMeshWeight.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { createArrayNAndFill } from "../../utils/utility.js";
 
@@ -15,7 +16,7 @@ class WeightBlock {
     }
 }
 
-export class WeightPaintCommand {
+export class WeightPaintCommand extends Command {
     constructor(
         point = [0,0],
         weightBlockIndex = app.appConfig.areasConfig["Viewer"].weightPaintMetaData.weightBlockIndex,
@@ -24,6 +25,7 @@ export class WeightPaintCommand {
         decaySize = app.appConfig.areasConfig["Viewer"].weightPaintMetaData.decaySize,
         bezierType = app.appConfig.areasConfig["Viewer"].weightPaintMetaData.bezierType
     ) {
+        super();
         this.error = false;
         this.weightBlockIndex = weightBlockIndex;
         this.weightvalue = weightValue;

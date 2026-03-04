@@ -1,9 +1,11 @@
 import { app } from "../../main.js";
 import { BMesh } from "../core/edit/entity/BMesh.js";
+import { Command } from "../operators/CommandOperator.js";
 import { useEffect } from "../utils/ui/util.js";
 
-export class SelectOnlyEdgeCommand {
+export class SelectOnlyEdgeCommand extends Command {
     constructor(selectData,multiple) {
+        super();
         this.multiple = multiple;
         this.editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh); // オブジェクトモードに移行する場合は前のモードで使っていた編集用オブジェクトを保持
         this.originalSelectData = {};

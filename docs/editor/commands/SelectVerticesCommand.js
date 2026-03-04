@@ -4,10 +4,12 @@ import { BBezier } from "../core/edit/entity/BBezier.js";
 import { BBezierShapeKey } from "../core/edit/entity/BBezierShapeKey.js";
 import { BMesh } from "../core/edit/entity/BMesh.js";
 import { BMeshShapeKey } from "../core/edit/entity/BMeshShapeKey.js";
+import { Command } from "../operators/CommandOperator.js";
 import { useEffect } from "../utils/ui/util.js";
 
-export class SelectVerticesCommand {
+export class SelectVerticesCommand extends Command {
     constructor(selectData,multiple) {
+        super();
         this.multiple = multiple;
         this.editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BMesh || editData instanceof BMeshShapeKey || editData instanceof BBezier || editData instanceof BBezierShapeKey || editData instanceof BArmature); // オブジェクトモードに移行する場合は前のモードで使っていた編集用オブジェクトを保持
         this.originalSelectData = {};

@@ -1,9 +1,11 @@
 import { app } from "../../main.js";
 import { GraphicMesh } from "../core/entity/GraphicMesh.js";
+import { Command } from "../operators/CommandOperator.js";
 
 // 親要素の変更
-export class JoinObjectCommand {
+export class JoinObjectCommand extends Command {
     constructor(targetObject, sourceObjects) {
+        super();
         this.targetObject = targetObject;
         this.error = false;
         this.newObject = null;

@@ -1,7 +1,9 @@
 import { app } from "../../main.js";
+import { Command } from "../operators/CommandOperator.js";
 
-export class SelectKeyframesCommand {
+export class SelectKeyframesCommand extends Command {
     constructor(selectDatas,multiple) {
+        super();
         this.error = false;
         this.multiple = multiple;
         this.targetKeyframe = app.scene.objects.keyframeBlocks.map(keyframeBlock => keyframeBlock.keys).flat();

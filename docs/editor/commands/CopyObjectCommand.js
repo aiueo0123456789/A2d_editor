@@ -1,8 +1,10 @@
 import { app } from "../../main.js";
+import { Command } from "../operators/CommandOperator.js";
 
 // 追加のコマンド
-export class CopyObjectCommand {
+export class CopyObjectCommand extends Command {
     constructor(sourceObject) {
+        super();
         this.sourceObject = sourceObject;
         this.newObject = null;
     }

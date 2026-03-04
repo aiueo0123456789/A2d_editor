@@ -1,8 +1,10 @@
 import { app } from "../../main.js";
+import { Command } from "../operators/CommandOperator.js";
 
 // 削除コマンド
-export class DeleteObjectCommand {
+export class DeleteObjectCommand extends Command {
     constructor(objects) {
+        super();
         this.objects = [...objects];
     }
 

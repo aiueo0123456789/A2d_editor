@@ -1,9 +1,11 @@
 import { BlendShape } from "../../core/entity/BlendShape.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { changeParameter } from "../../utils/utility.js";
 
-export class ChangeBlendShapeValueCommand {
+export class ChangeBlendShapeValueCommand extends Command {
     constructor(target, newValue = [0,0]) {
+        super();
         /** @type { BlendShape } */
         this.target = target;
         this.originalValues = [...this.target.value];

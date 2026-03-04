@@ -1,12 +1,14 @@
 
 import { app } from "../../../main.js";
 import { BMesh } from "../../core/edit/objects/BMesh.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { createEdgeFromTexture, createMeshByCBT, cutSilhouetteOutTriangle } from "../../utils/objects/graphicMesh/createMesh/createMesh.js";
 import { indexOfSplice, insertToArray, pushToArray } from "../../utils/utility.js";
 
-export class DeleteVerticesCommand {
+export class DeleteVerticesCommand extends Command {
     constructor() {
+        super();
         this.editObjects = app.scene.editData.allEditObjects;
         this.deleteVertexIndexs = {};
         this.deleteVertices = {};
@@ -78,8 +80,9 @@ export class DeleteVerticesCommand {
     }
 }
 
-export class CreateMeshCommand {
+export class CreateMeshCommand extends Command {
     constructor() {
+        super();
         this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
         this.originalMeshs = {};
         this.imageBoundingBoxs = {};
@@ -122,8 +125,9 @@ export class CreateMeshCommand {
     }
 }
 
-export class AppendVertexCommand {
+export class AppendVertexCommand extends Command {
     constructor(possition) {
+        super();
         this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
         this.createDatasInEditObject = {};
         for (const bmesh of this.bmeshs) {
@@ -147,8 +151,9 @@ export class AppendVertexCommand {
     }
 }
 
-export class AppendEdgeCommand {
+export class AppendEdgeCommand extends Command {
     constructor() {
+        super();
         this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
         this.createDatasInEditObject = {};
         for (const bmesh of this.bmeshs) {
@@ -177,8 +182,9 @@ export class AppendEdgeCommand {
     }
 }
 
-export class DeleteEdgeCommand {
+export class DeleteEdgeCommand extends Command {
     constructor() {
+        super();
         this.bmeshs = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BMesh);
         this.deleteDatasInEditObject = {};
         this.deleteDatasInEditObjectMeta = {};

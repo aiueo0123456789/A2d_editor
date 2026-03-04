@@ -1,10 +1,12 @@
 import { app } from "../../../main.js";
 import { BBezier } from "../../core/edit/entity/BBezier.js";
+import { Command } from "../../operators/CommandOperator.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { getArrayLastValue } from "../../utils/utility.js";
 
-export class BezierExtrudeMoveCommand {
+export class BezierExtrudeMoveCommand extends Command {
     constructor() {
+        super();
         this.error = false;
         this.editObjects = app.scene.editData.allEditObjects.filter(editObject => editObject instanceof BBezier);
         this.value = [0,0];

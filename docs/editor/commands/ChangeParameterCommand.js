@@ -1,7 +1,9 @@
+import { Command } from "../operators/CommandOperator.js";
 import { changeParameter, isFunction } from "../utils/utility.js";
 
-export class ChangeParameterCommand {
+export class ChangeParameterCommand extends Command {
     constructor(object, parameter, value = "", customFunction = null) {
+        super();
         this.object = object;
         this.parameter = parameter;
         this.originalValue = object[parameter];

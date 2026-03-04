@@ -1,6 +1,7 @@
 import { app } from "../../main.js";
 import { BArmature } from "../core/edit/entity/BArmature.js";
 import { BArmatureAnimation } from "../core/edit/entity/BArmatureAnimation.js";
+import { Command } from "../operators/CommandOperator.js";
 import { useEffect } from "../utils/ui/util.js";
 
 // export class SelectOnlyBoneCommand {
@@ -54,8 +55,9 @@ import { useEffect } from "../utils/ui/util.js";
 //         })
 //     }
 // }
-export class SelectBonesCommand {
+export class SelectBonesCommand extends Command {
     constructor(selectData, multiple) {
+        super();
         this.multiple = multiple;
         this.editObjects = app.scene.editData.allEditObjects.filter(editData => editData instanceof BArmatureAnimation || editData instanceof BArmature);
         this.originalSelectData = {};

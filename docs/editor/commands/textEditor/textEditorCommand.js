@@ -1,7 +1,9 @@
+import { Command } from "../../operators/CommandOperator.js";
 import { changeParameter } from "../../utils/utility.js";
 
-export class TextEditor_textSplice {
+export class TextEditor_textSplice extends Command {
     constructor(target, startOffset, endOffset) {
+        super();
         this.target = target;
         this.insertText = "";
         this.startOffset = startOffset;

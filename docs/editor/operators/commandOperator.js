@@ -3,6 +3,13 @@ import { createID } from "../utils/idGenerator.js";
 import { useEffect } from "../utils/ui/util.js";
 import { isFunction } from "../utils/utility.js";
 
+export class Command {
+    constructor() {
+        this.id = createID();
+        this.isCommand = true;
+    }
+}
+
 // undoとredoを実行
 class CommandStack {
     constructor(/** @type {Operator} */ operator) {
@@ -59,11 +66,13 @@ export class Operator {
 
     appendCommand(command) {
         console.log(command)
+        if (command instanceof Command) {
+            console.error("コマンドではありません", command)
+        }
         if (command.error) {
             console.error("コマンドの初期化でエラーが出た可能性があります");
             return false;
         } else {
-            command.id = createID();
             this.commands.push(command);
             return true;
         }
