@@ -36,7 +36,7 @@ export class Area_Outliner {
                             app.context.setActiveObject(array[endIndex]);
                         }
                     },
-                    activeSource: "context/activeObject", selectSource: "context/selectedObjects"}, withObject: {"scene": "scene/objects/rootObjects", "layer": "scene/layers/layers"}, updateEventTarget: "親変更", loopTarget: "/children", structures: [
+                    activeSource: "context/activeObject", selectSource: "context/selectedObjects"}, withObject: {"scene": "scene/objects/rootObjects", "layer": "scene/layers/layers"}, updateEventTarget: "scene/changeParent", loopTarget: "/children", structures: [
                         {
                             tagType: "if",
                             formula: {source: "/", conditions: "in", value: "name"},

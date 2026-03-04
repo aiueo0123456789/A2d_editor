@@ -81,8 +81,9 @@ export class InputManager {
 
         // キーイベント管理
         document.addEventListener("keydown", (e) => {
+            const activeEllement = document.activeElement;
+            if (activeEllement.tagName === "INPUT" || activeEllement.tagName === "TEXTAREA" || activeEllement.isContentEditable) return; // 入力中は無視
             const isCtrlOrCmd = e.ctrlKey || e.metaKey;
-            // console.log(e.key,"down")
             if (isCtrlOrCmd && e.key === 'z') {
                 if (e.shiftKey) {
                     app.operator.stack.redo();
@@ -105,12 +106,14 @@ export class InputManager {
                 }
             }
         });
-        document.addEventListener("keyup",(eveet) => {
-            this.keysDown[eveet.key] = false;
+        document.addEventListener("keyup",(e) => {
+            const activeEllement = document.activeElement;
+            if (activeEllement.tagName === "INPUT" || activeEllement.tagName === "TEXTAREA" || activeEllement.isContentEditable) return; // 入力中は無視
+            this.keysDown[e.key] = false;
         });
-        // document.addEventListener("contextmenu", (eveet) => {
-        //     app.contextmenu.showContextmenu([eveet.clientX,eveet.clientY]);
-        //     eveet.stopPropagation();
+        // document.addEventListener("contextmenu", (e) => {
+        //     app.contextmenu.showContextmenu([e.clientX,e.clientY]);
+        //     e.stopPropagation();
         // })
     }
 

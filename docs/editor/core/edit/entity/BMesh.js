@@ -7,10 +7,14 @@ import { GraphicMesh } from "../../entity/GraphicMesh.js";
 
 class Vert {
     constructor(data) {
-        this.co = data.co;
-        this.texCoord = data.texCoord;
-        this.weightBlock = data.weightBlock;
+        this.co = [...data.co];
+        this.texCoord = [...data.texCoord];
+        this.weightBlock = data.weightBlock ? [...data.weightBlock] : [0,0,0,0, 1,0,0,0];
         this.selected = false;
+    }
+
+    setCo(co) {
+        this.co = [...co];
     }
 }
 
@@ -43,8 +47,8 @@ class Edge {
 }
 
 export class BMesh {
-    static createVertex(co, texCoord, weightBlock = [0,0,0,0,1,0,0,0]) {
-        return new Vert({co: co, texCoord: texCoord, weightBlock: weightBlock});
+    static createVertex(co, texCoord) {
+        return new Vert({co: co, texCoord: texCoord});
     }
     static createEdge(v0, v1) {
         return new Edge({vertices: [v0, v1]});

@@ -51,7 +51,7 @@ export class ObjectBase extends NameAndTypeAndID{
     }
 
     changeParent(parent) {
-        useEffect.update({o: "親変更"});
+        useEffect.update({o: "scene", i: "changeParent"});
         this.parent = parent;
         if (!(parent instanceof UnfixedReference)) {
             if (this.autoWeight) {

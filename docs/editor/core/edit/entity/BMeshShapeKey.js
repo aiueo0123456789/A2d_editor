@@ -14,6 +14,10 @@ class Vert {
         this.index = data.index;
         this.selected = false;
     }
+
+    setCo(co) {
+        this.co = [...co];
+    }
 }
 
 class ShapeKey {

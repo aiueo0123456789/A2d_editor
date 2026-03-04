@@ -1,4 +1,5 @@
 import { app } from "../../../../main.js";
+import { bezierRender, circleRender, dottedLineRender, rectRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { createID } from "../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { useEffect } from "../../../utils/ui/util.js";
@@ -11,6 +12,18 @@ class Vert {
         this.co = [...data.co];
         this.index = data.index;
         this.selected = false;
+    }
+
+    setCo(co) {
+        this.co = [...co];
+    }
+}
+
+class AnchorPoint {
+    constructor(data) {
+        this.point = data.point;
+        this.leftControlHandle = data.leftControlHandle;
+        this.rightControlHandle = data.rightControlHandle;
     }
 }
 
@@ -29,6 +42,10 @@ class ShapeKeyVert {
         /** @type {int[]} */
         this.co = [...data.co];
     }
+
+    setCo(co) {
+        this.co = [...co];
+    }
 }
 
 export class BBezierShapeKey {
@@ -37,6 +54,8 @@ export class BBezierShapeKey {
         this.object = null;
         /** @type {Vert[]} */
         this.vertices = [];
+        /** @type {AnchorPoint[]} */
+        this.anchorPoints = [];
         /** @type {ShapeKey[]} */
         this.shapeKeys = [];
 
@@ -109,7 +128,7 @@ export class BBezierShapeKey {
     async fromBezier(/** @type {BezierModifier} */object) {
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;
         this.object = object;
-        const [coordinates,shape] = await Promise.all([
+        const [coordinates,shapes] = await Promise.all([
             bezierModifierData.baseVertices.getObjectData(object),
             bezierModifierData.shapeKeys.getObjectData(object)
         ]);
@@ -117,13 +136,14 @@ export class BBezierShapeKey {
             this.vertices.push(new Vert({co: coordinates[i].slice(0,2), index: i * 3}));
             this.vertices.push(new Vert({co: coordinates[i].slice(2,4), index: i * 3 + 1}));
             this.vertices.push(new Vert({co: coordinates[i].slice(4,6), index: i * 3 + 2}));
+            this.anchorPoints.push(new AnchorPoint({point: i * 3, leftControlHandle: i * 3 + 1, rightControlHandle: i * 3 + 2}));
         }
         this.object.shapeKeyMetaDatas.forEach((shapeKeyMetaDta, shapeKeyIndex) => {
             const data = [];
             for (let vertrxIndex = 0; vertrxIndex < coordinates.length; vertrxIndex ++) {
-                data.push(new ShapeKeyVert({co: MathVec2.addR(shape[shapeKeyIndex * coordinates.length + vertrxIndex].slice(0,2), coordinates[vertrxIndex].slice(0,2))}));
-                data.push(new ShapeKeyVert({co: MathVec2.addR(shape[shapeKeyIndex * coordinates.length + vertrxIndex].slice(2,4), coordinates[vertrxIndex].slice(2,4))}));
-                data.push(new ShapeKeyVert({co: MathVec2.addR(shape[shapeKeyIndex * coordinates.length + vertrxIndex].slice(4,6), coordinates[vertrxIndex].slice(4,6))}));
+                data.push(new ShapeKeyVert({co: MathVec2.addR(shapes[shapeKeyIndex * coordinates.length + vertrxIndex].slice(0,2), coordinates[vertrxIndex].slice(0,2))}));
+                data.push(new ShapeKeyVert({co: MathVec2.addR(shapes[shapeKeyIndex * coordinates.length + vertrxIndex].slice(2,4), coordinates[vertrxIndex].slice(2,4))}));
+                data.push(new ShapeKeyVert({co: MathVec2.addR(shapes[shapeKeyIndex * coordinates.length + vertrxIndex].slice(4,6), coordinates[vertrxIndex].slice(4,6))}));
             }
             pushToArray(this.shapeKeys, new ShapeKey({name: shapeKeyMetaDta.name, data: data, id: shapeKeyMetaDta.id}));
         })
@@ -143,5 +163,34 @@ export class BBezierShapeKey {
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;
         bezierModifierData.update(this.object);
         useEffect.update({o: this.object.shapeKeyMetaDatas});
+    }
+
+    render(renderPass) {
+        function getColorFromFlag(active, selected) {
+            return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
+        }
+        if (this.activeShapeKey) {
+            for (let i = 1; i < this.anchorPoints.length; i ++) {
+                bezierRender(renderPass, this.activeShapeKey.data[this.anchorPoints[i - 1].point].co, this.activeShapeKey.data[this.anchorPoints[i - 1].rightControlHandle].co, this.activeShapeKey.data[this.anchorPoints[i].point].co, this.activeShapeKey.data[this.anchorPoints[i].rightControlHandle].co, 2, [0,0,0.7,1], 0);
+            }
+            for (const anchorPoint of this.anchorPoints) {
+                dottedLineRender(renderPass, this.activeShapeKey.data[anchorPoint.point].co, this.activeShapeKey.data[anchorPoint.leftControlHandle].co, 2, 5, 5, [0,0,0,1], 0);
+                dottedLineRender(renderPass, this.activeShapeKey.data[anchorPoint.point].co, this.activeShapeKey.data[anchorPoint.rightControlHandle].co, 2, 5, 5, [0,0,0,1], 0);
+                rectRender(renderPass, this.activeShapeKey.data[anchorPoint.point].co, [6, 6], 0, getColorFromFlag(this.activeVertex?.index === anchorPoint.point, this.vertices[anchorPoint.point].selected), 0, 1, [0,0,0,1], 0);
+                circleRender(renderPass, this.activeShapeKey.data[anchorPoint.leftControlHandle].co, 6, getColorFromFlag(this.activeVertex?.index === anchorPoint.leftControlHandle, this.vertices[anchorPoint.leftControlHandle].selected), 0, 1, [0,0,0,1], 0);
+                circleRender(renderPass, this.activeShapeKey.data[anchorPoint.rightControlHandle].co, 6, getColorFromFlag(this.activeVertex?.index === anchorPoint.rightControlHandle, this.vertices[anchorPoint.rightControlHandle].selected), 0, 1, [0,0,0,1], 0);
+            }
+        } else {
+            for (let i = 1; i < this.anchorPoints.length; i ++) {
+                bezierRender(renderPass, this.vertices[this.anchorPoints[i - 1].point].co, this.vertices[this.anchorPoints[i - 1].rightControlHandle].co, this.vertices[this.anchorPoints[i].point].co, this.vertices[this.anchorPoints[i].rightControlHandle].co, 2, [0,0,1,1], 0);
+            }
+            for (const anchorPoint of this.anchorPoints) {
+                dottedLineRender(renderPass, this.vertices[anchorPoint.point].co, this.vertices[anchorPoint.leftControlHandle].co, 2, 5, 5, [0,0,0,1], 0);
+                dottedLineRender(renderPass, this.vertices[anchorPoint.point].co, this.vertices[anchorPoint.rightControlHandle].co, 2, 5, 5, [0,0,0,1], 0);
+                rectRender(renderPass, this.vertices[anchorPoint.point].co, [6, 6], 0, getColorFromFlag(this.activeVertex?.index === anchorPoint.point, this.vertices[anchorPoint.point].selected), 0, 1, [0,0,0,1], 0);
+                circleRender(renderPass, this.vertices[anchorPoint.leftControlHandle].co, 6, getColorFromFlag(this.activeVertex?.index === anchorPoint.leftControlHandle, this.vertices[anchorPoint.leftControlHandle].selected), 0, 1, [0,0,0,1], 0);
+                circleRender(renderPass, this.vertices[anchorPoint.rightControlHandle].co, 6, getColorFromFlag(this.activeVertex?.index === anchorPoint.rightControlHandle, this.vertices[anchorPoint.rightControlHandle].selected), 0, 1, [0,0,0,1], 0);
+            }
+        }
     }
 }

@@ -1,5 +1,6 @@
 import { app } from "../../../main.js";
 import { GraphicMesh } from "../../core/entity/GraphicMesh.js";
+import { useEffect } from "../../utils/ui/util.js";
 
 // 追加のコマンド
 export class CreateObjectCommand {
@@ -69,6 +70,9 @@ export class ChangeParentCommand {
 
     update(newParent) {
         this.newParent = newParent;
+        this.targets.forEach((target) => {
+            target.changeParent(this.newParent);
+        })
     }
 
     execute() {

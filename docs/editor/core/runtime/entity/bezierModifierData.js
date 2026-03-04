@@ -46,6 +46,7 @@ export class BezierModifierData extends RuntimeDataBase {
         map.set(this.weightBlocks, bezierModifier.weightBlocksData);
         map.set(this.shapeKeys, bezierModifier.shapeKeysData);
         map.set(this.shapeKeyWights, null);
+        map.set(this.renderingVertices, bezierModifier.verticesData);
         console.log(bezierModifier);
         return map;
     }

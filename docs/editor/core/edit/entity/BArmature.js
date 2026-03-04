@@ -12,6 +12,10 @@ class Vert {
         this.typeIndex = data.typeIndex;
         this.selected = false;
     }
+
+    setCo(co) {
+        this.co = [...co];
+    }
 }
 
 class Bone {
@@ -69,6 +73,34 @@ export class BArmature {
         /** @type {Bone[]} */
         this.bones = [];
         this.activeBone = null;
+    }
+
+    deleteBone(bone) {
+        if (this.bones.includes(bone)) {
+            const deleteIndex = this.bones.indexOf(bone);
+            this.bones.splice(deleteIndex, 1);
+            return deleteIndex;
+        } else {
+            return false;
+        }
+    }
+
+    appendBone(bone) {
+        if (bone instanceof Bone && !this.bones.includes(bone)) {
+            this.bones.push(bone);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    insertBone(index, bone) {
+        if (bone instanceof Bone && !this.bones.includes(bone)) {
+            this.bones.splice(index, 0, bone);
+            return true;
+        } else {
+            return false;
+        }
     }
 
     get id() {

@@ -141,7 +141,7 @@ class TransformCommand {
             if (this instanceof TranslateCommand) {
                 if (this.processType == "vertex") {
                     this.targetVertices.forEach((vertex, index) => {
-                        MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
+                        vertex.setCo(MathVec2.addR(this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index])));
                         useEffect.update({o: vertex.co});
                     });
                     this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -156,7 +156,7 @@ class TransformCommand {
             } else if (this instanceof ResizeCommand) {
                 if (this.processType == "vertex") {
                     this.targetVertices.forEach((vertex, index) => {
-                        MathVec2.mix(vertex.co, this.originalVerticesCoordinates[index], MathVec2.addR(this.pivotPoint, MathVec2.mulR(MathVec2.subR(this.originalVerticesCoordinates[index], this.pivotPoint), this.value)), this.weights[index]);
+                        vertex.setCo(MathVec2.mixR(this.originalVerticesCoordinates[index], MathVec2.addR(this.pivotPoint, MathVec2.mulR(MathVec2.subR(this.originalVerticesCoordinates[index], this.pivotPoint), this.value)), this.weights[index]));
                         useEffect.update({o: vertex.co});
                     });
                     this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -169,7 +169,7 @@ class TransformCommand {
             } else if (this instanceof RotateCommand) {
                 if (this.processType == "vertex") {
                     this.targetVertices.forEach((vertex, index) => {
-                        MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
+                        vertex.setCo(MathVec2.addR(this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index])));
                         useEffect.update({o: vertex.co});
                     });
                     this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -198,7 +198,7 @@ class TransformCommand {
             if (this instanceof TranslateCommand) {
                 if (this.processType == "vertex") {
                     this.targetVertices.forEach((vertex, index) => {
-                        MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
+                        vertex.setCo(MathVec2.addR(this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index])));
                         useEffect.update({o: vertex.co});
                     });
                     this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -213,7 +213,7 @@ class TransformCommand {
             } else if (this instanceof ResizeCommand) {
                 if (this.processType == "vertex") {
                     this.targetVertices.forEach((vertex, index) => {
-                        MathVec2.mix(vertex.co, this.originalVerticesCoordinates[index], MathVec2.addR(this.pivotPoint, MathVec2.mulR(MathVec2.subR(this.originalVerticesCoordinates[index], this.pivotPoint), this.value)), this.weights[index]);
+                        vertex.setCo(MathVec2.mixR(this.originalVerticesCoordinates[index], MathVec2.addR(this.pivotPoint, MathVec2.mulR(MathVec2.subR(this.originalVerticesCoordinates[index], this.pivotPoint), this.value)), this.weights[index]));
                         useEffect.update({o: vertex.co});
                     });
                     this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -226,7 +226,7 @@ class TransformCommand {
             } else if (this instanceof RotateCommand) {
                 if (this.processType == "vertex") {
                     this.targetVertices.forEach((vertex, index) => {
-                        MathVec2.add(vertex.co, this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index]));
+                        vertex.setCo(MathVec2.addR(this.originalVerticesCoordinates[index], MathVec2.scaleR(this.value, this.weights[index])));
                         useEffect.update({o: vertex.co});
                     });
                     this.editObjects.forEach(editObject => editObject.updateGPUData());
@@ -253,7 +253,7 @@ class TransformCommand {
         } else {
             if (this.processType == "vertex") {
                 this.targetVertices.forEach((vertex, index) => {
-                    MathVec2.set(vertex.co, this.originalVerticesCoordinates[index]);
+                    vertex.setCo(this.originalVerticesCoordinates[index]);
                     useEffect.update({o: vertex.co});
                 });
                 this.editObjects.forEach(editObject => editObject.updateGPUData());

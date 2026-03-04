@@ -8,7 +8,7 @@ import { calculateLocalMousePosition, changeParameter, errorCut } from "../../..
 import { TimelineSpaceData } from "../Graph/TimelineSpaceData.js";
 import { createID } from "../../../../utils/idGenerator.js";
 import { ModalOperator } from "../../../../operators/ModalOperator.js";
-import { TranslateModal } from "../../../modals/translate.js";
+import { TranslateModal } from "../../../modals/Translate.js";
 
 const targetValueToColor = {
     "x": "rgb(0, 0, 255)",

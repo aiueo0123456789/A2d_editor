@@ -49,14 +49,14 @@ function isFilterIncluded(object, filter = "all") {
 }
 
 export class OutlinerTag extends CustomTag {
-    constructor(jTag,t,parent,source,child,flag) {
+    constructor(jTag,t,parent,source,struct,flag) {
         super();
-        const options = child.options;
-        const isSourceFunction = isFunction(child.withObject);
+        const options = struct.options;
+        const isSourceFunction = isFunction(struct.withObject);
         const useMode = "mode" in options;
-        const withObject = child.withObject;
-        const structures = child.structures;
-        let loopTarget = child.loopTarget;
+        const withObject = struct.withObject;
+        const structures = struct.structures;
+        let loopTarget = struct.loopTarget;
         let loopTargetIsPlainObject = false;
         if (loopTarget.parameter && loopTarget.loopTargets) {
             loopTargetIsPlainObject = true;
@@ -169,17 +169,6 @@ export class OutlinerTag extends CustomTag {
                 if (!allObject.includes(object)) {
                     const container = this.objectDomMap.get(object);
                     container.remove();
-                    // data[0].others.container.remove();
-                    // data[0].others.container = null;
-                    // data[0].others.myContainer.remove();
-                    // data[0].others.myContainer = null;
-                    // data[0].others.childrenContainer.remove();
-                    // data[0].others.childrenContainer = null;
-                    // for (const tag of data[0].others.children) {
-                    //     tag.remove();
-                    // }
-                    // data[0].others.children.length = 0;
-                    // data[0].others = null;
                     this.objectDomMap.delete(object);
                 }
             }
@@ -230,7 +219,6 @@ export class OutlinerTag extends CustomTag {
                 const fn0 = (child) => {
                     if (allObject.includes(child)) {
                         try {
-                            // const managerObject = managerForDOMs.get({o: child, g: jTag.groupID, i: outlinerID})[0].others;
                             /** @type {HTMLElement} */
                             const container = this.objectDomMap.get(child);
                             targetDOM.append(container);
@@ -288,21 +276,17 @@ export class OutlinerTag extends CustomTag {
         }
         useEffect.set({o: activeSource.object, g: jTag.groupID, i: activeSource.parameter, f: flag}, listActive);
         useEffect.set({o: result.selects, g: jTag.groupID, f: flag}, listActive);
-        console.log("ヒエラルキー更新対象", child.updateEventTarget)
+        console.log("ヒエラルキー更新対象", struct.updateEventTarget)
         const setUpdateEventTarget = (updateEventTarget) => {
-            if (updateEventTarget.path) { // パラメーターに対応
-                jTag.setUpdateEventByPath(source, updateEventTarget.path, outlinerUpdate, flag);
-            } else { // 文字列に対応
-                useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag}, outlinerUpdate);
-            }
+            jTag.setUpdateEventByPath(source, updateEventTarget, outlinerUpdate, flag);
         }
-        if (child.updateEventTarget) {
-            if (Array.isArray(child.updateEventTarget)) {
-                for (const updateEventTarget of child.updateEventTarget) {
+        if (struct.updateEventTarget) {
+            if (Array.isArray(struct.updateEventTarget)) {
+                for (const updateEventTarget of struct.updateEventTarget) {
                     setUpdateEventTarget(updateEventTarget);
                 }
             } else {
-                setUpdateEventTarget(child.updateEventTarget);
+                setUpdateEventTarget(struct.updateEventTarget);
             }
         } else {
             if (!isSourceFunction) {

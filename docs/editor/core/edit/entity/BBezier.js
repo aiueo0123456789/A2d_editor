@@ -7,8 +7,12 @@ import { BezierModifier } from "../../entity/BezierModifier.js";
 class Vert {
     constructor(data) {
         this.co = [...data.co];
-        this.weightBlock = data.weightBlock;
+        this.weightBlock = data.weightBlock ? [...data.weightBlock] : [0,0,0,0, 1,0,0,0];
         this.selected = false;
+    }
+
+    setCo(co) {
+        this.co = [...co];
     }
 }
 
@@ -25,6 +29,9 @@ class AnchorPoint {
 }
 
 export class BBezier {
+    static createAnchorPoint(point, leftControlHandle, rightControlHandle) {
+        return new AnchorPoint({point: {co: point}, leftControlHandle: {co: leftControlHandle}, rightControlHandle: {co: rightControlHandle}});
+    }
     constructor() {
         /** @type {BezierModifier} */
         this.object = null;
@@ -77,6 +84,10 @@ export class BBezier {
         });
     }
 
+    append(newAnchorPoint) {
+        this.anchorPoints.push(newAnchorPoint);
+    }
+
     get selectedVertices() {
         return this.vertices.filter(vert => vert.selected);
     }
@@ -114,24 +125,25 @@ export class BBezier {
             this.object.verticesData.push(...vert.co);
             this.object.weightBlocksData.push(...vert.weightBlock);
         }
+        console.log(this.object)
         const bezierModifierData = app.scene.runtimeData.bezierModifierData;
         bezierModifierData.update(this.object);
     }
 
     render(renderPass) {
+        function getColorFromFlag(active, selected) {
+            return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
+        }
         for (let i = 1; i < this.anchorPoints.length; i ++) {
-            bezierRender(renderPass, this.anchorPoints[i - 1].point.co, this.anchorPoints[i - 1].rightControlHandle.co, this.anchorPoints[i].point.co, this.anchorPoints[i].leftControlHandle.co, 4, [0,0,1,1], 0);
+            bezierRender(renderPass, this.anchorPoints[i - 1].point.co, this.anchorPoints[i - 1].rightControlHandle.co, this.anchorPoints[i].point.co, this.anchorPoints[i].leftControlHandle.co, 2, [0,0,0.7,1], 0);
         }
 
         for (const anchorPoint of this.anchorPoints) {
-            function getColorFromFlag(active, selected) {
-                return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
-            }
-            rectRender(renderPass, anchorPoint.point.co, [4,4], 0, getColorFromFlag(false, anchorPoint.point.selected), 0, 1, [0,0,0,1], 0);
-            circleRender(renderPass, anchorPoint.leftControlHandle.co, 4, getColorFromFlag(false, anchorPoint.leftControlHandle.selected), 0, 1, [0,0,0,1], 0);
-            circleRender(renderPass, anchorPoint.rightControlHandle.co, 4, getColorFromFlag(false, anchorPoint.rightControlHandle.selected), 0, 1, [0,0,0,1], 0);
             dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.leftControlHandle.co, 2, 5, 5, [0,0,0,1], 0);
             dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.rightControlHandle.co, 2, 5, 5, [0,0,0,1], 0);
+            rectRender(renderPass, anchorPoint.point.co, [6, 6], 0, getColorFromFlag(false, anchorPoint.point.selected), 0, 1, [0,0,0,1], 0);
+            circleRender(renderPass, anchorPoint.leftControlHandle.co, 6, getColorFromFlag(false, anchorPoint.leftControlHandle.selected), 0, 1, [0,0,0,1], 0);
+            circleRender(renderPass, anchorPoint.rightControlHandle.co, 6, getColorFromFlag(false, anchorPoint.rightControlHandle.selected), 0, 1, [0,0,0,1], 0);
         }
     }
 }

@@ -26,18 +26,19 @@ import { BMesh } from '../../../../core/edit/entity/BMesh.js';
 import { SelectOnlyEdgeCommand } from '../../../../commands/utile/selectEdge.js';
 import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand, JoinObjectCommand } from '../../../../commands/object/object.js';
 import { ModalOperator } from '../../../../operators/ModalOperator.js';
-import { TranslateModal } from '../../../modals/translate.js';
+import { TranslateModal } from '../../../modals/Translate.js';
 import { SideBarOperator } from '../../../../operators/SideBarOperator.js';
-import { RotateModal } from '../../../modals/rotate.js';
-import { ExtrudeMoveModal } from '../../../modals/extrudeMove.js';
-import { ChangeParentModal } from '../../../modals/changeParent.js';
-import { ResizeModal } from '../../../modals/resize.js';
-import { WeightPaintModal } from '../../../modals/weightpaint.js';
+import { RotateModal } from '../../../modals/Rotate.js';
+import { BoneExtrudeMoveModal } from '../../../modals/BoneExtrudeMove.js';
+import { ChangeParentModal } from '../../../modals/ChangeParent.js';
+import { ResizeModal } from '../../../modals/Resize.js';
+import { WeightPaintModal } from '../../../modals/weightPaint.js';
 import { KeyframeInsertModal } from '../../../modals/KeyframeInsertModal.js';
 import { ChangeBlendShapeValueCommand } from '../../../../commands/object/blendShape.js';
 import { BlendShape } from '../../../../core/entity/BlendShape.js';
 import { BBlendShape } from '../../../../core/edit/entity/BBlendShape.js';
 import { Flag, FlagOperator } from '../../../../operators/FlagOperator.js';
+import { BezierExtrudeMoveModal } from '../../../modals/BezierExtrudeMove.js';
 
 // レイキャストよう
 const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
@@ -689,7 +690,7 @@ export class Area_Viewer {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
-                if (app.input.consumeKeys(["e"])) return ExtrudeMoveModal;
+                if (app.input.consumeKeys(["e"])) return BoneExtrudeMoveModal;
             }
             if (context.currentMode == "ボーンアニメーション編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
@@ -701,7 +702,7 @@ export class Area_Viewer {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
-                if (app.input.consumeKeys(["e"])) return ExtrudeMoveModal;
+                if (app.input.consumeKeys(["e"])) return BezierExtrudeMoveModal;
             }
             if (context.currentMode == "ベジェシェイプキー編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
@@ -1139,6 +1140,7 @@ export class Renderer {
             for (const bezierModifier of app.scene.objects.bezierModifiers) {
                 if (bezierModifier.visible) {
                     if (bezierModifier.mode == "オブジェクト") {
+                        // console.log(bezierModifier);
                         renderPass.setBindGroup(3, bezierModifier.objectDataGroup);
                         renderPass.draw(2 * 50, bezierModifier.pointsNum - 1, 0, 0);
                     } else {

@@ -1,8 +1,8 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/InputManager.js";
-import { BoneExtrudeMoveCommand } from "../../commands/bone/bone.js";
+import { BoneExtrudeMoveCommand } from "../../commands/object/bone.js";
 
-export class ExtrudeMoveModal {
+export class BoneExtrudeMoveModal {
     constructor() {
         this.command = new BoneExtrudeMoveCommand();
         app.operator.appendCommand(this.command);

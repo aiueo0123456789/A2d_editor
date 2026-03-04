@@ -1,9 +1,9 @@
 import { useEffect } from "../../utils/ui/util.js";
-import { BoneExtrudeMoveCommand } from "../../commands/bone/bone.js";
+import { BezierExtrudeMoveCommand } from "../../commands/object/bezier.js";
 
-export class AdjustPanel_ExtrudeMove {
-    static commandInstance = BoneExtrudeMoveCommand;
-    constructor(/** @type {BoneExtrudeMoveCommand} */ command) {
+export class AdjustPanel_BezierExtrudeMove {
+    static commandInstance = BezierExtrudeMoveCommand;
+    constructor(/** @type {BezierExtrudeMoveCommand} */ command) {
         this.command = command;
         this.values = [
             command.value[0],
@@ -12,7 +12,7 @@ export class AdjustPanel_ExtrudeMove {
         this.uiModel = {
             inputObject: {"values": this.values},
             DOM: [
-                {tagType: "panel", name: "ExtrudeMoveCommand", style: "width: fit-content;", children: [
+                {tagType: "panel", name: "BezierExtrudeMoveCommand", style: "width: fit-content;", children: [
                     {tagType: "label", text: "x", children: [
                         {tagType: "input", value: "values/0", type: "number", min: -1000, max: 1000, useCommand: false},
                     ]},

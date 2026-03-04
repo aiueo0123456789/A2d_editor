@@ -504,6 +504,7 @@ export class Scene {
         device.queue.submit([computeCommandEncoder.finish()]);
         // GPU.consoleBufferData(this.runtimeData.armatureData.renderingBoneMatrix.buffer, this.runtimeData.armatureData.renderingBoneMatrix.struct);
         // GPU.consoleBufferData(this.runtimeData.armatureData.baseBoneMatrix.buffer, this.runtimeData.armatureData.baseBoneMatrix.struct);
+        // GPU.consoleBufferData(this.runtimeData.bezierModifierData.renderingVertices.buffer, this.runtimeData.bezierModifierData.renderingVertices.struct);
     }
 
     async getSaveData() {
