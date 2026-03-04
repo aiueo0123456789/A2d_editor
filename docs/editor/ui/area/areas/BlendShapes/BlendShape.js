@@ -1,7 +1,7 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/InputManager.js";
-import { CreateObjectCommand } from "../../../../commands/object/object.js";
-import { ChangeParameterCommand } from "../../../../commands/utile/utile.js";
+import { CreateObjectCommand } from "../../../../commands/CreateObjectCommand.js";
+import { ChangeParameterCommand } from "../../../../commands/ChangeParameterCommand.js";
 import { ModalOperator } from "../../../../operators/ModalOperator.js";
 import { SideBarOperator } from "../../../../operators/SideBarOperator.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";

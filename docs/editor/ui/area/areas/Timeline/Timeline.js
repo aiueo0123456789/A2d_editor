@@ -1,6 +1,6 @@
 import { app } from "../../../../../main.js";
 import { InputManager } from "../../../../app/InputManager.js";
-import { SelectKeyframesCommand } from "../../../../commands/utile/selectKeyframe.js";
+import { SelectKeyframesCommand } from "../../../../commands/SelectKeyframesCommand.js";
 import { MathVec2 } from "../../../../utils/mathVec.js";
 import { OutlinerTag } from "../../../../utils/JTag/outlinerTag.js";
 import { resizeObserver } from "../../../../utils/ui/resizeObserver.js";

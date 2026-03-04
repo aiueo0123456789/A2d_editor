@@ -1,15 +1,15 @@
-import { app } from "../../../main.js";
-import { BArmature } from "../../core/edit/entity/BArmature.js";
-import { BArmatureAnimation } from "../../core/edit/entity/BArmatureAnimation.js";
-import { BBezier } from "../../core/edit/entity/BBezier.js";
-import { BBezierShapeKey } from "../../core/edit/entity/BBezierShapeKey.js";
-import { BMesh } from "../../core/edit/entity/BMesh.js";
-import { BMeshShapeKey } from "../../core/edit/entity/BMeshShapeKey.js";
-import { Armature } from "../../core/entity/Armature.js";
-import { MathMat3x3 } from "../../utils/mathMat.js";
-import { MathVec2 } from "../../utils/mathVec.js";
-import { useEffect } from "../../utils/ui/util.js";
-import { roundUp } from "../../utils/utility.js";
+import { app } from "../../main.js";
+import { BArmature } from "../core/edit/entity/BArmature.js";
+import { BArmatureAnimation } from "../core/edit/entity/BArmatureAnimation.js";
+import { BBezier } from "../core/edit/entity/BBezier.js";
+import { BBezierShapeKey } from "../core/edit/entity/BBezierShapeKey.js";
+import { BMesh } from "../core/edit/entity/BMesh.js";
+import { BMeshShapeKey } from "../core/edit/entity/BMeshShapeKey.js";
+import { Armature } from "../core/entity/Armature.js";
+import { MathMat3x3 } from "../utils/mathMat.js";
+import { MathVec2 } from "../utils/mathVec.js";
+import { useEffect } from "../utils/ui/util.js";
+import { roundUp } from "../utils/utility.js";
 
 class TransformCommand {
     constructor(pivotType, useProportionalEdit, proportionalType, proportionalSize) {
@@ -36,7 +36,7 @@ class TransformCommand {
             else if (this.editObjects[0] instanceof BArmature) this.isBArmature = true;
             else if (this.editObjects[0] instanceof BBezier) this.isBBezier = true;
             else if (this.editObjects[0] instanceof BArmatureAnimation) this.isBArmatureAnimation = true;
-            else if (this.editObjects[0] instanceof BMeshShapeKey) this.isBMeshAnimation = true;
+            else if (this.editObjects[0] instanceof BMeshShapeKey) this.isBMeshShapeKey = true;
             else if (this.editObjects[0] instanceof BBezierShapeKey) this.isBBezierShapeKey = true;
             if (this.isBMesh || this.isBArmature || this.isBBezier) {
                 this.processType = "vertex";
@@ -50,7 +50,7 @@ class TransformCommand {
                 this.targetVertices = this.editObjects.map(editObject => editObject.vertices).flat();
                 this.originalVerticesCoordinates = this.targetVertices.map(vertex => [...vertex.co]); // 元の状態の記憶
                 this.selectedVerticesIndexs = this.selectedVertices.map(vertex => this.targetVertices.indexOf(vertex));
-            } else if (this.isBMeshAnimation || this.isBBezierShapeKey) { // 一つまでしか編集できない
+            } else if (this.isBMeshShapeKey || this.isBBezierShapeKey) { // 一つまでしか編集できない
                 this.processType = "vertex";
                 this.activeShapeKey = this.editObjects[0].activeShapeKey;
                 this.error = !this.activeShapeKey;

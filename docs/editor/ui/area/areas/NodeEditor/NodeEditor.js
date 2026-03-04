@@ -1,5 +1,5 @@
 import { app } from "../../../../../main.js";
-import { CreateObjectCommand } from "../../../../commands/object/object.js";
+import { CreateObjectCommand } from "../../../../commands/CreateObjectCommand.js";
 import { changeParameter } from "../../../../utils/utility.js";
 
 export class Area_NodeEditor {

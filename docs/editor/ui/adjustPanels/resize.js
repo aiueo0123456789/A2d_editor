@@ -1,5 +1,5 @@
 import { useEffect } from "../../utils/ui/util.js";
-import { ResizeCommand } from "../../commands/transform/transform.js";
+import { ResizeCommand } from "../../commands/TransformCommand.js";
 
 export class AdjustPanel_Resize {
     static commandInstance = ResizeCommand;

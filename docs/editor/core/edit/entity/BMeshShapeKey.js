@@ -14,6 +14,14 @@ class Vert {
         this.index = data.index;
         this.selected = false;
     }
+}
+
+
+class ShapeKeyVert {
+    constructor(data) {
+        /** @type {int[]} */
+        this.co = [...data.co];
+    }
 
     setCo(co) {
         this.co = [...co];
@@ -28,12 +36,11 @@ class ShapeKey {
         this.data = data.data;
         this.selected = false;
     }
-}
 
-class ShapeKeyVert {
-    constructor(data) {
-        /** @type {int[]} */
-        this.co = [...data.co];
+    setVertexCo(vertex, co) {
+        if (vertex instanceof ShapeKeyVert) {
+            vertex.setCo(co);
+        }
     }
 }
 

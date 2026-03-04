@@ -1,4 +1,4 @@
-import { changeParameter, isFunction } from "../../utils/utility.js";
+import { changeParameter, isFunction } from "../utils/utility.js";
 
 export class ChangeParameterCommand {
     constructor(object, parameter, value = "", customFunction = null) {

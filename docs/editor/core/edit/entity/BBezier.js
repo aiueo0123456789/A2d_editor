@@ -19,18 +19,18 @@ class Vert {
 class AnchorPoint {
     constructor(data) {
         this.point = new Vert(data.point);
-        this.leftControlHandle = new Vert(data.leftControlHandle);
-        this.rightControlHandle = new Vert(data.rightControlHandle);
+        this.leftHandle = new Vert(data.leftHandle);
+        this.rightHandle = new Vert(data.rightHandle);
     }
 
     get vertices() {
-        return [this.point, this.leftControlHandle, this.rightControlHandle];
+        return [this.point, this.leftHandle, this.rightHandle];
     }
 }
 
 export class BBezier {
-    static createAnchorPoint(point, leftControlHandle, rightControlHandle) {
-        return new AnchorPoint({point: {co: point}, leftControlHandle: {co: leftControlHandle}, rightControlHandle: {co: rightControlHandle}});
+    static createAnchorPoint(point, leftHandle, rightHandle) {
+        return new AnchorPoint({point: {co: point}, leftHandle: {co: leftHandle}, rightHandle: {co: rightHandle}});
     }
     constructor() {
         /** @type {BezierModifier} */
@@ -113,7 +113,7 @@ export class BBezier {
             bezierModifierData.weightBlocks.getObjectData(object),
         ]);
         for (let i = 0; i < coordinates.length; i ++) {
-            this.anchorPoints.push(new AnchorPoint({point: {co: coordinates[i].slice(0,2), weightBlock: weightBlocks[i].slice(0, 8)}, leftControlHandle: {co: coordinates[i].slice(2,4), weightBlock: weightBlocks[i].slice(8, 16)}, rightControlHandle: {co: coordinates[i].slice(4,6), weightBlock: weightBlocks[i].slice(16, 24)}}));
+            this.anchorPoints.push(new AnchorPoint({point: {co: coordinates[i].slice(0,2), weightBlock: weightBlocks[i].slice(0, 8)}, leftHandle: {co: coordinates[i].slice(2,4), weightBlock: weightBlocks[i].slice(8, 16)}, rightHandle: {co: coordinates[i].slice(4,6), weightBlock: weightBlocks[i].slice(16, 24)}}));
         }
         this.updateGPUData();
     }
@@ -135,15 +135,15 @@ export class BBezier {
             return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
         }
         for (let i = 1; i < this.anchorPoints.length; i ++) {
-            bezierRender(renderPass, this.anchorPoints[i - 1].point.co, this.anchorPoints[i - 1].rightControlHandle.co, this.anchorPoints[i].point.co, this.anchorPoints[i].leftControlHandle.co, 2, [0,0,0.7,1], 0);
+            bezierRender(renderPass, this.anchorPoints[i - 1].point.co, this.anchorPoints[i - 1].rightHandle.co, this.anchorPoints[i].point.co, this.anchorPoints[i].leftHandle.co, 2, [0,0,0.7,1], 0);
         }
 
         for (const anchorPoint of this.anchorPoints) {
-            dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.leftControlHandle.co, 2, 5, 5, [0,0,0,1], 0);
-            dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.rightControlHandle.co, 2, 5, 5, [0,0,0,1], 0);
+            dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.leftHandle.co, 2, 5, 5, [0,0,0,1], 0);
+            dottedLineRender(renderPass, anchorPoint.point.co, anchorPoint.rightHandle.co, 2, 5, 5, [0,0,0,1], 0);
             rectRender(renderPass, anchorPoint.point.co, [6, 6], 0, getColorFromFlag(false, anchorPoint.point.selected), 0, 1, [0,0,0,1], 0);
-            circleRender(renderPass, anchorPoint.leftControlHandle.co, 6, getColorFromFlag(false, anchorPoint.leftControlHandle.selected), 0, 1, [0,0,0,1], 0);
-            circleRender(renderPass, anchorPoint.rightControlHandle.co, 6, getColorFromFlag(false, anchorPoint.rightControlHandle.selected), 0, 1, [0,0,0,1], 0);
+            circleRender(renderPass, anchorPoint.leftHandle.co, 6, getColorFromFlag(false, anchorPoint.leftHandle.selected), 0, 1, [0,0,0,1], 0);
+            circleRender(renderPass, anchorPoint.rightHandle.co, 6, getColorFromFlag(false, anchorPoint.rightHandle.selected), 0, 1, [0,0,0,1], 0);
         }
     }
 }

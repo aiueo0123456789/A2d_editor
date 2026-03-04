@@ -1,7 +1,7 @@
-import { app } from "../../../main.js";
-import { BArmature } from "../../core/edit/entity/BArmature.js";
-import { BArmatureAnimation } from "../../core/edit/entity/BArmatureAnimation.js";
-import { useEffect } from "../../utils/ui/util.js";
+import { app } from "../../main.js";
+import { BArmature } from "../core/edit/entity/BArmature.js";
+import { BArmatureAnimation } from "../core/edit/entity/BArmatureAnimation.js";
+import { useEffect } from "../utils/ui/util.js";
 
 // export class SelectOnlyBoneCommand {
 //     constructor(point,multiple) {

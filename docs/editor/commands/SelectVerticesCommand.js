@@ -1,10 +1,10 @@
-import { app } from "../../../main.js";
-import { BArmature } from "../../core/edit/entity/BArmature.js";
-import { BBezier } from "../../core/edit/entity/BBezier.js";
-import { BBezierShapeKey } from "../../core/edit/entity/BBezierShapeKey.js";
-import { BMesh } from "../../core/edit/entity/BMesh.js";
-import { BMeshShapeKey } from "../../core/edit/entity/BMeshShapeKey.js";
-import { useEffect } from "../../utils/ui/util.js";
+import { app } from "../../main.js";
+import { BArmature } from "../core/edit/entity/BArmature.js";
+import { BBezier } from "../core/edit/entity/BBezier.js";
+import { BBezierShapeKey } from "../core/edit/entity/BBezierShapeKey.js";
+import { BMesh } from "../core/edit/entity/BMesh.js";
+import { BMeshShapeKey } from "../core/edit/entity/BMeshShapeKey.js";
+import { useEffect } from "../utils/ui/util.js";
 
 export class SelectVerticesCommand {
     constructor(selectData,multiple) {

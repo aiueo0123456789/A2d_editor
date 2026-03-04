@@ -1,6 +1,6 @@
 import { app } from "../../../main.js";
 import { InputManager } from "../../app/InputManager.js";
-import { ResizeCommand } from "../../commands/transform/transform.js";
+import { ResizeCommand } from "../../commands/TransformCommand.js";
 import { MathVec2 } from "../../utils/mathVec.js";
 import { circleRender, dottedLineRender } from "../area/areas/Viewer/Viewer.js";
 import { ViewerSpaceData } from "../area/areas/Viewer/ViewerSpaceData.js";

@@ -1,7 +1,7 @@
 import { app } from "../../../../../main.js";
+import { ChangeParentCommand } from "../../../../commands/ChangeParentCommand.js";
 import { AppendBlendShapePointCommand, AppendShapeKeyInBlendShapeCommand, CreateShapeKeyCommand, DeleteShapeKeyCommand, DeleteShapeKeyInBlendShapeCommand } from "../../../../commands/mesh/shapeKey.js";
-import { ChangeParentCommand } from "../../../../commands/object/object.js";
-import { ChangeParameterCommand } from "../../../../commands/utile/utile.js";
+import { ChangeParameterCommand } from "../../../../commands/ChangeParameterCommand.js";
 import { BMeshShapeKey } from "../../../../core/edit/entity/BMeshShapeKey.js";
 import { changeParameter } from "../../../../utils/utility.js";
 

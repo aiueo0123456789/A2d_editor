@@ -29,8 +29,8 @@ export class BezierExtrudeMoveCommand {
         this.editObjects.forEach(editObject => {
             const createAnchorPointData = this.createDatasInEditObject[editObject.id];
             MathVec2.add(createAnchorPointData.anchorPoint.point.co, createAnchorPointData.baseCo, this.value);
-            MathVec2.add(createAnchorPointData.anchorPoint.leftControlHandle.co, MathVec2.subR(createAnchorPointData.baseCo, [50, 0]), this.value);
-            MathVec2.add(createAnchorPointData.anchorPoint.rightControlHandle.co, MathVec2.addR(createAnchorPointData.baseCo, [50, 0]), this.value);
+            MathVec2.add(createAnchorPointData.anchorPoint.leftHandle.co, MathVec2.subR(createAnchorPointData.baseCo, [50, 0]), this.value);
+            MathVec2.add(createAnchorPointData.anchorPoint.rightHandle.co, MathVec2.addR(createAnchorPointData.baseCo, [50, 0]), this.value);
             editObject.updateGPUData();
         });
     }
@@ -39,8 +39,8 @@ export class BezierExtrudeMoveCommand {
         this.editObjects.forEach(editObject => {
             const createAnchorPointData = this.createDatasInEditObject[editObject.id];
             MathVec2.add(createAnchorPointData.anchorPoint.point.co, createAnchorPointData.baseCo, this.value);
-            MathVec2.add(createAnchorPointData.anchorPoint.leftControlHandle.co, MathVec2.subR(createAnchorPointData.baseCo, [50, 0]), this.value);
-            MathVec2.add(createAnchorPointData.anchorPoint.rightControlHandle.co, MathVec2.addR(createAnchorPointData.baseCo, [50, 0]), this.value);
+            MathVec2.add(createAnchorPointData.anchorPoint.leftHandle.co, MathVec2.subR(createAnchorPointData.baseCo, [50, 0]), this.value);
+            MathVec2.add(createAnchorPointData.anchorPoint.rightHandle.co, MathVec2.addR(createAnchorPointData.baseCo, [50, 0]), this.value);
             editObject.updateGPUData();
         });
         return {state: "FINISHED"};

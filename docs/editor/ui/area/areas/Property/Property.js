@@ -1,10 +1,8 @@
 import { app } from "../../../../../main.js";
-import { AppendBlendShapePointCommand, AppendShapeKeyInBlendShapeCommand } from "../../../../commands/mesh/shapeKey.js";
-import { CopyObjectCommand, CreateObjectCommand, DeleteObjectCommand } from "../../../../commands/object/object.js";
+import { CopyObjectCommand } from "../../../../commands/CopyObjectCommand.js";
+import { CreateObjectCommand } from "../../../../commands/CreateObjectCommand.js";
+import { DeleteObjectCommand } from "../../../../commands/DeleteObjectCommand.js";
 import { AppendParameterInParameterManager, DeleteParameterInParameterManager } from "../../../../commands/parameterManager/parameter.js";
-import { BlendShape } from "../../../../core/entity/BlendShape.js";
-import { MathVec2 } from "../../../../utils/mathVec.js";
-import { calculateLocalMousePosition, objectInit } from "../../../../utils/utility.js";
 
 export class Area_Property {
     constructor(area) {

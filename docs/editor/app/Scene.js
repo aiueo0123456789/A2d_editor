@@ -10,7 +10,6 @@ import { ParameterManager } from '../core/entity/ParameterManager.js';
 import { Particle } from '../core/entity/Particle.js';
 import { Script } from '../core/entity/Script.js';
 import { Camera } from '../core/entity/Camera.js';
-import { DeleteObjectCommand } from '../commands/object/object.js';
 import { Texture } from '../core/entity/Texture.js';
 import { MaskTexture } from '../core/entity/MaskTexture.js';
 import { NameAndTypeAndID, UnfixedReference, UnfixedReferenceForLayer } from '../utils/objects/util.js';
@@ -19,6 +18,7 @@ import { KeyframeBlock } from '../core/entity/KeyframeBlock.js';
 import { BArmatureAnimation } from '../core/edit/entity/BArmatureAnimation.js';
 import { BlendShape } from '../core/entity/BlendShape.js';
 import { app } from '../../main.js';
+import { DeleteObjectCommand } from '../commands/DeleteObjectCommand.js';
 
 const parallelAnimationApplyPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/graphicMesh/parent.wgsl"));
 const treeAnimationApplyPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Cu"), GPU.getGroupLayout("Csrw_Csr_Csr_Csr"), GPU.getGroupLayout("Csr_Csr_Csr")], await loadFile("./editor/shader/compute/object/bezierModifier/parent.wgsl"));

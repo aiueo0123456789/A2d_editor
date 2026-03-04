@@ -1,5 +1,5 @@
-import { ChangeEditModeCommand } from "../commands/utile/changeEditMode.js";
-import { SelectObjectsCommand, SetActiveObjectsCommand } from "../commands/utile/selectObject.js";
+import { ChangeEditModeCommand } from "../commands/ChangeEditModeCommand.js";
+import { SelectObjectsCommand, SetActiveObjectsCommand } from "../commands/SetActiveObjectsCommand.js";
 import { Armature } from "../core/entity/Armature.js";
 import { Application } from "./Application.js";
 

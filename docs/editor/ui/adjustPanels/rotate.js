@@ -1,5 +1,5 @@
 import { useEffect } from "../../utils/ui/util.js";
-import { RotateCommand } from "../../commands/transform/transform.js";
+import { RotateCommand } from "../../commands/TransformCommand.js";
 
 export class AdjustPanel_Rotate {
     static commandInstance = RotateCommand;

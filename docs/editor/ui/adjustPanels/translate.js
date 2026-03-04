@@ -1,5 +1,5 @@
 import { useEffect } from "../../utils/ui/util.js";
-import { TranslateCommand } from "../../commands/transform/transform.js";
+import { TranslateCommand } from "../../commands/TransformCommand.js";
 
 export class AdjustPanel_Translate {
     static commandInstance = TranslateCommand;

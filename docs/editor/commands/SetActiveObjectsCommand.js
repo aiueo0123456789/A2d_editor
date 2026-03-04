@@ -1,6 +1,6 @@
-import { app } from "../../../main.js";
-import { useEffect } from "../../utils/ui/util.js";
-import { changeParameter } from "../../utils/utility.js";
+import { app } from "../../main.js";
+import { useEffect } from "../utils/ui/util.js";
+import { changeParameter } from "../utils/utility.js";
 
 export class SetActiveObjectsCommand {
     constructor(object) {

@@ -5,7 +5,7 @@ import { app } from "../../../main.js";
 import { MenuTag } from "./menuTag.js";
 import { CodeEditorTag } from "./codeEditorTag.js";
 import { SelectTag } from "./selectTag.js";
-import { ChangeParameterCommand } from "../../commands/utile/utile.js";
+import { ChangeParameterCommand } from "../../commands/ChangeParameterCommand.js";
 import { createGrid } from "../ui/grid.js";
 import { OutlinerTag } from "./outlinerTag.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";

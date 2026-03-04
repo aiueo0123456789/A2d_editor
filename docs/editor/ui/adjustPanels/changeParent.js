@@ -1,5 +1,5 @@
+import { ChangeParentCommand } from "../../commands/ChangeParentCommand.js";
 import { useEffect } from "../../utils/ui/util.js";
-import { ChangeParentCommand } from "../../commands/object/object.js";
 
 export class AdjustPanel_ChangeParent {
     static commandInstance = ChangeParentCommand;
@@ -12,7 +12,7 @@ export class AdjustPanel_ChangeParent {
             inputObject: {"value": this.values},
             DOM: [
                 {tagType: "panel", name: "ChangeParentCommand", style: "width: fit-content;", children: [
-                    
+
                 ]}
             ]
         };
