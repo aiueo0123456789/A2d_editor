@@ -67,14 +67,15 @@ export class Operator {
     appendCommand(command) {
         console.log(command)
         if (command instanceof Command) {
-            console.error("コマンドではありません", command)
-        }
-        if (command.error) {
-            console.error("コマンドの初期化でエラーが出た可能性があります");
-            return false;
+            if (command.error) {
+                console.error("コマンドの初期化でエラーが出た可能性があります");
+                return false;
+            } else {
+                this.commands.push(command);
+                return true;
+            }
         } else {
-            this.commands.push(command);
-            return true;
+            console.error("コマンドではありません", command);
         }
     }
 

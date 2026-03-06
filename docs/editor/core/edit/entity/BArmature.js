@@ -251,7 +251,7 @@ export class BArmature {
         armatureData.update(this.object);
     }
 
-    render(renderPass) {
+    gizumoRender(renderPass) {
         for (const bone of this.bones) {
             const color = this.activeBone === bone ? [1,1,1,1] : bone.selected ? [1,0.5,0,1] : bone.color;
             const hcolor = this.activeBone === bone ? [1,1,1,1] : bone.headVertex.selected ? [1,0.5,0,1] : bone.color;

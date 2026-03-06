@@ -43,6 +43,9 @@ import { CreateObjectCommand } from '../../../../commands/CreateObjectCommand.js
 import { CopyObjectCommand } from '../../../../commands/CopyObjectCommand.js';
 import { DeleteBoneCommand } from '../../../../commands/object/bone.js';
 import { Command } from '../../../../operators/CommandOperator.js';
+import { ChangeEditModeCommand } from '../../../../commands/ChangeEditModeCommand.js';
+import { GraphicMesh } from '../../../../core/entity/GraphicMesh.js';
+import { BezierModifier } from '../../../../core/entity/BezierModifier.js';
 
 // レイキャストよう
 const boneHitTestPipeline = GPU.createComputePipeline([GPU.getGroupLayout("Csrw_Csr_Cu_Cu_Cu")], await loadFile("./editor/shader/compute/select/armature/hitTest.wgsl"));
@@ -75,6 +78,7 @@ const dottedLineRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGro
 const circleRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/circle.wgsl"), [], "2d", "s", "");
 const bezierRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu")], await loadFile("./editor/shader/render/util/bezier.wgsl"), [], "2d", "s", "");
 const textRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu"), GPU.getGroupLayout("VFu_Ft")], await loadFile("./editor/shader/render/util/text.wgsl"), [], "2d", "s", "");
+const textureRenderPipeline = GPU.createRenderPipelineFromOneFile([GPU.getGroupLayout("VFu_Fts"), GPU.getGroupLayout("VFu_Ft")], await loadFile("./editor/shader/render/util/texture.wgsl"), [], "2d", "t", "");
 
 export function triangleRender(renderPass, pointA, pointB, pointC, color, strokeWidth = 0, strokeColor = [0,0,0,0], isAffectedForZoomStroke = 1, strokePosition = 0) {
     renderPass.setPipeline(triangleRenderPipeline);
@@ -89,6 +93,21 @@ export function triangleRender(renderPass, pointA, pointB, pointC, color, stroke
             isAffectedForZoomStroke, // 0 1 影響を受けない 影響を受ける
             strokePosition, // 0 -0.5 -1 外側 中間 内側
         ], ["f32"]),
+    ]));
+    renderPass.draw(3, 1, 0, 0);
+}
+export function textureRender(renderPass, pointA, texCoordA, pointB, texCoordB, pointC, texCoordC, textureView) {
+    renderPass.setPipeline(textureRenderPipeline);
+    renderPass.setBindGroup(1, GPU.createGroup(GPU.getGroupLayout("VFu_Ft"), [
+        GPU.createUniformBuffer((17) * 4, [
+            pointA[0], pointA[1],
+            texCoordA[0], texCoordA[1],
+            pointB[0], pointB[1],
+            texCoordB[0], texCoordB[1],
+            pointC[0], pointC[1],
+            texCoordC[0], texCoordC[1],
+        ], ["f32"]),
+        textureView
     ]));
     renderPass.draw(3, 1, 0, 0);
 }
@@ -681,110 +700,76 @@ export class Area_Viewer {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["p"])) return ChangeParentModal;
+                if (app.input.consumeKeys(["Tab"])) {
+                    if (context.activeObject instanceof GraphicMesh) return {command: ChangeEditModeCommand, parameter: ["メッシュ編集"]};
+                    else if (context.activeObject instanceof BezierModifier) return {command: ChangeEditModeCommand, parameter: ["ベジェ編集"]};
+                    else if (context.activeObject instanceof BArmature) return {command: ChangeEditModeCommand, parameter: ["ボーン編集"]};
+                }
             }
             if (context.currentMode == "メッシュ編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
             if (context.currentMode == "メッシュウェイト編集") {
                 if (app.input.click) return WeightPaintModal;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
             if (context.currentMode == "ボーン編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
                 if (app.input.consumeKeys(["e"])) return BoneExtrudeMoveModal;
+                if (app.input.consumeKeys(["x"])) return DeleteBoneCommand;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
             if (context.currentMode == "ボーンアニメーション編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
                 if (app.input.consumeKeys(["i"])) return KeyframeInsertModal;
-                if (app.input.consumeKeys(["x"])) return DeleteBoneCommand;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
             if (context.currentMode == "ベジェ編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
                 if (app.input.consumeKeys(["e"])) return BezierExtrudeMoveModal;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
             if (context.currentMode == "ベジェシェイプキー編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
                 if (app.input.consumeKeys(["r"])) return RotateModal;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
         }
+        return null;
+    }
+
+    shortcuts() {
+        const resultShortcuts = this.getShortcuts();
+        if (resultShortcuts) {
+            if (resultShortcuts.command?.prototype instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts.command(resultShortcuts.parameter));
+                app.operator.execute();
+            } else if (resultShortcuts.prototype instanceof Command) {
+                app.operator.appendCommand(new resultShortcuts());
+                app.operator.execute();
+            } else {
+                this.modalOperator.start(resultShortcuts);
+            }
+            return true;
+        }
+        return false;
     }
 
     async keyInput(/** @type {InputManager} */ inputManager) {
         this.inputs.keysDown = inputManager.keysDown;
         this.inputs.keysPush = inputManager.keysPush;
         if (await this.modalOperator.keyInput(this.inputs)) return ;
-        const resultShortcuts = this.getShortcuts();
-        if (resultShortcuts) {
-            if (resultShortcuts instanceof Command) {
-                app.operator.appendCommand(new resultShortcuts());
-                app.operator.execute();
-            } else {
-                this.modalOperator.start(resultShortcuts);
-            }
-            return ;
-        }
-        const context = app.context;
-        if (context.activeObject) {
-            if (context.currentMode == "オブジェクト") {
-                if (inputManager.consumeKeys(["j"])) {
-                    app.operator.appendCommand(new JoinObjectCommand(context.activeObject, context.selectedObjects.filter(object => object != context.activeObject)));
-                    app.operator.execute();
-                }
-            }
-            if (context.activeObject.type == "GraphicMesh") {
-                if (inputManager.consumeKeys(["Tab"])) {
-                    if (context.currentMode == "オブジェクト") {
-                        if (inputManager.consumeKeys(["a"])) {
-                            context.setModeForSelected("メッシュシェイプキー編集");
-                        } else if (inputManager.consumeKeys(["w"])) {
-                            context.setModeForSelected("メッシュウェイト編集");
-                        } else {
-                            context.setModeForSelected("メッシュ編集");
-                        }
-                    } else {
-                        context.setModeForSelected("オブジェクト");
-                    }
-                } else if (inputManager.consumeKeys(["f"])) {
-                    for (const object of app.context.selectedObjects) {
-                        app.scene.editData.getEditObjectByObject(object).appendEdge();
-                    }
-                }
-            } else if (context.activeObject.type == "Armature") {
-                if (inputManager.consumeKeys(["Tab"])) {
-                    if (context.currentMode == "オブジェクト") {
-                        if (inputManager.consumeKeys(["a"])) {
-                            context.setModeForSelected("ボーンアニメーション編集");
-                        } else {
-                            context.setModeForSelected("ボーン編集");
-                        }
-                    } else {
-                        context.setModeForSelected("オブジェクト");
-                    }
-                }
-            } else if (context.activeObject.type == "BezierModifier") {
-                if (inputManager.consumeKeys(["Tab"])) {
-                    if (context.currentMode == "オブジェクト") {
-                        if (inputManager.consumeKeys(["a"])) {
-                            context.setModeForSelected("ベジェシェイプキー編集");
-                        } else if (inputManager.consumeKeys(["w"])) {
-                            context.setModeForSelected("ベジェウェイト編集");
-                        } else {
-                            context.setModeForSelected("ベジェ編集");
-                        }
-                    } else {
-                        context.setModeForSelected("オブジェクト");
-                    }
-                }
-            }
-        }
+        if (this.shortcuts()) return ;
     }
 
     async mousedown(/** @type {InputManager} */ inputManager) {
@@ -794,16 +779,7 @@ export class Area_Viewer {
         this.inputs.position = local;
 
         if (await this.modalOperator.mousedown(this.inputs)) return ;
-        const resultShortcuts = this.getShortcuts();
-        if (resultShortcuts) {
-            if (resultShortcuts instanceof Command) {
-                app.operator.appendCommand(new resultShortcuts());
-                app.operator.execute();
-            } else {
-                this.modalOperator.start(resultShortcuts);
-            }
-            return ;
-        }
+        if (this.shortcuts()) return ;
 
         const context = app.context;
         if (context.currentMode == "オブジェクト") {
@@ -870,16 +846,7 @@ export class Area_Viewer {
         this.inputs.position = local;
 
         if (await this.modalOperator.mousemove(this.inputs)) return ;
-        const resultShortcuts = this.getShortcuts();
-        if (resultShortcuts) {
-            if (resultShortcuts instanceof Command) {
-                app.operator.appendCommand(new resultShortcuts());
-                app.operator.execute();
-            } else {
-                this.modalOperator.start(resultShortcuts);
-            }
-            return ;
-        }
+        if (this.shortcuts()) return ;
 
         const context = app.context;
         if (context.currentMode == "ブレンドシェイプ編集") {
@@ -891,16 +858,7 @@ export class Area_Viewer {
     }
     async mouseup(inputManager) {
         if (await this.modalOperator.mouseup(this.inputs)) return ;
-        const resultShortcuts = this.getShortcuts();
-        if (resultShortcuts) {
-            if (resultShortcuts instanceof Command) {
-                app.operator.appendCommand(new resultShortcuts());
-                app.operator.execute();
-            } else {
-                this.modalOperator.start(resultShortcuts);
-            }
-            return ;
-        }
+        if (this.shortcuts()) return ;
 
         const context = app.context;
         if (context.currentMode == "ブレンドシェイプ編集") {
@@ -915,16 +873,7 @@ export class Area_Viewer {
 
     async wheel(inputManager) {
         if (await this.modalOperator.wheel(this.inputs)) return ;
-        const resultShortcuts = this.getShortcuts();
-        if (resultShortcuts) {
-            if (resultShortcuts instanceof Command) {
-                app.operator.appendCommand(new resultShortcuts());
-                app.operator.execute();
-            } else {
-                this.modalOperator.start(resultShortcuts);
-            }
-            return ;
-        }
+        if (this.shortcuts()) return ;
         if (app.input.keysDown["Alt"]) {
             this.camera.zoom += inputManager.wheelDelta[1] / 200;
             this.camera.zoom = Math.max(Math.min(this.camera.zoom,this.camera.zoomMax),this.camera.zoomMin);
@@ -1091,31 +1040,10 @@ export class Renderer {
                     renderPass.setBindGroup(2, graphicMesh.renderGroup);
                     renderPass.setVertexBuffer(0, app.scene.runtimeData.graphicMeshData.meshes.buffer, graphicMesh.runtimeOffsetData.start.meshesOffset * app.scene.runtimeData.graphicMeshData.meshes.structByteSize, graphicMesh.meshesNum * app.scene.runtimeData.graphicMeshData.meshes.structByteSize);
                     renderPass.draw(graphicMesh.meshesNum * 3, 1, 0, 0);
-                } else if (graphicMesh.mode == "メッシュ編集") {
+                } else {
                     const bm = app.scene.editData.getEditObjectByObject(graphicMesh);
-                    renderPass.setBindGroup(1, bm.renderingGroup);
-                    renderPass.setPipeline(BMeshMainRenderPipeline);
-                    renderPass.draw(3 * bm.meshesNum, 1, 0, 0); // 3つの頂点から三角形を表示する * meshNum
+                    bm.render(renderPass);
 
-                    // パイプラインやグループを元に戻す
-                    renderPass.setPipeline(renderPipeline);
-                    renderPass.setBindGroup(1, app.scene.runtimeData.graphicMeshData.renderGroup);
-                } else if (graphicMesh.mode == "メッシュウェイト編集") {
-                    const bmw = app.scene.editData.getEditObjectByObject(graphicMesh);
-                    renderPass.setBindGroup(1, bmw.renderingGroup);
-                    renderPass.setPipeline(BMWMainRenderPipeline);
-                    renderPass.draw(3 * bmw.meshesNum, 1, 0, 0); // 3つの頂点から三角形を表示する * meshNum
-
-                    // パイプラインやグループを元に戻す
-                    renderPass.setPipeline(renderPipeline);
-                    renderPass.setBindGroup(1, app.scene.runtimeData.graphicMeshData.renderGroup);
-                } else if (graphicMesh.mode == "メッシュシェイプキー編集") {
-                    const bms = app.scene.editData.getEditObjectByObject(graphicMesh);
-                    renderPass.setBindGroup(1, bms.renderingGroup);
-                    renderPass.setPipeline(BMSMainRenderPipeline);
-                    renderPass.draw(3 * bms.meshesNum, 1, 0, 0); // 3つの頂点から三角形を表示する * meshNum
-
-                    // パイプラインやグループを元に戻す
                     renderPass.setPipeline(renderPipeline);
                     renderPass.setBindGroup(1, app.scene.runtimeData.graphicMeshData.renderGroup);
                 }
@@ -1138,7 +1066,7 @@ export class Renderer {
                         if (graphicMesh.mode == "オブジェクト") {
                         } else {
                             const b = app.scene.editData.getEditObjectByObject(graphicMesh);
-                            b.render(renderPass);
+                            b.gizumoRender(renderPass);
                         }
                     }
                 }
@@ -1155,7 +1083,7 @@ export class Renderer {
                         renderPass.draw(4, armature.bonesNum, 0, 0);
                     } else {
                         const b = app.scene.editData.getEditObjectByObject(armature);
-                        b.render(renderPass);
+                        b.gizumoRender(renderPass);
 
                         renderPass.setBindGroup(2, app.scene.runtimeData.armatureData.renderingGizumoGroup);
                         renderPass.setPipeline(boneBoneRenderPipeline);
@@ -1175,7 +1103,7 @@ export class Renderer {
                         renderPass.draw(2 * 50, bezierModifier.pointsNum - 1, 0, 0);
                     } else {
                         const b = app.scene.editData.getEditObjectByObject(bezierModifier);
-                        b.render(renderPass);
+                        b.gizumoRender(renderPass);
 
                         renderPass.setBindGroup(2, app.scene.runtimeData.bezierModifierData.renderingGizumoGroup);
                         renderPass.setPipeline(bezierModifierRenderPipeline);
@@ -1254,7 +1182,7 @@ export class Renderer {
             renderPass.draw(4, 1, 0, 0);
         }
         if (isFunction(this.viewer.modalOperator.nowModal?.render)) {
-            this.viewer.modalOperator.nowModal.render(renderPass);
+            this.viewer.modalOperator.nowModal.gizumoRender(renderPass);
         }
         // if (app.scene.runtimeData.graphicMeshData.textureAtls) {
         //     renderPass.setBindGroup(0, GPU.createGroup(GPU.getGroupLayout("Fts_Ft"), [GPU.sampler, app.scene.runtimeData.graphicMeshData.textureAtls.createView()]));

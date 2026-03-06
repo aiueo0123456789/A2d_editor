@@ -1,5 +1,5 @@
 import { app } from "../../../../main.js";
-import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
+import { circleRender, textureRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { roundUp } from "../../../utils/utility.js";
 import { GPU } from "../../../utils/webGPU.js";
@@ -159,7 +159,6 @@ export class BMesh {
     selectedClear() {
         this.vertices.forEach(vertex => {
             vertex.selected = false;
-            GPU.writeBuffer(this.vertexSelectedBuffer, GPU.createBitData([0], ["u32"]), this.getVertexIndexByVertex(vertex) * 4);
         });
         this.activeVertex = null;
     }
@@ -169,7 +168,6 @@ export class BMesh {
         indexs.forEach(index => {
             this.vertices[index].selected = true;
             this.activeVertex = this.vertices[index];
-            GPU.writeBuffer(this.vertexSelectedBuffer, GPU.createBitData([1], ["u32"]), index * 4);
         });
     }
 
@@ -209,17 +207,6 @@ export class BMesh {
     }
 
     updateGPUData() {
-        this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        this.texCoordsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.texCoord).flat(), ["f32", "f32"]);
-        this.autoEdgesBuffer = GPU.createStorageBuffer(roundUp(this.autoEdges.length * 2 * 4, 2 * 4), this.autoEdges.map(edge => this.getVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
-        this.manualEdgesBuffer = GPU.createStorageBuffer(roundUp(this.manualEdges.length * 2 * 4, 2 * 4), this.manualEdges.map(edge => this.getVerticesIndexInEdge(edge)).flat(), ["u32", "u32"]);
-        this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => this.getMeshLoop(mesh)).flat(), ["u32", "u32", "u32"]);
-        this.vertexSelectedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.vertices.map(vertex => vertex.selected ? 1 : 0), ["u32"]);
-        this.autoEdgeselectedBuffer = GPU.createStorageBuffer(roundUp(this.autoEdges.length * 4, 4), this.autoEdges.map(edge => edge.selected ? 1 : 0), ["u32"]);
-        this.manualEdgeselectedBuffer = GPU.createStorageBuffer(roundUp(this.manualEdges.length * 4, 4), this.manualEdges.map(edge => edge.selected ? 1 : 0), ["u32"]);
-        this.meshSelectedBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 4, 4), this.meshes.map(mesh => mesh.selected ? 1 : 0), ["u32"]);
-        this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.texCoordsBuffer, this.autoEdgesBuffer, this.manualEdgesBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.autoEdgeselectedBuffer, this.manualEdgeselectedBuffer, this.meshSelectedBuffer, this.zIndexBuffer, this.texture.view]);
     }
 
     setMeshData(data) {
@@ -291,6 +278,12 @@ export class BMesh {
     }
 
     render(renderPass) {
+        for (const mesh of this.meshes) {
+            textureRender(renderPass, mesh.vertices[0].co, mesh.vertices[0].texCoord, mesh.vertices[1].co, mesh.vertices[1].texCoord, mesh.vertices[2].co, mesh.vertices[2].texCoord, this.texture.view);
+        }
+    }
+
+    gizumoRender(renderPass) {
         for (const mesh of this.meshes) {
             triangleRender(renderPass, mesh.vertices[0].co, mesh.vertices[1].co, mesh.vertices[2].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
         }

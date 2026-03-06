@@ -28,8 +28,9 @@ export class SetActiveObjectsCommand extends Command {
     }
 }
 
-export class SelectObjectsCommand {
+export class SelectObjectsCommand extends Command {
     constructor(object,multiple) {
+        super();
         this.multiple = multiple;
         this.targetObject = object;
         this.originalSelectData = app.context.selectedObjects; // selectedObjectsはゲッターだから[...app.context.selectedObjects]じゃなくていい

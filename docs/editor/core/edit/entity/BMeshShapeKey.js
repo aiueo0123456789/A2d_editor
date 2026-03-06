@@ -123,13 +123,6 @@ export class BMeshShapeKey {
     }
 
     updateGPUData() {
-        if (this.activeShapeKey) this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => this.activeShapeKey.data[vertex.index].co).flat(), ["f32", "f32"]);
-        else this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        this.texCoordsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.texCoord).flat(), ["f32", "f32"]);
-        this.vertexSelectedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.vertices.map(vertex => vertex.selected ? 1 : 0), ["u32"]);
-        this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => mesh.indexs).flat(), ["u32", "u32", "u32"]);
-        this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.texCoordsBuffer, this.meshesBuffer, this.vertexSelectedBuffer, this.zIndexBuffer, this.texture.view]);
     }
 
     async fromMesh(object) {
@@ -175,7 +168,7 @@ export class BMeshShapeKey {
         useEffect.update({o: this.object.shapeKeyMetaDatas})
     }
 
-    render(renderPass) {
+    gizumoRender(renderPass) {
         if (this.activeShapeKey) {
             for (const mesh of this.meshes) {
                 triangleRender(renderPass, this.activeShapeKey.data[mesh.indexs[0]].co, this.activeShapeKey.data[mesh.indexs[1]].co, this.activeShapeKey.data[mesh.indexs[2]].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);

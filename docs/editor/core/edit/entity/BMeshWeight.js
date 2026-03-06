@@ -16,7 +16,8 @@ class Vert {
 
 class Mesh {
     constructor(data) {
-        this.indexs = data.indexs;
+        /** @type {Vert[]} */
+        this.vertices = data.vertices;
     }
 }
 
@@ -103,19 +104,6 @@ export class BMeshWeight {
     }
 
     updateGPUData() {
-        // this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        if (!this.isInit) {
-            this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.renderingVerticesCoordinates.flat(), ["f32", "f32"]);
-            this.texCoordsBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.texCoord).flat(), ["f32", "f32"]);
-            this.weightBlocksBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.weightBlocks[app.appConfig.areasConfig["Viewer"].weightPaintMetaData.weightBlockIndex].weights, ["f32"]);
-            this.meshesBuffer = GPU.createStorageBuffer(roundUp(this.meshes.length * 3 * 4, 3 * 4), this.meshes.map(mesh => mesh.indexs).flat(), ["u32", "u32", "u32"]);
-            this.zIndexBuffer = GPU.createUniformBuffer(4, [1 / (this.zIndex + 1)], ["f32"]);
-            this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr_Vsr_Vsr_Vu_Ft"), [this.verticesBuffer, this.texCoordsBuffer, this.weightBlocksBuffer, this.meshesBuffer, this.zIndexBuffer, this.texture.view]);
-            this.isInit = true;
-        } else {
-            GPU.writeBuffer(this.verticesBuffer, new Float32Array(this.renderingVerticesCoordinates.flat()));
-            GPU.writeBuffer(this.weightBlocksBuffer, new Float32Array(this.weightBlocks[app.appConfig.areasConfig["Viewer"].weightPaintMetaData.weightBlockIndex].weights));
-        }
     }
 
     async fromMesh(/** @type {GraphicMesh} */object) {
@@ -142,8 +130,8 @@ export class BMeshWeight {
         for (let boneIndex = 0; boneIndex < boneBaseMatrixs.length; boneIndex ++) {
             this.bones.push(new Bone({baseMatrix: MathMat3x3.mat3x3ToArray(boneBaseMatrixs[boneIndex]), poseMatrix: MathMat3x3.mat3x3ToArray(bonePoseMatrixs[boneIndex])}));
         }
-        for (const indexs of meshes) {
-            this.meshes.push(new Mesh({indexs: indexs}));
+        for (let i = 0; i < meshes.length; i ++) {
+            this.meshes.push(new Mesh({vertices: meshes[i].map(vertexIndex => this.vertices[vertexIndex])}));
         }
         this.texture = object.texture;
         this.zIndex = object.zIndex;
@@ -168,7 +156,7 @@ export class BMeshWeight {
         graphicMeshData.update(this.object);
     }
 
-    render(renderPass) {
+    gizumoRender(renderPass) {
         for (const mesh of this.meshes) {
             triangleRender(renderPass, mesh.vertices[0].co, mesh.vertices[1].co, mesh.vertices[2].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);
         }

@@ -74,6 +74,6 @@ fn fmain(
 ) -> FragmentOutput {
     var output: FragmentOutput;
     let color = textureSample(textTexture, mySampler, texCoord);
-    output.color = color * vec4<f32>(text.colorR, text.colorG, text.colorB, text.colorA);;
+    output.color = color * vec4<f32>(text.colorR, text.colorG, text.colorB, text.colorA);
     return output;
 }

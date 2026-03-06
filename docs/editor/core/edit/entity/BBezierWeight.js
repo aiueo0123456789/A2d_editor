@@ -86,16 +86,6 @@ export class BBezierWeight {
     }
 
     updateGPUData() {
-        // this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        if (!this.isInit) {
-            this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.renderingVerticesCoordinates.flat(), ["f32", "f32"]);
-            this.weightBlocksBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.weightBlocks[app.appConfig.areasConfig["Viewer"].weightPaintMetaData.weightBlockIndex].weights, ["f32"]);
-            this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr"), [this.verticesBuffer, this.weightBlocksBuffer]);
-            this.isInit = true;
-        } else {
-            GPU.writeBuffer(this.verticesBuffer, new Float32Array(this.renderingVerticesCoordinates.flat()));
-            GPU.writeBuffer(this.weightBlocksBuffer, new Float32Array(this.weightBlocks[app.appConfig.areasConfig["Viewer"].weightPaintMetaData.weightBlockIndex].weights));
-        }
     }
 
     async fromBezier(/** @type {BezierModifier} */object) {

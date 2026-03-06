@@ -146,10 +146,6 @@ export class BArmatureAnimation {
     }
 
     updateGPUData() {
-        this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.flat(), ["f32", "f32"]);
-        this.boneColorsBuffer = GPU.createStorageBuffer(roundUp(this.bones.length * 4 * 4, 4 * 4), this.bones.map(bone => bone.color).flat(), ["f32", "f32", "f32", "f32"]);
-        this.boneSelectedBuffer = GPU.createStorageBuffer(roundUp(this.bones.length * 4 * 4, 4 * 4), this.bones.map(bone => bone.selected ? 1 : 0).flat(), ["u32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_VFsr_Vsr"), [this.verticesBuffer, this.boneColorsBuffer, this.boneSelectedBuffer]);
         // 実行データの更新
         this.object.animationsData.length = 0;
         for (const bone of this.bones) {
@@ -248,7 +244,7 @@ export class BArmatureAnimation {
         armatureData.update(this.object);
     }
 
-    render(renderPass) {
+    gizumoRender(renderPass) {
         for (const bone of this.bones) {
             const color = this.activeBone === bone ? [1,1,1,1] : bone.selected ? [1,0.5,0,1] : bone.color;
             triangleRender(renderPass, bone.polygon[0], bone.polygon[1], bone.polygon[2], color, 0);

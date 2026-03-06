@@ -100,9 +100,6 @@ export class BBezier {
     }
 
     updateGPUData() {
-        this.verticesBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 2 * 4, 2 * 4), this.vertices.map(vertex => vertex.co).flat(), ["f32", "f32"]);
-        this.vertexSelectedBuffer = GPU.createStorageBuffer(roundUp(this.vertices.length * 4, 4), this.vertices.map(vertex => vertex.selected ? 1 : 0), ["u32"]);
-        this.renderingGroup = GPU.createGroup(GPU.getGroupLayout("Vsr_Vsr"), [this.verticesBuffer, this.vertexSelectedBuffer]);
     }
 
     async fromBezier(object) {
@@ -130,7 +127,7 @@ export class BBezier {
         bezierModifierData.update(this.object);
     }
 
-    render(renderPass) {
+    gizumoRender(renderPass) {
         function getColorFromFlag(active, selected) {
             return active ? [1,1,1,1] : selected ? [1,0.5,0,1] : [0.2,0.2,0.2,1];
         }

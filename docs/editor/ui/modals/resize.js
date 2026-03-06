@@ -53,7 +53,7 @@ export class ResizeModal {
         return "FINISHED";
     }
 
-    render(renderPass) {
+    gizumoRender(renderPass) {
         circleRender(renderPass, this.command.pivotPoint, 2, [1,0,0,1], 0, 0);
         dottedLineRender(renderPass, this.command.pivotPoint, this.mousePosition, 2, 10, 10, [0,0,0,1],0);
         /** @type {ViewerSpaceData} */
