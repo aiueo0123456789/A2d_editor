@@ -1,5 +1,5 @@
 import { app } from "../../../../main.js";
-import { circleRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
+import { circleRender, textureRender, triangleRender } from "../../../ui/area/areas/Viewer/Viewer.js";
 import { createID } from "../../../utils/idGenerator.js";
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { useEffect } from "../../../utils/ui/util.js";
@@ -166,6 +166,18 @@ export class BMeshShapeKey {
         const graphicMeshData = app.scene.runtimeData.graphicMeshData;
         graphicMeshData.update(this.object);
         useEffect.update({o: this.object.shapeKeyMetaDatas})
+    }
+
+    render(renderPass) {
+        if (this.activeShapeKey) {
+            for (const mesh of this.meshes) {
+                textureRender(renderPass, this.activeShapeKey.data[mesh.indexs[0]].co, this.vertices[mesh.indexs[0]].texCoord, this.activeShapeKey.data[mesh.indexs[1]].co, this.vertices[mesh.indexs[1]].texCoord, this.activeShapeKey.data[mesh.indexs[2]].co, this.vertices[mesh.indexs[2]].texCoord, this.texture.view);
+            }
+        } else {
+            for (const mesh of this.meshes) {
+                textureRender(renderPass, this.vertices[mesh.indexs[0]].co, this.vertices[mesh.indexs[0]].texCoord, this.vertices[mesh.indexs[1]].co, this.vertices[mesh.indexs[1]].texCoord, this.vertices[mesh.indexs[2]].co, this.vertices[mesh.indexs[2]].texCoord, this.texture.view);
+            }
+        }
     }
 
     gizumoRender(renderPass) {

@@ -45,8 +45,9 @@ export class AppendShapeKeyInBlendShapeCommand extends Command {
 /**
  * BlendShapeにポイントを追加
  */
-export class AppendBlendShapePointCommand {
+export class AppendBlendShapePointCommand extends Command {
     constructor(/** @type {BlendShape} */blendShape) {
+        super();
         this.blendShape = blendShape;
         this.newPoint = this.blendShape.createPoint([...blendShape.value]);
     }
@@ -66,8 +67,9 @@ export class AppendBlendShapePointCommand {
 /**
  * アクティブなオブジェクトにシェイプキーを追加
  */
-export class CreateShapeKeyCommand {
+export class CreateShapeKeyCommand extends Command {
     constructor(name) {
+        super();
         /** @type {BMeshShapeKey} */
         this.editObject = app.scene.editData.getEditObjectByObject(app.context.activeObject);
         this.error = !this.editObject;

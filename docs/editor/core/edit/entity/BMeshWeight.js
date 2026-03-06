@@ -156,6 +156,12 @@ export class BMeshWeight {
         graphicMeshData.update(this.object);
     }
 
+    render(renderPass) {
+        for (const mesh of this.meshes) {
+            textureRender(renderPass, mesh.vertices[0].co, mesh.vertices[0].texCoord, mesh.vertices[1].co, mesh.vertices[1].texCoord, mesh.vertices[2].co, mesh.vertices[2].texCoord, this.texture.view);
+        }
+    }
+
     gizumoRender(renderPass) {
         for (const mesh of this.meshes) {
             triangleRender(renderPass, mesh.vertices[0].co, mesh.vertices[1].co, mesh.vertices[2].co, [0,0,0,0], 2, [0,0,0,1], 0, -0.5);

@@ -218,9 +218,11 @@ export class Area_Inspector {
                                         app.operator.execute();
                                     }, onActive: (object) => {
                                         /** @type {BMeshShapeKey} */
+                                        console.log(object);
                                         const bms = app.scene.editData.getEditObjectByObject(app.context.activeObject);
-                                        app.operator.appendCommand(new ChangeParameterCommand(bms, "activeShapeKey", object, () => {
-                                            bms.updateGPUData();
+                                        app.operator.appendCommand(new ChangeParameterCommand(bms, "activeShapeKey", object, (object, parameter, newValue) => {
+                                            changeParameter(object, parameter, newValue);
+                                            object.updateGPUData();
                                         }));
                                         app.operator.execute();
                                     }, src: "/shapeKeys", type: "min",

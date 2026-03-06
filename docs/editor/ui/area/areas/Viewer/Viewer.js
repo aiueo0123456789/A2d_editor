@@ -716,6 +716,12 @@ export class Area_Viewer {
                 if (app.input.click) return WeightPaintModal;
                 if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
             }
+            if (context.currentMode == "メッシュシェイプキー編集") {
+                if (app.input.consumeKeys(["g"])) return TranslateModal;
+                if (app.input.consumeKeys(["s"])) return ResizeModal;
+                if (app.input.consumeKeys(["r"])) return RotateModal;
+                if (app.input.consumeKeys(["Tab"])) return {command: ChangeEditModeCommand, parameter: ["オブジェクト"]};
+            }
             if (context.currentMode == "ボーン編集") {
                 if (app.input.consumeKeys(["g"])) return TranslateModal;
                 if (app.input.consumeKeys(["s"])) return ResizeModal;
