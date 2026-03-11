@@ -31,7 +31,7 @@ export class Area_BlendShape {
                                         changeParameter(this.spaceData, "activeBlendShape", app.scene.objects.getObjectByID(value));
                                     },
                                     sourceObject: () => {
-                                        return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, id: blendShape.id}});
+                                        return app.scene.objects.blendShapes.map(blendShape => {return {name: blendShape.name, key: blendShape.id}});
                                     }, options: {initValue: ""}
                                 },
                                 {tagType: "operatorButton", label: "Add", onClick: () => {
@@ -41,9 +41,9 @@ export class Area_BlendShape {
                             ]}
                         ]}
                     ]},
-                    {tagType: "box", id: "main", style: "width: 100%; height: 100%; position: relative;", children: [
-                        {tagType: "box", id: "canvasContainer", style: "position: absolute; width: 100%; height: 100%; display: flex; justifyContent: center; alignItems: center; backgroundColor: rgb(55, 55, 55);", children: [
-                            {tagType: "html", tag: "canvas", id: "renderingCanvas", style: "backgroundColor: rgb(208, 208, 208);"},
+                    {tagType: "box", key: "main", style: "width: 100%; height: 100%; position: relative;", children: [
+                        {tagType: "box", key: "canvasContainer", style: "position: absolute; width: 100%; height: 100%; display: flex; justifyContent: center; alignItems: center; backgroundColor: rgb(55, 55, 55);", children: [
+                            {tagType: "html", tag: "canvas", key: "renderingCanvas", style: "backgroundColor: rgb(208, 208, 208);"},
                         ]}
                     ]},
                 ]}
@@ -59,7 +59,7 @@ export class Area_BlendShape {
 
         this.box = this.jTag.getDOMFromID("canvasContainer").element;
         /** @type {HTMLCanvasElement} */
-        this.canvas = this.jTag.getDOMFromID("renderingCanvas");
+        this.canvas = this.jTag.getDOMFromID("renderingCanvas").element;
         this.context = this.canvas.getContext("2d");
 
         this.isMouseContentAndMouseDown = false;

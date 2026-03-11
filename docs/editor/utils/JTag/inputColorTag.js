@@ -4,7 +4,7 @@ import { createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
 
 export class InputColorTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "input", {type: "color"});
         if (child.value) this.dataBlocks = [jTag.setWith(this.element, child.value, source, flag, child.useCommand, child.onChange)];
         // if (child.custom && "collision" in child.custom && !child.custom.collision) {

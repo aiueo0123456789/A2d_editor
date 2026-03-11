@@ -14,7 +14,7 @@ export class SpacesStructure {
 
     init() {
         const app = this.workSpaces.app;
-        const workSpacesDiv = app.ui.jTag.getDOMFromID("workSpaces");
+        const workSpacesDiv = app.ui.jTag.getDOMFromID("workSpaces").element;
         const looper = (data, t) => {
             if (data.type == "grid") {
                 const grid = createGrid(t, data.axis, data.template);
@@ -25,7 +25,7 @@ export class SpacesStructure {
                 this.areas.push(app.ui.setAreaType(t,data.areaType));
             }
         }
-        this.spaceContainer = looper(this.struct, app.ui.jTag.getDOMFromID("main"));
+        this.spaceContainer = looper(this.struct, app.ui.jTag.getDOMFromID("main").element);
         this.spaceContainer.container.classList.add("hidden");
         const header = createTag(workSpacesDiv, "div", {textContent: this.spaceName});
         header.addEventListener("click", () => {
@@ -87,26 +87,26 @@ export class WorkSpaces {
                     }
                 }
             }),
-            new SpacesStructure(this, "script", {
-                type: "grid",
-                axis: "c",
-                child1: {
-                    type: "grid",
-                    axis: "r",
-                    child1: {
-                        type: "area",
-                        areaType: "Viewer"
-                    },
-                    child2: {
-                        type: "area",
-                        areaType: "Inspector"
-                    }
-                },
-                child2: {
-                    type: "area",
-                    areaType: "NodeEditor"
-                }
-            }),
+            // new SpacesStructure(this, "script", {
+            //     type: "grid",
+            //     axis: "c",
+            //     child1: {
+            //         type: "grid",
+            //         axis: "r",
+            //         child1: {
+            //             type: "area",
+            //             areaType: "Viewer"
+            //         },
+            //         child2: {
+            //             type: "area",
+            //             areaType: "Inspector"
+            //         }
+            //     },
+            //     child2: {
+            //         type: "area",
+            //         areaType: "NodeEditor"
+            //     }
+            // }),
             new SpacesStructure(this, "animation", {
                 type: "grid",
                 axis: "c",

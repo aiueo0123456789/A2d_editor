@@ -5,7 +5,7 @@ import { JTag } from "./JTag.js";
 
 export class GroupTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         /** @type {HTMLElement} */
         this.element = createTag(t, "div", {class: "group"});
         this.element.style.gridTemplateColumns = child.template ? child.template : createArrayNAndFill(child.children.length, "1fr").join(" ");

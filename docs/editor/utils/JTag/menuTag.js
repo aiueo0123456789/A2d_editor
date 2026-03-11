@@ -4,18 +4,18 @@ import { CustomTag } from "./customTag.js";
 import { createTag, removeHTMLElementInObject, setClass } from "../ui/util.js";
 
 export class MenuTag extends CustomTag {
-    constructor(t, title, struct, options = {}) {
-        super();
+    constructor(jTag,t,parent,source,child,flag) {
+        super(parent);
         this.customTag = true;
         // console.log("セレクトの生成", t, list);
         this.element = createTag(t, "div");
-        this.title = createTag(this.element, "p", {textContent: title});
+        this.title = createTag(this.element, "p", {textContent: child.title});
         setClass(this.title, "nowrap");
         // const listContainer = createTag(container,"ul");
         this.element.classList.add("popupMenu");
         this.element.addEventListener("click", (e) => {
             const rect = this.element.getBoundingClientRect();
-            const menuItemsContainer = app.ui.jTag.getDOMFromID("popupMenu-items");
+            const menuItemsContainer = app.ui.jTag.getDOMFromID("popupMenu-items").element;
             function removeFn() {
                 menuItemsContainer.replaceChildren();
                 menuItemsContainer.classList.add("hidden");
@@ -61,7 +61,7 @@ export class MenuTag extends CustomTag {
                 children.className = "popupMenu-item-submenu";
                 return children;
             }
-            looper(struct, "children", createItemTag, menuItemsContainer);
+            looper(child.struct, "children", createItemTag, menuItemsContainer);
 
             document.addEventListener("click", removeFn); // セレクト以外がクリックされたら(ドキュメント)非表示
             e.stopPropagation();

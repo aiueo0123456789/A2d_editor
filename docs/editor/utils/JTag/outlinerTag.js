@@ -5,6 +5,7 @@ import { createTag, useEffect } from "../ui/util.js";
 import { InputCheckboxTag } from "./inputCheckboxTag.js";
 import { createID } from "../idGenerator.js";
 import { SelectTag } from "./selectTag.js";
+import { JTag } from "./JTag.js";
 
 /**
  * 検索の仕方
@@ -49,12 +50,11 @@ function isFilterIncluded(object, filter = "all") {
 }
 
 export class OutlinerTag extends CustomTag {
-    constructor(jTag,t,parent,source,struct,flag) {
-        super();
+    constructor(/** @type {JTag} */ jTag,t,parent,source,struct,flag) {
+        super(parent);
         const options = struct.options;
-        const isSourceFunction = isFunction(struct.withObject);
         const useMode = "mode" in options;
-        const withObject = struct.withObject;
+        const sourcePath = struct.src;
         const structures = struct.structures;
         let loopTarget = struct.loopTarget;
         let loopTargetIsPlainObject = false;
@@ -90,11 +90,11 @@ export class OutlinerTag extends CustomTag {
 
         let result = {active: null, selects: []};
         if (options.selectSource) {
-            result.selects = jTag.getParameterByPath(source, options.selectSource.object);
+            result.selects = jTag.getParameter(source, options.selectSource.object);
         }
         let activeSource = null;
         if (options.activeSource) {
-            activeSource = {object: jTag.getParameterByPath(source, options.activeSource.object), parameter: options.activeSource.parameter};
+            activeSource = {object: jTag.getParameter(source, options.activeSource.object), parameter: options.activeSource.parameter};
         } else {
             activeSource = {object: result, parameter: "active"};
         }
@@ -118,7 +118,7 @@ export class OutlinerTag extends CustomTag {
                         const targetType = child[loopTarget.parameter];
                         const loopTargets = loopTarget.loopTargets[targetType] ? loopTarget.loopTargets[targetType] : loopTarget.loopTargets["others"] ? loopTarget.loopTargets["others"] : [];
                         for (const l of loopTargets) {
-                            const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
+                            const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                             if (nextChildren) { // 子要素がある場合ループする
                                 const fnResult = getLoopChildren(nextChildren, resultObject);
                                 if (fnResult.filter) {
@@ -128,7 +128,7 @@ export class OutlinerTag extends CustomTag {
                         }
                     } else {
                         for (const l of loopTarget) {
-                            const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
+                            const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                             if (nextChildren) { // 子要素がある場合ループする
                                 const fnResult = getLoopChildren(nextChildren, resultObject);
                                 if (fnResult.filter) {
@@ -155,9 +155,9 @@ export class OutlinerTag extends CustomTag {
         }
         const outlinerUpdate = () => {
             if (useMode) {
-                rootObject = isSourceFunction ? withObject(this.mode) : jTag.getParameterByPath(source, withObject[this.mode]);
+                rootObject = jTag.getParameter(source, sourcePath[this.mode]);
             } else {
-                rootObject = isSourceFunction ? withObject() : jTag.getParameterByPath(source, withObject);
+                rootObject = jTag.getParameter(source, sourcePath);
             }
             array.length = 0;
             const allObject = getAllObject();
@@ -226,14 +226,14 @@ export class OutlinerTag extends CustomTag {
                                 const targetType = child[loopTarget.parameter];
                                 const loopTargets = loopTarget.loopTargets[targetType] ? loopTarget.loopTargets[targetType] : loopTarget.loopTargets["others"];
                                 for (const l of loopTargets) {
-                                    const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
+                                    const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                                     if (nextChildren) { // 子要素がある場合ループする
                                         looper(nextChildren, container.children[1]);
                                     }
                                 }
                             } else {
                                 for (const l of loopTarget) {
-                                    const nextChildren = jTag.getParameterByPath({normal: child, special: {}}, l);
+                                    const nextChildren = jTag.getParameter({normal: child, special: {}}, l);
                                     if (nextChildren) { // 子要素がある場合ループする
                                         looper(nextChildren, container.children[1]);
                                     }
@@ -276,22 +276,20 @@ export class OutlinerTag extends CustomTag {
         }
         useEffect.set({o: activeSource.object, g: jTag.groupID, i: activeSource.parameter, f: flag}, listActive);
         useEffect.set({o: result.selects, g: jTag.groupID, f: flag}, listActive);
-        console.log("ヒエラルキー更新対象", struct.updateEventTarget)
-        const setUpdateEventTarget = (updateEventTarget) => {
-            jTag.setUpdateEventByPath(source, updateEventTarget, outlinerUpdate, flag);
+        console.log("ヒエラルキー更新対象", struct.updateTarget)
+        const setUpdateEventTarget = (updateTarget) => {
+            jTag.setUpdateFunction(source, updateTarget, outlinerUpdate, flag);
         }
-        if (struct.updateEventTarget) {
-            if (Array.isArray(struct.updateEventTarget)) {
-                for (const updateEventTarget of struct.updateEventTarget) {
-                    setUpdateEventTarget(updateEventTarget);
+        if (struct.updateTarget) {
+            if (Array.isArray(struct.updateTarget)) {
+                for (const updateTarget of struct.updateTarget) {
+                    setUpdateEventTarget(updateTarget);
                 }
             } else {
-                setUpdateEventTarget(struct.updateEventTarget);
+                setUpdateEventTarget(struct.updateTarget);
             }
         } else {
-            if (!isSourceFunction) {
-                useEffect.set({o: jTag.getParameterByPath(source, withObject), g: jTag.groupID, f: flag}, outlinerUpdate);
-            }
+            jTag.setUpdateFunction(source, sourcePath, outlinerUpdate, f);
         }
         outlinerUpdate();
     }

@@ -18,13 +18,13 @@ export class UI {
                 inputObject: {"app": app},
                 DOM: [
                     {tagType: "html", tag: "div", class: "all", children: [
-                        {tagType: "html", id: "contextmenu", class: "contextmenu hidden", tag: "ul"},
-                        {tagType: "html", id: "popupMenu-items", class: "popupMenu-items hidden", tag: "ul"},
-                        {tagType: "html", id: "custom-select-items", class: "custom-select-items hidden", tag: "ul"},
-                        {tagType: "html", id: "parameterManagerSelecter", class: "custom-select-items hidden", tag: "ul"},
-                        {tagType: "html", id: "popoverMenusContainer", class: "popoverMenusContainer", tag: "div"},
-                        {tagType: "html", id: "loadingModalsContainer", class: "loadingModalsContainer hidden", tag: "ul"},
-                        {tagType: "div", id: "headMenubar", class: "menubar", children: [
+                        {tagType: "html", key: "contextmenu", class: "contextmenu hidden", tag: "ul"},
+                        {tagType: "html", key: "popupMenu-items", class: "popupMenu-items hidden", tag: "ul"},
+                        {tagType: "html", key: "custom-select-items", class: "custom-select-items hidden", tag: "ul"},
+                        {tagType: "html", key: "parameterManagerSelecter", class: "custom-select-items hidden", tag: "ul"},
+                        {tagType: "html", key: "popoverMenusContainer", class: "popoverMenusContainer", tag: "div"},
+                        {tagType: "html", key: "loadingModalsContainer", class: "loadingModalsContainer hidden", tag: "ul"},
+                        {tagType: "html", tag: "div", key: "headMenubar", class: "menubar", children: [
                             {tagType: "label", text: "projectName", children: [
                                 {tagType: "input", value: "app/appConfig/projectName", type: "text"},
                             ]},
@@ -48,10 +48,10 @@ export class UI {
                                 {label: "setting", icon: "setting", children: [], onClick: () => {
                                 }},
                             ]},
-                            {tagType: "html", id: "workSpaces", style: "width: 100%; display: flex; gap: 10px; alignItems: center; overflowX: auto;", tag: "div"},
+                            {tagType: "html", key: "workSpaces", style: "width: 100%; display: flex; gap: 10px; alignItems: center; overflowX: auto;", tag: "div"},
                         ]},
-                        {tagType: "html", id: "main", class: "main", tag: "div"},
-                        {tagType: "div", id: "headMenubar", class: "menubar", children: [
+                        {tagType: "html", key: "main", class: "main", tag: "div"},
+                        {tagType: "html", tag: "div", key: "headMenubar", class: "menubar", children: [
                             {tagType: "label", text: "メモリ", children: [
                                 {tagType: "meter", valueSource: "app/appPerformance/usedJSHeapByteSize", maxSource: "app/appPerformance/totalJSHeapByteSize"},
                             ]},
@@ -63,10 +63,9 @@ export class UI {
                 ]
             },
         );
-        this.header = this.jTag.getDOMFromID("headMenubar");
+        this.header = this.jTag.getDOMFromID("headMenubar").element;
 
         this.adjustPanelOperator = new AdjustPanelOperator();
-        console.log(this.jTag.getDOMFromID("custom-select-items"));
 
         this.loadingModals = {};
 
@@ -87,7 +86,7 @@ export class UI {
 
     createLodingModal(processName) {
         /** @type {HTMLElement} */
-        const loadingModalsContainer = this.jTag.getDOMFromID("loadingModalsContainer");
+        const loadingModalsContainer = this.jTag.getDOMFromID("loadingModalsContainer").element;
         loadingModalsContainer.classList.remove("hidden");
         const id = createID();
         const container = createTag(loadingModalsContainer, "div", {class: "loadingModalContainer"});
@@ -113,12 +112,12 @@ export class UI {
         delete this.loadingModals[id];
         if (Object.keys(this.loadingModals).length == 0) {
             /** @type {HTMLElement} */
-            const loadingModalsContainer = this.jTag.getDOMFromID("loadingModalsContainer");
+            const loadingModalsContainer = this.jTag.getDOMFromID("loadingModalsContainer").element;
             loadingModalsContainer.classList.add("hidden");
         }
     }
 
-    createArea(axis, target = this.jTag.getDOMFromID("main")) { // エリアの作成
+    createArea(axis, target = this.jTag.getDOMFromID("main").element) { // エリアの作成
         const area = new AutoGrid(createID(), target, axis, "50%");
         return area;
     }

@@ -4,7 +4,7 @@ import { createTag } from "../ui/util.js";
 
 export class GridBoxTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "div");
         this.element.style.display = "grid";
         if (child.axis == "r") {

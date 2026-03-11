@@ -52,7 +52,7 @@ export class Context {
     get getSelectBones() {
         const result = [];
         for (const /** @type {Armature} */ armature of this.selectedObjects.filter(object => object.type == "Armature")) {
-            result.push(...armature.allBone.filter(bone => bone && bone.selected));
+            result.push(...armature.bonesData.filter(bone => bone && bone.selected));
         }
         return result;
     }
@@ -61,7 +61,7 @@ export class Context {
         const result = [];
         for (const object of this.selectedObjects) {
             if (object.type == "Armature") {
-                for (const bone of object.allBone) {
+                for (const bone of object.bonesData) {
                     if (bone.baseHead.selected) {
                         result.push(bone.baseHead);
                     }
@@ -92,7 +92,7 @@ export class Context {
         const result = [];
         for (const object of this.selectedObjects) {
             if (object.type == "Armature") {
-                for (const bone of object.allBone) {
+                for (const bone of object.bonesData) {
                     if (bone.selected) result.push(bone);
                 }
             } else if (object.type == "GraphicMesh") {

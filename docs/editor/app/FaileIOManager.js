@@ -121,7 +121,6 @@ export class FaileIOManager {
 
         // テクスチャファイルを追加
         for (const texture of data.scene.objects.textures) {
-            // tex.id: filename, tex.blob: Blob形式の画像
             await zipWriter.add(`textures/${texture.id}.png`, new BlobReader(texture.texture));
             texture.texture = "";
         }

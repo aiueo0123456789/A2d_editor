@@ -4,7 +4,7 @@ import { createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
 
 export class InputFileTag extends CustomTag{
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         /** @type {HTMLElement} */
         this.element = createTag(t, "input", {type: "file"});
         if (child.webkitdirectory) {

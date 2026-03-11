@@ -225,22 +225,22 @@ export class Area_Viewer {
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "gridBox", class: "minLimitClear header", axis: "c", allocation: "auto 1fr auto 1fr auto", children: [
-                        {tagType: "flexBox", gap: "10px", children: [
+                        {tagType: "html", tag: "div", style: "display: flex; gap: 10px; width: fit-content; height: 100%; alignItems: center;", children: [
                             {tagType: "input", type: "radio", value: "", onChange: () => {}, inputs: [{value: "1", look: {check: "check", uncheck: "uncheck"}}, {value: "2", look: {check: "check", uncheck: "uncheck"}}, {value: "3", look: {check: "check", uncheck: "uncheck"}}]},
-                            {tagType: "path", sourceObject: "context/activeObject", updateEventTarget: {path: "context/%activeObject"}, children: [
-                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "GraphicMesh"},
+                            {tagType: "path", src: "{context/activeObject}", updateTarget: "{context/[S]activeObject}", children: [
+                                {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "GraphicMesh"},
                                     true: [
                                         {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト", "メッシュ編集", "メッシュウェイト編集", "メッシュシェイプキー編集"], options: {initValue: "オブジェクト"}},
                                     ], false: [
-                                        {tagType: "if", formula: {source: "/type", conditions: "==", value: "Armature"},
+                                        {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "Armature"},
                                             true: [
                                                 {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト", "ボーン編集", "ボーンアニメーション編集"], options: {initValue: "オブジェクト"}},
                                             ], false: [
-                                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "BezierModifier"},
+                                                {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "BezierModifier"},
                                                     true: [
                                                         {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト", "ベジェ編集", "ベジェウェイト編集", "ベジェシェイプキー編集"], options: {initValue: "オブジェクト"}},
                                                     ], false: [
-                                                        {tagType: "if", formula: {source: "/type", conditions: "==", value: "BlendShape"},
+                                                        {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "BlendShape"},
                                                             true: [
                                                                 {tagType: "select", value: (value) => {app.context.setModeForSelected(value)}, sourceObject: ["オブジェクト", "ブレンドシェイプ編集"], options: {initValue: "オブジェクト"}},
                                                             ], false: [
@@ -280,70 +280,70 @@ export class Area_Viewer {
                             ]},
                         ]},
                         {tagType: "padding", size: "10px"},
-                        {tagType: "path", sourceObject: "context", updateEventTarget: {path: "context/%currentMode"}, children: [
-                            {tagType: "if", formula: {source: "/currentMode", conditions: "==", value: "メッシュウェイト編集"},
+                        {tagType: "path", src: "context", updateTarget: "{context/[S]currentMode}", children: [
+                            {tagType: "if", formula: {src: "{/currentMode}", conditions: "==", value: "メッシュウェイト編集"},
                             true: [
                                 {tagType: "popoverMenu", label: "weightPaintMetaData", children: [
                                     {tagType: "label", text: "weight", children: [
-                                        {tagType: "input", value: "spaceData/weightPaintMetaData/weightValue", type: "number", min: 0, max: 1, step: 0.01},
+                                        {tagType: "input", value: "{spaceData/weightPaintMetaData/weightValue}", type: "number", min: 0, max: 1, step: 0.01},
                                     ]},
                                     {tagType: "label", text: "decaySize", children: [
-                                        {tagType: "input", value: "spaceData/weightPaintMetaData/decaySize", type: "number", min: 0, max: 1000, step: 0.01},
+                                        {tagType: "input", value: "{spaceData/weightPaintMetaData/decaySize}", type: "number", min: 0, max: 1000, step: 0.01},
                                     ]},
                                     {tagType: "label", text: "decayType", children: [
-                                        {tagType: "select", value: "spaceData/weightPaintMetaData/decayType", sourceObject: ["ミックス","最大","最小"], options: {initValue: {path: "spaceData/weightPaintMetaData/decayType"}}},
+                                        {tagType: "select", value: "{spaceData/weightPaintMetaData/decayType}", sourceObject: ["ミックス","最大","最小"], options: {initValue: "{spaceData/weightPaintMetaData/decayType}"}},
                                     ]},
                                     {tagType: "label", text: "bezierType", children: [
-                                        {tagType: "select", value: "spaceData/weightPaintMetaData/bezierType", sourceObject: [0,1], options: {initValue: "0"}},
+                                        {tagType: "select", value: "{spaceData/weightPaintMetaData/bezierType}", sourceObject: [0,1], options: {initValue: "0"}},
                                     ]},
                                 ]},
                             ], false: [
                                 {tagType: "popoverMenu", label: "proportionalMetaData", children: [
                                     {tagType: "label", text: "use", attributes: ["after"], children: [
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/proportionalMetaData/use", look: {check: "check", uncheck: "uncheck"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/proportionalMetaData/use}", look: {check: "check", uncheck: "uncheck"}},
                                     ]},
                                     {tagType: "label", text: "type", attributes: ["after"], children: [
-                                        {tagType: "select", value: "spaceData/proportionalMetaData/type", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "spaceData/proportionalMetaData/type"}}},
+                                        {tagType: "select", value: "{spaceData/proportionalMetaData/type}", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: "{spaceData/proportionalMetaData/type}"}},
                                     ]},
                                     {tagType: "label", text: "size", attributes: ["after"], children: [
-                                        {tagType: "input", value: "spaceData/proportionalMetaData/size", type: "number", min: 0, max: 10000},
+                                        {tagType: "input", value: "{spaceData/proportionalMetaData/size}", type: "number", min: 0, max: 10000},
                                     ]},
                                 ]},
                             ]},
                             {tagType: "padding", size: "10px"},
-                            {tagType: "flexBox", gap: "10px", children: [
+                            {tagType: "html", tag: "div", style: "display: flex; gap: 10px; width: fit-content; height: 100%; alignItems: center;", children: [
                                 {tagType: "popoverMenu", icon: "setting", children: [
                                     {tagType: "label", text: "graphicMesh", children: [
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/selectabilityAndVisbility/graphicMesh/visible", look: {check: "display", uncheck: "hide"}},
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/selectabilityAndVisbility/graphicMesh/select", look: {check: "selected", uncheck: "notSelected"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/selectabilityAndVisbility/graphicMesh/visible}", look: {check: "display", uncheck: "hide"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/selectabilityAndVisbility/graphicMesh/select}", look: {check: "selected", uncheck: "notSelected"}},
                                     ]},
                                     {tagType: "label", text: "armature", children: [
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/selectabilityAndVisbility/armature/visible", look: {check: "display", uncheck: "hide"}},
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/selectabilityAndVisbility/armature/select", look: {check: "selected", uncheck: "notSelected"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/selectabilityAndVisbility/armature/visible}", look: {check: "display", uncheck: "hide"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/selectabilityAndVisbility/armature/select}", look: {check: "selected", uncheck: "notSelected"}},
                                     ]},
                                     {tagType: "label", text: "bezierModifier", children: [
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/selectabilityAndVisbility/bezierModifier/visible", look: {check: "display", uncheck: "hide"}},
-                                        {tagType: "input", type: "checkbox", checked: "spaceData/selectabilityAndVisbility/bezierModifier/select", look: {check: "selected", uncheck: "notSelected"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/selectabilityAndVisbility/bezierModifier/visible}", look: {check: "display", uncheck: "hide"}},
+                                        {tagType: "input", type: "checkbox", checked: "{spaceData/selectabilityAndVisbility/bezierModifier/select}", look: {check: "selected", uncheck: "notSelected"}},
                                     ]},
                                 ]},
                                 {tagType: "popoverMenu", icon: "overlay", children: [
                                     {tagType: "label", text: "Guides", attributes: ["top"], children: [
                                         {tagType: "label", text: "Grid", attributes: ["after"], children: [
-                                            {tagType: "input", type: "checkbox", checked: "spaceData/overlays/guides/grid", look: {check: "display", uncheck: "hide"}},
+                                            {tagType: "input", type: "checkbox", checked: "{spaceData/overlays/guides/grid}", look: {check: "display", uncheck: "hide"}},
                                         ]},
                                     ]},
                                     {tagType: "label", text: "Guides", attributes: ["top"], children: [
                                         {tagType: "label", text: "Grid", attributes: ["after"], children: [
-                                            {tagType: "input", type: "checkbox", checked: "spaceData/overlays/guides/grid", look: {check: "display", uncheck: "hide"}},
+                                            {tagType: "input", type: "checkbox", checked: "{spaceData/overlays/guides/grid}", look: {check: "display", uncheck: "hide"}},
                                         ]},
                                     ]},
                                 ]},
                             ]}
                         ]},
                     ]},
-                    {tagType: "box", id: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
-                        {tagType: "html", tag: "canvas", id: "renderingCanvas", style: "width: 100%; height: 100%; position: absolute;"},
-                        {tagType: "html", tag: "div", id: "adjustPanel", style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: flex; alignItems: flex-end; padding: 5px;"},
+                    {tagType: "box", key: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
+                        {tagType: "html", tag: "canvas", key: "renderingCanvas", style: "width: 100%; height: 100%; position: absolute;"},
+                        {tagType: "html", tag: "div", key: "adjustPanel", style: "width: 100%; height: 100%; position: absolute; pointerEvents: none; display: flex; alignItems: flex-end; padding: 5px;"},
                     ], contextmenu: () => {
                         if (app.context.currentMode == "オブジェクト") {
                             return [
@@ -410,7 +410,7 @@ export class Area_Viewer {
         this.jTag.create(area.main, this.struct);
 
         this.sideBarOperator = new SideBarOperator(this.jTag.getDOMFromID("canvasContainer").element, {});
-        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel"); // これがadjustPanelが作られるタグ
+        this.adjustPanel = this.jTag.getDOMFromID("adjustPanel").element; // これがadjustPanelが作られるタグ
         this.modalOperator = new ModalOperator();
 
         this.flagOperator = new FlagOperator();
@@ -428,7 +428,7 @@ export class Area_Viewer {
             {}
         ));
 
-        this.canvas = this.jTag.getDOMFromID("renderingCanvas");
+        this.canvas = this.jTag.getDOMFromID("renderingCanvas").element;
         this.canvasRect = this.canvas.getBoundingClientRect();
 
         this.camera = new Camera();

@@ -6,7 +6,7 @@ import { JTag } from "./JTag.js";
 
 export class PanelTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "div", {class: "panel"});
         this.header = createTag(this.element, "div", {class: "panel-header"});
 

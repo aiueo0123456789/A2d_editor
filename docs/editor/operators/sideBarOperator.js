@@ -55,8 +55,8 @@ export class SideBarOperator {
         for (const shelfeName in this.shelfes) {
             // 横
             this.jTag.createFromStructures(this.domForSideBar,null,[
-                {tagType: "div", children: [
-                    {tagType: "div", options: {textContent: shelfeName}, style: "writingMode: vertical-rl;"},
+                {tagType: "html", tag: "div", children: [
+                    {tagType: "html", tag: "div", options: {textContent: shelfeName}, style: "writingMode: vertical-rl;"},
                 ], style: `
                     padding: 5px 0px;
                     background-color: rgb(36, 36, 36);

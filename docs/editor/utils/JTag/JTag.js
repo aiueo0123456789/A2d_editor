@@ -27,13 +27,14 @@ import { ListTag } from "./listTag.js";
 import { CanvasTag } from "./canvasTag.js";
 import { DualListboxTag } from "./dualListbox.js";
 import { ParameterManagerTag } from "./parameterManagerTag.js";
-import { ChecksTag } from "./checksTag.js";
 import { createID } from "../idGenerator.js";
 import { PopoverMenuTag } from "./popoverMenuTag.js";
 import { IconTag } from "./iconTag.js";
 import { GroupTag } from "./groupTag.js";
 import { InputRadioTag } from "./radioTag.js";
 import { HeaderTag } from "./headerTag.js";
+import { HTMLTag } from "./htmlTag.js";
+import { IfTag } from "./ifTag.js";
 
 function isFocus(t) {
     return document.hasFocus() && document.activeElement === t;
@@ -51,10 +52,10 @@ const tagCreater = {
         let element = createTag(t, "p");
         setClass(element, "text");
         const update = () => {
-            element.textContent = jTag.getParameterByPath(source, child.withObject);
+            element.textContent = jTag.getParameter(source, child.src);
         }
         update();
-        jTag.setUpdateEventByPath(source, child.withObject, update, flag);
+        jTag.setUpdateFunction(source, child.src, update, flag);
         return element;
     },
     "heightCenter": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
@@ -102,28 +103,18 @@ const tagCreater = {
     "buttons": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         createGroupButton(t, [{icon: "グループ", label: "a"},{icon: "グループ", label: "b"},{icon: "グループ", label: "c"}]);
     },
-    "checks": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        const a = (child.withObjects).map((data, index) => {
-            return {icon: "グループ", label: data.text};
-        });
-        let element = new ChecksTag(t, a);
-        child.withObjects.forEach((data, index) => {
-            jTag.setWith(element.checks[index], data.path, source);
-        })
-        return element;
-    },
     "select": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        return new SelectTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
+        return new SelectTag(jTag,t,parent,source,child,flag);
     },
     "menu": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        let element = new MenuTag(t, child.title, child.struct, child?.options);
+        let element = new MenuTag(jTag,t,parent,source,child,flag);
         return element;
     },
     "dblClickInput": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => { // ダブルクッリク入力
         return new DblClickInput(jTag,t,parent,source,child,flag);
     },
     "list": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        return new ListTag(/** @type {JTag} */ jTag,t,parent,source,child,flag);
+        return new ListTag(jTag,t,parent,source,child,flag);
     },
     "container": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         let element = createTag(t, "ul");
@@ -195,40 +186,17 @@ const tagCreater = {
         return new PathTag(jTag,t,parent,source,child,flag);
     },
     "if": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        // console.log(source, child, jTag.getParameterByPath(source,child.formula.source))
-        let bool = false;
-        if (child.formula.conditions == "==") {
-            bool = jTag.getParameterByPath(source,child.formula.source) == child.formula.value;
-        } else if (child.formula.conditions == ">") {
-            bool = jTag.getParameterByPath(source,child.formula.source) > child.formula.value;
-        } else if (child.formula.conditions == "<") {
-            bool = jTag.getParameterByPath(source,child.formula.source) < child.formula.value;
-        } else if (child.formula.conditions == "in") {
-            bool = child.formula.value in jTag.getParameterByPath(source,child.formula.source);
-        }
-        if (bool) {
-            if (child.true) {
-                return jTag.createFromStructures(t, null, child.true, source, flag);
-            }
-        } else {
-            if (child.false) {
-                return jTag.createFromStructures(t, null, child.false, source, flag);
-            }
-        }
+        return new IfTag(jTag,t,parent,source,child,flag);
     },
     "hasKeyframeCheck": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new HasKeyframeCheck(jTag,t,parent,source,child,flag);
     },
     "nodeFromFunction": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        const functionResult = jTag.getParameterByPath(source, child.source)();
+        const functionResult = jTag.getParameter(source, child.source)();
         return jTag.createFromStructures(t, null, functionResult, source, flag);
     },
     "html": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        const element = createTag(t, child.tag);
-        if (child.children) {
-            jTag.createFromStructures(element, null, child.children, source, flag);
-        }
-        return element;
+        return new HTMLTag(jTag,t,parent,source,child,flag);
     },
     "meter": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
         return new MeterTag(jTag,t,parent,source,child,flag);
@@ -240,8 +208,8 @@ const tagCreater = {
         return new DualListboxTag(jTag,t,parent,source,child,flag);
     },
     "color": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
-        if (t instanceof HTMLElement) t.style.backgroundColor = jTag.getParameterByPath(source, child.src);
-        else t.element.style.backgroundColor = jTag.getParameterByPath(source, child.src);
+        if (t instanceof HTMLElement) t.style.backgroundColor = jTag.getParameter(source, child.src);
+        else t.element.style.backgroundColor = jTag.getParameter(source, child.src);
         return null;
     },
     "parameterManager": (/** @type {JTag} */ jTag,t,parent,source,child,flag) => {
@@ -272,6 +240,13 @@ export class ParameterReference {
     }
 }
 
+class SourceAndRoot {
+    constructor(source, root) {
+        this.source = source;
+        this.root = root;
+    }
+}
+
 // UIを作るクラス
 export class JTag {
     static tagAppendChildren(t, children) {
@@ -291,179 +266,152 @@ export class JTag {
         this.keyRef = new Map();
     }
 
-    setUpdateEventByPath(source, path, event, flag) {
+    setUpdateFunction(source, value, /** @type {Function} */ submitFunction, flag) {
         const template = flag ? {g: this.groupID, f: flag} : {g: this.groupID};
         try {
-            // pathをもとに参照
-            let useSearchTarget;
-            // 一般的
-            if (path[0] == "/") {
-                path = path.slice(1);
-                useSearchTarget = source.normal;
-            } else if (path[0] == "!") {
-                path = path.slice(1);
-                useSearchTarget = source.special;
-            } else {
-                useSearchTarget = this.globalSource;
-            }
-            if (path == "") {
-                useEffect.set(Object.assign(template,{o: useSearchTarget}), event);
-            }
-            let roots = [];
-            if (path.includes("{") && path.includes("}")) {
-                const matches = [];
-                // {〜} 部分を抽出しつつ置換
-                let checked = false;
-                let replaced = path.replace(/\{([^{}]*)\}/g, (match, content, index) => {
-                    const currentIndex = matches.length;
-                    if (path[index - 1] == "%") {
-                        checked = true;
-                        matches.push(`%${this.getParameterByPath(source, content)}`);
-                    } else matches.push(this.getParameterByPath(source, content));
-                    return `&${currentIndex}`;
-                });
-                if (checked) replaced = replaced.replace("%", "");
-                roots = replaced.split("/").map(root => {
-                    if (root[0] == "&") return matches[root.slice(1)];
-                    else return root;
-                });
-            } else {
-                // 一般的
-                roots = path.split("/");
-            }
-            roots = roots.map(root => {
-                if (isNumber(root)) return Number(root)
-                else return root;
-            });
-            const root = roots.slice(0, -1);
-            let lastRoot = roots[roots.length - 1];
-            let lastIsParameter = false;
-            if (lastRoot[0] == "%") { // ~/%parameterNameの場合オブジェクト内のidを対象とする
-                lastRoot = lastRoot.slice(1); // %を取り除く
-                lastIsParameter = true;
-            }
-            let object = useSearchTarget;
-            for (let next of root) {
-                if (next in object) {
-                    object = object[next];
-                } else {
-                    return null;
+            const parameter = this.getParameter(source, value, "SOURCE_AND_ROOT");
+            if (parameter instanceof SourceAndRoot) {
+                const {root: root, source: startObject} = parameter;
+                const mainRoot = root.slice(0, -1);
+                let lastRoot = root[root.length - 1];
+                let lastIsParameter = false;
+                console.log(root)
+                if (lastRoot.startsWith("[S]")) { // ~/[S]...の場合オブジェクト内のidを対象とする
+                    console.log(lastRoot)
+                    lastRoot = lastRoot.slice(3); // [S]を取り除く
+                    lastIsParameter = true;
                 }
-            }
-            if (lastIsParameter) {
-                return useEffect.set(Object.assign(template,{o: object, i: lastRoot}), event);
-            } else {
-                const final = object[lastRoot];
-                if (isPassByReference(final)) {
-                    return useEffect.set(Object.assign(template,{o: final}), event);
-                } else {
-                    return useEffect.set(Object.assign(template,{o: object, i: lastRoot}), event);
-                }
-            }
-        } catch {
-            console.trace("値の取得", path, source, "でエラーが出ました");
-        }
-    }
-
-    getParameter(source, value) {
-        if (IsString(value.path)) {
-            return this.getParameterByPath(source, value.path);
-        } else if (isFunction(value)) {
-            return value();
-        } else {
-            return value;
-        }
-    }
-
-    getParameterByPath(source, path, option = 0) {
-        try {
-            let useSearchTarget;
-            path = path.replace("%", ""); // %はじゃまなので削除
-            // 一般的
-            if (path[0] == "/") { // normalから
-                path = path.slice(1);
-                useSearchTarget = source.normal;
-            } else if (path[0] == "!") { // specialから
-                path = path.slice(1);
-                useSearchTarget = source.special;
-            } else if (path[0] == "<") { // sourceから
-                path = path.slice(1);
-                return this.getParameterByPath(source, path, "fromSource");
-            } else { // globalから
-                useSearchTarget = this.globalSource;
-            }
-            if (path == "") {
-                return useSearchTarget;
-            }
-            let roots = [];
-            if (path.includes("{") && path.includes("}")) {
-                const matches = [];
-                // {〜} 部分を抽出しつつ置換
-                const replaced = path.replace(/\{([^{}]*)\}/g, (match, content, index) => {
-                    const currentIndex = matches.length;
-                    matches.push(this.getParameterByPath(source, content));
-                    return `&${currentIndex}`;
-                });
-                roots = replaced.split("/").map(root => {
-                    if (root[0] == "&") return matches[root.slice(1)];
-                    else return root;
-                });
-            } else { // 通常
-                roots = path.split("/");
-            }
-            if (option == "fromSource") return roots[0];
-            roots = roots.map(root => {
-                if (isNumber(root)) return Number(root)
-                else return root;
-            });
-            const root = roots.slice(0, -1);
-            let lastRoot = roots[roots.length - 1];
-            let object = useSearchTarget;
-            for (let next of root) {
-                if (object instanceof Map) {
-                    object = object.get(next);
-                } else if (next in object) {
-                    object = object[next];
-                } else {
-                    return null;
-                }
-            }
-            let final;
-            if (object instanceof Map) {
-                final = object.get(lastRoot);
-            } else if (lastRoot in object) {
-                final = object[lastRoot];
-            } else {
-                return null;
-            }
-            if (option == 1) { // optionが1ならParameterReference型で返す
-                return new ParameterReference(object, lastRoot);
-            } else {
-                if (isFunction(final)) {
-                    return final.bind(object);
-                } else if (isPassByReference(final)) {
-                    return final;
-                } else {
-                    if (option == 2) {
-                        return new ParameterReference(object, lastRoot);
+                let object = startObject;
+                for (let next of mainRoot) {
+                    if (next in object) {
+                        object = object[next];
                     } else {
-                        return final;
+                        return null;
                     }
                 }
+                if (lastIsParameter) {
+                    return useEffect.set(Object.assign(template,{o: object, i: lastRoot}), submitFunction);
+                } else {
+                    const final = object[lastRoot];
+                    if (isPassByReference(final)) {
+                        return useEffect.set(Object.assign(template,{o: final}), submitFunction);
+                    } else {
+                        return useEffect.set(Object.assign(template,{o: object, i: lastRoot}), submitFunction);
+                    }
+                }
+            } else {
+                return useEffect.set(Object.assign(template,{o: parameter}), submitFunction);
             }
         } catch(e) {
-            // console.error(e);
-            console.warn("値の取得", path, source, "でエラーが出ました");
+            console.error(e)
+            console.warn("値の取得", value, source, "でエラーが出ました");
+        }
+    }
+
+    getParameter(source, value, option = "VALUE") {
+        try {
+            if (isFunction(value)) {
+                return value;
+            } else if (value[0] == "{" && value[value.length - 1] == "}") { // {string}という構造か
+                let path = value.slice(1, -1); // string部分
+                let startObject;
+                // 最初の参照
+                if (path[0] == "/") { // normalから
+                    path = path.slice(1);
+                    startObject = source.normal;
+                } else if (path[0] == "!") { // specialから
+                    path = path.slice(1);
+                    startObject = source.special;
+                } else if (path[0] == "<") { // pathから {<{!index}} の場合
+                    path = path.slice(1);
+                    return this.getParameter(source, path, "FIRST_PATH"); // optionをつけて呼び直す
+                } else { // globalから
+                    startObject = this.globalSource;
+                }
+                if (path == "") return startObject;
+
+                // ルート
+                let root = [];
+                if (path.includes("{") && path.includes("}")) {
+                    const matches = [];
+                    // {〜} 部分を抽出しつつ置換
+                    let checked = false;
+                    let replaced = path.replace(/\{([^{}]*)\}/g, (match, content, index) => {
+                        const currentIndex = matches.length;
+                        if (path.startsWith("[S]", index - 3)) {
+                            checked = true;
+                            matches.push(`[S]${this.getParameter(source, content)}`);
+                        } else matches.push(this.getParameter(source, content));
+                        return `[ref]${currentIndex}`;
+                    });
+                    if (checked) replaced = replaced.replace("%", "");
+                    root = replaced.split("/").map(root => {
+                        if (root.startsWith("[ref]")) return matches[root.slice(5)];
+                        else return root;
+                    });
+                } else {
+                    // 一般的
+                    root = path.split("/");
+                }
+                if (option == "FIRST_PATH") return root[0];
+                root = root.map(root => {
+                    if (isNumber(root)) return Number(root)
+                    else return root;
+                });
+                if (option == "SOURCE_AND_ROOT") return new SourceAndRoot(startObject, root);
+                const mainRoot = root.slice(0, -1);
+                let lastRoot = root[root.length - 1];
+
+                // ルートで取得
+                let object = startObject;
+                for (let next of mainRoot) {
+                    if (object instanceof Map) {
+                        object = object.get(next);
+                    } else if (next in object) {
+                        object = object[next];
+                    } else {
+                        return null;
+                    }
+                }
+                let final;
+                if (object instanceof Map) {
+                    final = object.get(lastRoot);
+                } else if (lastRoot in object) {
+                    final = object[lastRoot];
+                } else {
+                    return null;
+                }
+                console.log(final, object, lastRoot)
+                if (option == "VALUE") {
+                    if (isFunction(final)) return final.bind(object);
+                    else if (isPassByReference(final)) return final;
+                    else return final;
+                } else if (option == "REFERENCE") {
+                    return new ParameterReference(object, lastRoot);
+                } else if (option == "REFERENCE_IF_VALUE") {
+                    if (isFunction(final)) return final.bind(object);
+                    else if (isPassByReference(final)) return final;
+                    else {
+                        if (option == 2) return new ParameterReference(object, lastRoot);
+                        else return final;
+                    }
+                }
+            } else { // ただの文字列
+                return value;
+            }
+        } catch(e) {
+            // console.error(e)
+            console.warn("値の取得", value, source, this.globalSource, "でエラーが出ました");
         }
     }
 
     removeReference(tagData) {
-        if (tagData.id) {
+        if (tagData.key) {
             let id = "";
-            if (tagData.id.path) {
-                id = this.getParameterByPath(source, tagData.id.path);
+            if (tagData.key.path) {
+                id = this.getParameter(source, tagData.key.path);
             } else {
-                id = tagData.id;
+                id = tagData.key;
             }
             this.keyRef.delete(id);
         }
@@ -471,7 +419,7 @@ export class JTag {
 
     // inputとselectを値と関連付ける
     setWith(/** @type {HTMLElement} */t, path, source, flag, useCommand = true, submitFunction = null) {
-        let object = this.getParameterByPath(source, path, 1);
+        let object = this.getParameter(source, path, "REFERENCE");
         if (!object) { // 取得できなかったら切り上げ
             console.warn("UIとパラメータの連携ができませんでした", path, source, this.globalSource);
             if (t.type == "number" || t.type == "range") { // 数字型
@@ -537,15 +485,15 @@ export class JTag {
             }
         })
         updateDOMsValue();
-        return this.setUpdateEventByPath(source, path, updateDOMsValue, flag);
+        return this.setUpdateFunction(source, path, updateDOMsValue, flag);
     }
 
     getKeyFromStructure(structure, source) {
-        if (!structure.id) return null;
-        if (structure.id.path) {
-            return this.getParameterByPath(source, structure.id.path);
+        if (!structure.key) return null;
+        if (structure.key.path) {
+            return this.getParameter(source, structure.key.path);
         } else {
-            return structure.id;
+            return structure.key;
         }
     }
 
@@ -580,10 +528,10 @@ export class JTag {
                                 })
                             }
                         }
-                        if (structure.id) {
-                            let id = this.getKeyFromStructure(structure, source);
-                            element.id = structure.id;
-                            this.keyRef.set(id, element);
+                        if (structure.key) {
+                            let key = this.getKeyFromStructure(structure, source);
+                            element.key = structure.key;
+                            this.keyRef.set(key, element);
                         }
                         // if (structure.label) element = new LabelTag(setTarget, structure.label);
                         if (structure.labelIn) {

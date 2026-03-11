@@ -7,7 +7,7 @@ export class BlendShapePanel {
             inputObject: {"context": app.context, "areaConfig": app.appConfig.areasConfig["BlendShape"], "scene": app.scene, "values": this.values},
             DOM: [
                 {tagType: "panel", name: "BlendShape", children: [
-                    {tagType: "path", sourceObject: "areaConfig/activeBlendShape", updateEventTarget: {path: "areaConfig/%activeBlendShape"}, children: [
+                    {tagType: "path", src: "areaConfig/activeBlendShape", updateTarget: "{areaConfig/[S]activeBlendShape}", children: [
                         {tagType: "label", text: "name", children: [
                             {tagType: "input", value: "/name", type: "text"},
                         ]},

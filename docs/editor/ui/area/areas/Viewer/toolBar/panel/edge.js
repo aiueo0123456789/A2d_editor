@@ -6,7 +6,7 @@ export class ActiveEdgePanel {
             inputObject: {"context": app.context, "areasConifg": app.appConfig.areasConfig, "scene": app.scene, "values": this.values},
             DOM: [
                 {tagType: "panel", name: "辺", children: [
-                    {tagType: "path", sourceObject: "scene/editData/editObjects/{context/activeObject/id}/activeEdge", updateEventTarget: "辺選択", children: [
+                    {tagType: "path", src: "scene/editData/editObjects/{context/activeObject/id}/activeEdge", updateTarget: "辺選択", children: [
                         {tagType: "label", text: "x", children: [
                             {tagType: "input", value: "/co/0", type: "number"},
                         ]},

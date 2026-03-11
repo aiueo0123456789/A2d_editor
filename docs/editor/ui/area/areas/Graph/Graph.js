@@ -40,13 +40,13 @@ export class Area_Graph {
             DOM: [
                 {tagType: "gridBox", style: "width: 100%; height: 100%;", axis: "r", allocation: "auto 1fr", children: [
                     {tagType: "gridBox", class: "minLimitClear header", axis: "c", allocation: "1fr auto 1fr", children: [
-                        {tagType: "flexBox", gap: "10px", children: [
+                        {tagType: "html", tag: "div", style: "display: flex; gap: 10px; width: fit-content; height: 100%; alignItems: center;", children: [
                             {tagType: "menu", title: "選択", struct: [
                                 {label: "すべて選択", children: [], onClick: () => {app.context.selectAll()}},
                                 {label: "属性選択", children: [], onClick: () => {app.context.selectByAttribute()}},
                             ]},
                         ]},
-                        {tagType: "flexBox", gap: "10px", children: [
+                        {tagType: "html", tag: "div", style: "display: flex; gap: 10px; width: fit-content; height: 100%; alignItems: center;", children: [
                             {tagType: "group", children: [
                                 {tagType: "operatorButton", icon: "reverseSkip", onClick: () => {
                                     changeParameter(app.scene, "frame_current", app.scene.frame_start);
@@ -60,7 +60,7 @@ export class Area_Graph {
                         ]},
                         {tagType: "gridBox", axis: "c", allocation: "1fr auto", children: [
                             {tagType: "padding"},
-                            {tagType: "flexBox", gap: "10px", children: [
+                            {tagType: "html", tag: "div", style: "display: flex; gap: 10px; width: fit-content; height: 100%; alignItems: center;", children: [
                                 {tagType: "input", name: "frame_current", style: "maxWidth: 70px", value: "scene/frame_current", type: "number", max: 500, min: -500},
                                 {tagType: "input", name: "frame_start", style: "maxWidth: 70px", value: "scene/frame_start", type: "number", max: 500, min: -500},
                                 {tagType: "input", name: "frame_end", style: "maxWidth: 70px", value: "scene/frame_end", type: "number", max: 500, min: -500},
@@ -69,8 +69,7 @@ export class Area_Graph {
                         ]}
                     ]},
                     {tagType: "grid", axis: "c", child1: [
-                        {tagType: "outliner", name: "outliner", id: "overview",
-                            updateEventTarget: "選択物",
+                        {tagType: "outliner", name: "outliner", key: "overview",
                             options: {
                                 clickEventFn: (event, object) => {
                                     event.stopPropagation();
@@ -79,8 +78,8 @@ export class Area_Graph {
                                 },
                                 activeSource: {object: "context", parameter: "activeObject"}, selectSource: {object: "context/selectedObjects"},
                             },
-                            withObject: "spaceData/outlineData",
-                            updateEventTarget: ["頂点選択","ボーン選択","オブジェクト選択"],
+                            src: "spaceData/outlineData",
+                            updateTarget: ["頂点選択","ボーン選択","オブジェクト選択"],
                             loopTarget: {
                                 parameter: "type",
                                 loopTargets: {
@@ -89,20 +88,20 @@ export class Area_Graph {
                                 }
                             },
                             structures: [
-                                {tagType: "if", formula: {source: "/type", conditions: "==", value: "KeyframeBlock"},
+                                {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "KeyframeBlock"},
                                     true: [
-                                        {tagType: "gridBox", id: {path: "/pathID"}, axis: "c", style: "marginTop: 1px; marginBottom: 1px", allocation: "10px auto auto 1fr", children: [
+                                        {tagType: "gridBox", key: "{/pathID}", axis: "c", style: "marginTop: 1px; marginBottom: 1px", allocation: "10px auto auto 1fr", children: [
                                             {tagType: "html", tag: "div", children: [
                                                 {tagType: "color", src: "colorData/{/parameter}"},
                                             ]},
-                                            {tagType: "icon", src: {path: "/type"}},
+                                            {tagType: "icon", src: "{/type}"},
                                             {tagType: "input", type: "checkbox", checked: "/object/visible", look: {check: "display", uncheck: "hide"}},
                                             {tagType: "dblClickInput", value: "/parameter"},
                                         ]}
                                     ],
                                     false: [
-                                        {tagType: "gridBox", id: {path: "/id"}, axis: "c", allocation: "auto 1fr", children: [
-                                            {tagType: "icon", src: {path: "/type"}},
+                                        {tagType: "gridBox", key: "{/id}", axis: "c", allocation: "auto 1fr", children: [
+                                            {tagType: "icon", src: "{/type}"},
                                             {tagType: "dblClickInput", value: "/name"},
                                         ]}
                                     ]
@@ -110,8 +109,8 @@ export class Area_Graph {
                             ]
                         },
                     ],child2: [
-                        {tagType: "box", id: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
-                            {tagType: "html", tag: "canvas", id: "timelineCanvasForGrid", style: "width: 100%; height: 100%; position: absolute;"},
+                        {tagType: "box", key: "canvasContainer", style: "width: 100%; height: 100%; position: relative;", children: [
+                            {tagType: "html", tag: "canvas", key: "timelineCanvasForGrid", style: "width: 100%; height: 100%; position: absolute;"},
                         ]},
                     ]}
                 ]}
@@ -127,8 +126,8 @@ export class Area_Graph {
         this.toolPanelOperator = new AdjustPanelOperator();
 
         /** @type {OutlinerTag} */
-        this.overview = this.jTag.getDOMFromID("overview");
-        this.canvas = this.jTag.getDOMFromID("timelineCanvasForGrid");
+        this.overview = this.jTag.getDOMFromID("overview").element;
+        this.canvas = this.jTag.getDOMFromID("timelineCanvasForGrid").element;
         this.canvasRect = this.canvas.getBoundingClientRect();
         this.context = this.canvas.getContext("2d");//2次元描画
 

@@ -5,7 +5,7 @@ const hadClass = {};
 
 export class InputCheckboxTag extends CustomTag {
     constructor(jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.checkbox = document.createElement("input");
         this.checkbox.type = "checkbox";
         this.checkbox.style.display = "none";

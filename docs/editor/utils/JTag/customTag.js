@@ -2,7 +2,15 @@ import { isFunction } from "../utility.js";
 import { useEffect } from "../ui/util.js";
 
 export class CustomTag {
-    constructor(isSetLabel = true) {
+    constructor(/** @type {CustomTag} */parent, isSetLabel = true) {
+        if (!(parent instanceof CustomTag || parent === null)) console.error("未登録のタグです", parent);
+        /** @type {CustomTag} */
+        this.parent = parent;
+        /** @type {CustomTag[]} */
+        this.children = [];
+
+        if (parent !== null) this.parent.children.push(this);
+
         this.isSetLabel = isSetLabel;
         this.customTag = true;
         this.isRemoved = false;
@@ -17,6 +25,7 @@ export class CustomTag {
         } else {
             // console.trace("削除されました", this);
         }
+        if (parent !== null) this.parent.children.splice(this.parent.children.indexOf(this), 1);
         for (const key in this) {
             if (!this.notRemoveList.includes(key)) { // 削除してはいけないタグ
                 if (this[key] instanceof HTMLElement) {

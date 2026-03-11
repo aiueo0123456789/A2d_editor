@@ -6,7 +6,7 @@ import { InputCheckboxTag } from "./inputCheckboxTag.js";
 
 export class InputRadioTag extends CustomTag {
     constructor(jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "div", {class: "radio"});
         this.checkboxs = [];
         this.value = child.value;

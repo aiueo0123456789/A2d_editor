@@ -3,9 +3,9 @@ import { CustomTag } from "./customTag.js";
 
 export class TextureTag extends CustomTag {
     constructor(jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.canvas = document.createElement("canvas");
-        this.texture = jTag.getParameterByPath(source, child.sourceTexture);
+        this.texture = jTag.getParameter(source, child.sourceTexture);
         this.canvas.style.width = "100%";
         this.canvas.style.height = "100%";
         this.canvas.style.objectFit = "contain";

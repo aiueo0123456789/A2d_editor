@@ -6,7 +6,7 @@ import { IconTag } from "./iconTag.js";
 
 export class PopoverMenuTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super(false);
+        super(parent, false);
         this.customTag = true;
         /** @type {HTMLElement} */
         this.container = createTag(t, "div");
@@ -20,7 +20,7 @@ export class PopoverMenuTag extends CustomTag {
         }
         const downArrow = createTag(this.container, "span", {class: "downArrow"});
         /** @type {HTMLElement} */
-        this.mainContainer = createTag(app.ui.jTag.getDOMFromID("popoverMenusContainer"), "div", {class: "mainContainer"});
+        this.mainContainer = createTag(app.ui.jTag.getDOMFromID("popoverMenusContainer").element, "div", {class: "mainContainer"});
         this.mainContainer.classList.add("hidden");
         /** @type {HTMLElement} */
         const speechBubbleTriangle = createTag(this.mainContainer, "div", {class: "speechBubbleTriangle"});

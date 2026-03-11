@@ -105,21 +105,20 @@ export class Armature extends ObjectBase {
         this.objectDataGroup = GPU.createGroup(GPU.getGroupLayout("Vu"), [this.objectDataBuffer]);
 
         // ベースローカル行列
-        this.allBone = [];
+        this.bonesData = [];
         // ベースワールド行列
-        this.allBoneWorldMatrix = [];
+        this.boneWorldMatrixsData = [];
         // ボーンの色
-        this.allColors = [];
+        this.colorsData = [];
         // 物理演算パラメーター
-        this.allPhysics = [];
+        this.physicsParametersData = [];
         // 頂点
         this.verticesData = [];
         // 名前など
         /** @type {BoneMetaData[]} */
         this.boneMetaDatas = [];
 
-        this.animationsData = [];
-
+        this.poseData = [];
         this.mode = "オブジェクト";
 
         this.changeParent(app.scene.objects.getObjectByID(data.parent));
@@ -129,25 +128,25 @@ export class Armature extends ObjectBase {
         for (const boneMetaData of data.boneMetaDatas) {
             this.boneMetaDatas.push(Armature.createBoneMetaData(boneMetaData.name, boneMetaData.index, boneMetaData.parentIndex, boneMetaData.depth, false));
         }
-        copyToArray(this.allBone, data.bones.flat());
-        copyToArray(this.animationsData, createArrayNAndFill(this.allBone.length, 0));
-        copyToArray(this.allBoneWorldMatrix, data.worldMatrix.flat());
-        copyToArray(this.allColors, data.boneColors.flat());
-        copyToArray(this.allPhysics, data.physicsDatas.flat().map(x => Math.abs(x - 0.4) < 0.01 ? 0.2 : x));
+        copyToArray(this.bonesData, data.bones.flat());
+        copyToArray(this.poseData, createArrayNAndFill(this.bonesData.length, 0));
+        copyToArray(this.boneWorldMatrixsData, data.worldMatrix.flat());
+        copyToArray(this.colorsData, data.boneColors.flat());
+        copyToArray(this.physicsParametersData, data.physicsDatas.flat().map(x => Math.abs(x - 0.4) < 0.01 ? 0.2 : x));
         copyToArray(this.verticesData, data.vertices.flat());
 
         if (data.keyframeBlockManager) { // セーブデータから
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
-                object: this.animationsData,
+                object: this.poseData,
                 parameters: data.keyframeBlockManager.parameters,
                 keyframeBlocks: data.keyframeBlockManager.keyframeBlocks,
             });
         } else {
             /** @type {KeyframeBlockManager} */
             this.keyframeBlockManager = new KeyframeBlockManager({
-                object: this.animationsData,
-                parameters: createArrayN(this.animationsData.length),
+                object: this.poseData,
+                parameters: createArrayN(this.poseData.length),
             });
         }
         console.log(this)
@@ -176,7 +175,7 @@ export class Armature extends ObjectBase {
         return this.verticesData.length / 2;
     }
     get bonesNum() {
-        return this.allBone.length / 6;
+        return this.bonesData.length / 6;
     }
 
     // gc対象にしてメモリ解放

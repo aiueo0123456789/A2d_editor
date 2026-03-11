@@ -1,6 +1,6 @@
 import { MathVec2 } from "../../../utils/mathVec.js";
 import { cdt } from "../../../utils/objects/graphicMesh/createMesh/cdt.js";
-import { copyToArray, createArrayN, createArrayNAndFill, hitTestPointTriangle, IsString, lerpTriangle } from "../../../utils/utility.js";
+import { copyToArray, hitTestPointTriangle, lerpTriangle } from "../../../utils/utility.js";
 import { BlendShape } from "../../entity/BlendShape.js";
 import { BKeyframeBlockManager } from "./BKeyframeBlockManager.js";
 

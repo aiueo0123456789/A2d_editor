@@ -6,7 +6,7 @@ import { createTag, removeHTMLElementInObject } from "../ui/util.js";
 
 export class OperatorButtonTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super(false);
+        super(parent, false);
         /** @type {HTMLElement} */
         this.element = createTag(t, "div");
         this.element.classList.add("operatorButton");

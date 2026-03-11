@@ -10,7 +10,7 @@ export class ActiveBonePanelFromBAA {
             inputObject: {"context": app.context, "areasConifg": app.appConfig.areasConfig, "scene": app.scene, "values": this.values},
             DOM: [
                 {tagType: "panel", name: "ボーン", children: [
-                    {tagType: "path", sourceObject: "scene/editData/editObjects/{context/activeObject/id}/activeBone", updateEventTarget: "ボーン選択", children: [
+                    {tagType: "path", src: "scene/editData/editObjects/{context/activeObject/id}/activeBone", updateTarget: "ボーン選択", children: [
                         {tagType: "dblClickInput", label: "ボーンの名前", value: "/name"},
                         {tagType: "panel", name: "ヘッド", children: [
                             {tagType: "input", label: "x", value: "/headVertex/0", type: "number"},
@@ -63,7 +63,7 @@ export class ActiveBonePanelFromBA {
             inputObject: {"context": app.context, "areasConifg": app.appConfig.areasConfig, "scene": app.scene, "values": this.values},
             DOM: [
                 {tagType: "panel", name: "ボーン", children: [
-                    {tagType: "path", sourceObject: "scene/editData/editObjects/{context/activeObject/id}/activeBone", updateEventTarget: "ボーン選択", children: [
+                    {tagType: "path", src: "scene/editData/editObjects/{context/activeObject/id}/activeBone", updateTarget: "ボーン選択", children: [
                         {tagType: "dblClickInput", label: "ボーンの名前", value: "/name"},
                         {tagType: "input", label: "color", value: "/color", type: "color", onChange: updateGPUData},
                         {tagType: "panel", name: "ヘッド", children: [

@@ -7,7 +7,7 @@ import { createID } from "../idGenerator.js";
 
 export class PathTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,/** @type {HTMLElement}} */t,parent,source,child,flag) {
-        super();
+        super(parent);
         if (parent instanceof PathTag) { // 親がpathTagの場合特殊
             this.element = parent.element;
             this.parentElement = parent.parentElement;
@@ -17,29 +17,25 @@ export class PathTag extends CustomTag {
             this.parentElement = t;
             this.element = createTag(t, "div", {style: "width: 0px; height: 0px; position: absolute;"})
         };
-        this.children = [];
         const myFlag = createID();
         this.isRemoved = false;
         const childrenReset = () => {
-            // managerForDOMs.delete({f: myFlag});
             // 関連づけられていない小要素を削除
             for (const childTag of this.children) {
                 if (isFunction(childTag.remove)) childTag.remove();
             }
-            this.children.length = 0;
             const keep = createTag(null, "div", {style: "width: 0px; height: 0px;"});
             if (child.children) {
-                const o = jTag.getParameterByPath(source, child.sourceObject, 2);
+                const o = jTag.getParameter(source, child.src, "REFERENCE_IF_VALUE");
                 if (o) {
                     if (isFunction(o)) {
-                        this.children = jTag.createFromStructures(keep, this, child.children, {normal: o(), special: {}}, myFlag);
+                        jTag.createFromStructures(keep, this, child.children, {normal: o(), special: {}}, myFlag);
                     } else if (o instanceof ParameterReference) {
-                        // console.warn("伝播できません", o)
                         if ("errorChildren" in child) {
-                            this.children = jTag.createFromStructures(keep, this, child.errorChildren, {normal: {}, special: {}}, myFlag);
+                            jTag.createFromStructures(keep, this, child.errorChildren, {normal: {}, special: {}}, myFlag);
                         }
                     } else {
-                        this.children = jTag.createFromStructures(keep, this, child.children, {normal: o, special: {}}, myFlag);
+                        jTag.createFromStructures(keep, this, child.children, {normal: o, special: {}}, myFlag);
                     }
                 }
             }
@@ -48,19 +44,16 @@ export class PathTag extends CustomTag {
             }
             keep.remove();
         }
-        const setUpdateEventTarget = (updateEventTarget) => {
-            if (updateEventTarget.path) { // パラメーターに対応
-                this.dataBlocks = [jTag.setUpdateEventByPath(source, updateEventTarget.path, childrenReset, flag)];
-            } else { // 文字列に対応
-                this.dataBlocks = [useEffect.set({o: updateEventTarget, g: jTag.groupID, f: flag},childrenReset)];
-            }
+        const setUpdateEventTarget = (updateTarget) => {
+            this.dataBlocks.push(jTag.setUpdateFunction(source, updateTarget, childrenReset, flag));
         }
-        if (Array.isArray(child.updateEventTarget)) {
-            for (const updateEventTarget of child.updateEventTarget) {
-                setUpdateEventTarget(updateEventTarget);
+        this.dataBlocks = [];
+        if (Array.isArray(child.updateTarget)) {
+            for (const updateTarget of child.updateTarget) {
+                setUpdateEventTarget(updateTarget);
             }
         } else {
-            setUpdateEventTarget(child.updateEventTarget);
+            setUpdateEventTarget(child.updateTarget);
         }
         childrenReset();
     }

@@ -20,7 +20,7 @@ export class Area_NodeEditor {
                                         changeParameter(this.spaceData, "sourceCode", app.scene.objects.getObjectByID(value));
                                     },
                                     sourceObject: () => {
-                                        return app.scene.objects.scripts.map(script => {return {name: script.name, id: script.id}});
+                                        return app.scene.objects.scripts.map(script => {return {name: script.name, key: script.id}});
                                     }, options: {initValue: ""}
                                 },
                             ]},
@@ -34,7 +34,7 @@ export class Area_NodeEditor {
                             }},
                         ]}
                     ]},
-                    {tagType: "path", sourceObject: "spaceData/sourceCode", updateEventTarget: {path: "spaceData/sourceCode"}, children: [
+                    {tagType: "path", src: "spaceData/sourceCode", updateTarget: "{spaceData/sourceCode}", children: [
                         {tagType: "codeEditor", source: "/text"}
                     ]}
                 ]}

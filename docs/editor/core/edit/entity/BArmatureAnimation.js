@@ -147,9 +147,9 @@ export class BArmatureAnimation {
 
     updateGPUData() {
         // 実行データの更新
-        this.object.animationsData.length = 0;
+        this.object.poseData.length = 0;
         for (const bone of this.bones) {
-            this.object.animationsData.push(
+            this.object.poseData.push(
                 bone.animationLocalBoneData.x,
                 bone.animationLocalBoneData.y,
                 bone.animationLocalBoneData.sx,
@@ -177,7 +177,7 @@ export class BArmatureAnimation {
             for (const childData of children) {
                 const boneIndex = childData.index;
                 // 編集用キーフレームブロックマネージャーの作成
-                const animationLocalBoneData = Armature.BoneDataByArray(object.animationsData.slice(boneIndex * 6, boneIndex * 6 + 6));
+                const animationLocalBoneData = Armature.BoneDataByArray(object.poseData.slice(boneIndex * 6, boneIndex * 6 + 6));
                 const keyframeBlockManager = new KeyframeBlockManager({
                     object: animationLocalBoneData,
                     parameters: ["x", "y", "sx", "sy", "r", "l"],
@@ -208,10 +208,10 @@ export class BArmatureAnimation {
 
     toRutime() {
         const keyframeBlocks = [];
-        this.object.allPhysics.length = 0;
-        this.object.animationsData.length = 0;
+        this.object.physicsParametersData.length = 0;
+        this.object.poseData.length = 0;
         for (const bone of this.bones) {
-            this.object.allPhysics.push(...bone.physics,
+            this.object.physicsParametersData.push(...bone.physics,
                 0, 1, 0,
 
                 0, 0,
@@ -224,7 +224,7 @@ export class BArmatureAnimation {
                 0,
                 0,
             );
-            this.object.animationsData.push(
+            this.object.poseData.push(
                 bone.animationLocalBoneData.x,
                 bone.animationLocalBoneData.y,
                 bone.animationLocalBoneData.sx,

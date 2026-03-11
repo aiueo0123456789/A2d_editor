@@ -4,7 +4,7 @@ import { CustomTag } from "./customTag.js";
 
 export class BoxTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "div");
         this.children = [];
         if (child.children) {

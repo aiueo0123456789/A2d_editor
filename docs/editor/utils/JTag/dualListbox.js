@@ -4,11 +4,11 @@ import { createTag, useEffect } from "../ui/util.js";
 
 export class DualListboxTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         /** @type {Array} */
-        const availableItems = Array.isArray(child.available) ? child.available : jTag.getParameterByPath(source, child.available);
+        const availableItems = Array.isArray(child.available) ? child.available : jTag.getParameter(source, child.available);
         /** @type {Array} */
-        const selectedItems = Array.isArray(child.selected) ? child.selected : jTag.getParameterByPath(source, child.selected);
+        const selectedItems = Array.isArray(child.selected) ? child.selected : jTag.getParameter(source, child.selected);
         this.element = createTag(t, "div", {style: "width: 100%; minHeight: fit-content; display: grid; gridTemplateColumns: 1fr 2px 1fr;"});
         /** @type {HTMLElement} */
         this.availableList = createTag(this.element, "div", {style: "width: 100%; minHeight: 100px; height: fit-content; backgroundColor: var(--color-input);"});

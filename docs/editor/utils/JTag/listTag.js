@@ -7,7 +7,7 @@ import { createButton, createMinButton, createTag, useEffect } from "../ui/util.
 
 export class ListTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,data,flag) {
-        super(false);
+        super(parent, false);
         this.element;
         this.selected = [];
         this.active = null;
@@ -67,7 +67,7 @@ export class ListTag extends CustomTag {
         }
 
         const keys = new Map();
-        let items = jTag.getParameterByPath(source, data.src);
+        let items = jTag.getParameter(source, data.src);
         this.children = [];
         const isPrimitive = data.isPrimitive;
         const listUpdate = () => {

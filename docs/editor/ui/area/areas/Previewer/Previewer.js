@@ -31,8 +31,8 @@ export class Area_Previewer {
         this.struct = {
             inputObject: {"scene": app.scene, "o": this.spaceData, "areasConfig": this.areasConfig},
             DOM: [
-                {tagType: "box", id: "canvasContainer", style: "width: 100%; height: 100%; display: flex; justifyContent: center; alignItems: center; backgroundColor: rgb(55, 55, 55);", children: [
-                    {tagType: "html", tag: "canvas", id: "renderingCanvas"},
+                {tagType: "box", key: "canvasContainer", style: "width: 100%; height: 100%; display: flex; justifyContent: center; alignItems: center; backgroundColor: rgb(55, 55, 55);", children: [
+                    {tagType: "html", tag: "canvas", key: "renderingCanvas"},
                 ]},
             ]
         }
@@ -40,7 +40,7 @@ export class Area_Previewer {
         this.jTag.create(area.main, this.struct);
 
         this.box = this.jTag.getDOMFromID("canvasContainer").element;
-        this.canvas = this.jTag.getDOMFromID("renderingCanvas");
+        this.canvas = this.jTag.getDOMFromID("renderingCanvas").element;
         this.canvasRect = this.canvas.getBoundingClientRect();
 
         this.camera = app.scene.objects.renderingCamera;

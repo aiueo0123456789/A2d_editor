@@ -214,12 +214,12 @@ export class BArmature {
     toRutime() {
         this.object.boneMetaDatas.length = 0;
         this.object.verticesData.length = 0;
-        this.object.allPhysics.length = 0;
-        this.object.allBone.length = 0;
-        this.object.allBoneWorldMatrix.length = 0;
-        this.object.allColors.length = 0;
+        this.object.physicsParametersData.length = 0;
+        this.object.bonesData.length = 0;
+        this.object.boneWorldMatrixsData.length = 0;
+        this.object.colorsData.length = 0;
         this.object.root.length = 0;
-        this.object.animationsData.length = 0;
+        this.object.poseData.length = 0;
         const keyframeBlocks = [];
         for (const bone of this.bones) {
             const parent = bone.parent;
@@ -227,7 +227,7 @@ export class BArmature {
             const boneData = Armature.getLocalBoneDataByVertices(bone.headVertex.co, bone.tailVertex.co, parent?.headVertex?.co, parent?.tailVertex?.co);
             this.object.verticesData.push(...bone.headVertex.co);
             this.object.verticesData.push(...bone.tailVertex.co);
-            this.object.allPhysics.push(...bone.physics,
+            this.object.physicsParametersData.push(...bone.physics,
                 0, 1, 0,
 
                 0, 0,
@@ -240,13 +240,13 @@ export class BArmature {
                 0,
                 0,
             );
-            this.object.allBone.push(...boneData.bone);
-            this.object.allBoneWorldMatrix.push(...boneData.worldMatrix.flat());
-            this.object.allColors.push(...bone.color);
-            this.object.animationsData.push(0,0,0,0,0,0); // x y sx sy r l
+            this.object.bonesData.push(...boneData.bone);
+            this.object.boneWorldMatrixsData.push(...boneData.worldMatrix.flat());
+            this.object.colorsData.push(...bone.color);
+            this.object.poseData.push(0,0,0,0,0,0); // x y sx sy r l
             keyframeBlocks.push(...bone.keyframeBlocks);
         }
-        this.object.keyframeBlockManager.setKeyframeBlocks(createArrayN(this.object.animationsData.length), keyframeBlocks);
+        this.object.keyframeBlockManager.setKeyframeBlocks(createArrayN(this.object.poseData.length), keyframeBlocks);
         const armatureData = app.scene.runtimeData.armatureData;
         armatureData.update(this.object);
     }

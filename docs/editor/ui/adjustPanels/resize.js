@@ -26,7 +26,7 @@ export class AdjustPanel_Resize {
                         {tagType: "input", type: "checkbox", checked: "values/2", look: {check: "check", uncheck: "uncheck"}, useCommand: false},
                     ]},
                     {tagType: "label", text: "proportionalType", children: [
-                        {tagType: "select", value: "values/3", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "values/3"}}, useCommand: false},
+                        {tagType: "select", value: "values/3", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: "{values/3}"}, useCommand: false},
                     ]},
                     {tagType: "label", text: "proportionalSize", children: [
                         {tagType: "input", value: "values/4", type: "number", min: 0, max: 10000, useCommand: false, custom: {visual: "range"}},

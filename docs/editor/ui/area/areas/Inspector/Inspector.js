@@ -13,12 +13,12 @@ export class Area_Inspector {
             inputObject: {"context": app.context,"scene": app.scene},
             DOM: [
                 {tagType: "html", type: "div", class: "ui_container_0", children: [
-                    {tagType: "path", sourceObject: "context/activeObject", updateEventTarget: {path: "context/%activeObject"}, children: [
+                    {tagType: "path", src: "{context/activeObject}", updateTarget: "{context/[S]activeObject}", children: [
                         {tagType: "panel", name: "基本情報", children: [
-                            {tagType: "if", formula: {source: "/type", conditions: "==", value: "GraphicMesh"},
+                            {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "GraphicMesh"},
                                 true: [
                                     {tagType: "label", text: "name", children: [
-                                        {tagType: "input", value: "/name", type: "text"},
+                                        {tagType: "input", value: "{/name}", type: "text"},
                                     ]},
                                     {tagType: "label", text: "parent", children: [
                                         {tagType: "select",
@@ -27,19 +27,19 @@ export class Area_Inspector {
                                                 app.operator.execute();
                                             },
                                             sourceObject: () => {
-                                                return app.scene.objects.getObjectsFromeTypes(["BezierModifier", "Armature"]).map(object => {return {name: object.name, id: object.id}});
+                                                return app.scene.objects.getObjectsFromeTypes(["BezierModifier", "Armature"]).map(object => {return {name: object.name, key: object.id}});
                                             },
-                                            options: {initValue: {path: "context/activeObject/parent/name"}}
+                                            options: {initValue: "{context/activeObject/parent/name}"}
                                         },
                                     ]},
                                     {tagType: "label", text: "zIndex", children: [
-                                        {tagType: "input", value: "/zIndex", type: "number", min: 0, max: 1000, step: 1},
+                                        {tagType: "input", value: "{/zIndex}", type: "number", min: 0, max: 1000, step: 1},
                                     ]},
                                     {tagType: "label", text: "verticesNum", children: [
-                                        {tagType: "input", value: "/verticesNum", type: "number", custom: {collision: false, visual: "1"}},
+                                        {tagType: "input", value: "{/verticesNum}", type: "number", custom: {collision: false, visual: "1"}},
                                     ]},
                                     {tagType: "label", text: "editRock", children: [
-                                        {tagType: "input", type: "checkbox", checked: "/editRock", look: {check: "rock", uncheck: "unrock"}},
+                                        {tagType: "input", type: "checkbox", checked: "{/editRock}", look: {check: "rock", uncheck: "unrock"}},
                                     ]},
                                     {tagType: "label", text: "texutre", children: [
                                         {tagType: "select",
@@ -48,14 +48,14 @@ export class Area_Inspector {
                                                 app.operator.execute();
                                             },
                                             sourceObject: () => {
-                                                return app.scene.objects.textures.map(texture => {return {name: texture.name, id: texture.id}});
+                                                return app.scene.objects.textures.map(texture => {return {name: texture.name, key: texture.id}});
                                             },
-                                            options: {initValue: {path: "context/activeObject/texture/name"}}
+                                            options: {initValue: "{context/activeObject/texture/name}"}
                                         },
                                     ]},
                                     {tagType: "label", text: "texupreviewtre", children: [
-                                        {tagType: "path", sourceObject: "/texture", updateEventTarget: {path: "/%texture"}, children: [
-                                            {tagType: "texture", sourceTexture: "/texture"},
+                                        {tagType: "path", src: "{/texture}", updateTarget: "{/[S]texture}", children: [
+                                            {tagType: "texture", sourceTexture: "{/texture}"},
                                         ]},
                                     ]},
                                     {tagType: "label", text: "mask", children: [
@@ -64,9 +64,9 @@ export class Area_Inspector {
                                                 app.context.activeObject.changeClippingMask(app.scene.objects.getObjectByID(value));
                                             },
                                             sourceObject: () => {
-                                                return app.scene.objects.maskTextures.map(texture => {return {name: texture.name, id: texture.id}});
+                                                return app.scene.objects.maskTextures.map(texture => {return {name: texture.name, key: texture.id}});
                                             },
-                                            options: {initValue: {path: "context/activeObject/clippingMask/name"}}
+                                            options: {initValue: "{context/activeObject/clippingMask/name}"}
                                         },
                                     ]},
                                     {tagType: "label", text: "renderingTarget", children: [
@@ -75,9 +75,9 @@ export class Area_Inspector {
                                                 app.context.activeObject.changeRenderingTarget(app.scene.objects.getObjectByID(value));
                                             },
                                             sourceObject: () => {
-                                                return [{name: "", id: null}].concat(app.scene.objects.maskTextures.map(texture => {return {name: texture.name, id: texture.id}}));
+                                                return [{name: "", key: null}].concat(app.scene.objects.maskTextures.map(texture => {return {name: texture.name, key: texture.id}}));
                                             },
-                                            options: {initValue: {path: "context/activeObject/renderingTarget/name"}}
+                                            options: {initValue: "{context/activeObject/renderingTarget/name}"}
                                         },
                                     ]},
                                     {tagType: "label", text: "autoWeight", children: [
@@ -88,7 +88,7 @@ export class Area_Inspector {
                                     ]}
                                 ],
                                 false: [
-                                    {tagType: "if", formula: {source: "/type", conditions: "==", value: "BezierModifier"},
+                                    {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "BezierModifier"},
                                         true: [
                                             {tagType: "label", text: "name", children: [
                                                 {tagType: "input", value: "/name", type: "text"},
@@ -100,9 +100,9 @@ export class Area_Inspector {
                                                         app.operator.execute();
                                                     },
                                                     sourceObject: () => {
-                                                        return app.scene.objects.getObjectsFromeTypes(["BezierModifier", "Armature"]).map(object => {return {name: object.name, id: object.id}});
+                                                        return app.scene.objects.getObjectsFromeTypes(["BezierModifier", "Armature"]).map(object => {return {name: object.name, key: object.id}});
                                                     },
-                                                    options: {initValue: {path: "context/activeObject/parent/name"}}
+                                                    options: {initValue: "{context/activeObject/parent/name}"}
                                                 },
                                             ]},
                                             {tagType: "label", text: "pointsNum", children: [
@@ -116,7 +116,7 @@ export class Area_Inspector {
                                             ]}
                                         ],
                                         false: [
-                                            {tagType: "if", formula: {source: "/type", conditions: "==", value: "Armature"},
+                                            {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "Armature"},
                                                 true: [
                                                     {tagType: "label", text: "name", children: [
                                                         {tagType: "input", value: "/name", type: "text"},
@@ -129,7 +129,7 @@ export class Area_Inspector {
                                                     ]}
                                                 ],
                                                 false: [
-                                                    {tagType: "if", formula: {source: "/type", conditions: "==", value: "BlendShape"},
+                                                    {tagType: "if", formula: {src: "{/type}", conditions: "==", value: "BlendShape"},
                                                         true: [
                                                             {tagType: "label", text: "name", children: [
                                                                 {tagType: "input", value: "/name", type: "text"},
@@ -197,17 +197,18 @@ export class Area_Inspector {
                                 // bms.updateGPUData();
                             }, src: "/shapeKeyMetaDatas", type: "min",
                             liStruct: {
-                                tagType: "gridBox", id: {path: "/shapeKeyMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
+                                tagType: "gridBox", key: "{/shapeKeyMetaDatas/{!index}/name}", axis: "c", allocation: "1fr 20%", children: [
                                     {tagType: "dblClickInput", value: "/name"},
+                                    {tagType: "input", type: "number", value: "/object/shapeKeyWeightsData/{/index}", min: 0, max: 1, step: 0.0001},
                                 ]
                             }}
                         ]},
                     ], errorChildren: [
                         {tagType: "panel", name: "基本情報", children: []}
                     ]},
-                    {tagType: "path", sourceObject: "scene/editData/editObjects/{context/activeObject/id}", updateEventTarget: "changeEditMode", children: [
+                    {tagType: "path", src: "scene/editData/editObjects/{context/activeObject/id}", updateTarget: "changeEditMode", children: [
                         {
-                            tagType: "if", formula: {source: "/constructor/name", conditions: "==", value: "BMeshShapeKey"},
+                            tagType: "if", formula: {src: "/constructor/name", conditions: "==", value: "BMeshShapeKey"},
                             true: [
                                 {tagType: "panel", name: "シェイプキー", children: [
                                     {tagType: "list", label: "シェイプキー", onAppend: () => {
@@ -227,7 +228,7 @@ export class Area_Inspector {
                                         app.operator.execute();
                                     }, src: "/shapeKeys", type: "min",
                                     liStruct: {
-                                        tagType: "gridBox", id: {path: "/shapeKeyMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
+                                        tagType: "gridBox", key: "{/shapeKeyMetaDatas/{!index}/name}", axis: "c", allocation: "1fr", children: [
                                             {tagType: "dblClickInput", value: "/name"},
                                         ]
                                     }}
@@ -235,7 +236,7 @@ export class Area_Inspector {
                             ],
                             false: [
                                 {
-                                    tagType: "if", formula: {source: "/constructor/name", conditions: "==", value: "BBezierShapeKey"},
+                                    tagType: "if", formula: {src: "/constructor/name", conditions: "==", value: "BBezierShapeKey"},
                                     true: [
                                         {tagType: "panel", name: "シェイプキー", children: [
                                             {tagType: "list", label: "シェイプキー", onAppend: () => {
@@ -255,7 +256,7 @@ export class Area_Inspector {
                                                 app.operator.execute();
                                             }, src: "/shapeKeys", type: "min",
                                             liStruct: {
-                                                tagType: "gridBox", id: {path: "/shapeKeyMetaDatas/{!index}/name"}, axis: "c", allocation: "1fr", children: [
+                                                tagType: "gridBox", key: "{/shapeKeyMetaDatas/{!index}/name}", axis: "c", allocation: "1fr", children: [
                                                     {tagType: "dblClickInput", value: "/name"},
                                                 ]
                                             }}

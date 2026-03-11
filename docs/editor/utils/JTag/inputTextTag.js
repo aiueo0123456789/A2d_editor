@@ -4,7 +4,7 @@ import { createTag, useEffect, removeHTMLElementInObject } from "../ui/util.js";
 
 export class InputTextTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "input", {type: "text"});
         if (child.value) this.dataBlocks = [jTag.setWith(this.element, child.value, source, flag, child.useCommand, child.onChange)];
     }

@@ -4,7 +4,7 @@ import { createTag } from "../ui/util.js";
 
 export class DblClickInput extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "input");
         this.element.type = "text";
         this.element.classList.add("dblClickInput");

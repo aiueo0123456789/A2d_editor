@@ -36,17 +36,16 @@ export class Area_Outliner {
                             app.context.setActiveObject(array[endIndex]);
                         }
                     },
-                    activeSource: "context/activeObject", selectSource: "context/selectedObjects"}, withObject: {"scene": "scene/objects/rootObjects", "layer": "scene/layers/layers"}, updateEventTarget: "scene/changeParent", loopTarget: "/children", structures: [
+                    activeSource: "context/activeObject", selectSource: "context/selectedObjects"}, src: {"scene": "{scene/objects/rootObjects}", "layer": "{scene/layers/layers}"}, updateTarget: ["scene/changeParent", "scene/addObject", "scene/deleteObject"], loopTarget: "/children", structures: [
                         {
                             tagType: "if",
-                            formula: {source: "/", conditions: "in", value: "name"},
+                            formula: {src: "/", conditions: "in", value: "name"},
                             true: [
                                 {
                                     tagType: "if",
-                                    formula: {source: "/", conditions: "in", value: "zIndex"},
+                                    formula: {src: "/", conditions: "in", value: "zIndex"},
                                     true: [
                                         {tagType: "gridBox", axis: "c", allocation: "auto 50% 1fr auto 20%", children: [ // グラフィックメッシュ
-                                            // {tagType: "icon", src: {path: "/type"}},
                                             {tagType: "texture", sourceTexture: "/texture/texture", width: "15px", height: "15px"},
                                             {tagType: "dblClickInput", value: "/name"},
                                             {tagType: "padding", size: "10px"},
@@ -56,7 +55,7 @@ export class Area_Outliner {
                                     ],
                                     false: [
                                         {tagType: "gridBox", axis: "c", allocation: "auto 50% 1fr", children: [
-                                            {tagType: "icon", src: {path: "/type"}},
+                                            {tagType: "icon", src: "{/type}"},
                                             {tagType: "dblClickInput", value: "/name"},
                                             {tagType: "padding", size: "10px"},
                                         ]},

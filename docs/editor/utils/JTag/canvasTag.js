@@ -2,7 +2,7 @@ import { CustomTag } from "./customTag.js";
 
 export class CanvasTag extends CustomTag {
     constructor(jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = document.createElement("div");
         this.element.style.width = "100%";
         this.element.style.height = "100%";

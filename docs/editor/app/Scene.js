@@ -346,22 +346,6 @@ export class Scene {
     }
 
     init() {
-        // const texture = this.objects.createObject({
-        //     type: "Texture",
-        //     name: "未設定テクスチャ",
-        //     id: "isNotTexture",
-        //     texture: GPU.isNotTexture
-        // });
-        // this.objects.appendObject(texture);
-
-        // const script = this.objects.createObject({
-        //     type: "Script",
-        //     name: "スクリプトテスト",
-        //     id: "templateParticleUpdateCode",
-        //     text: templateParticleUpdateCode
-        // });
-        // this.objects.appendObject(script);
-
         if (true) { // 白のマスクテクスチャ
             const baseMaskTexture = this.objects.createAndAppendObject({name: "base", type: "MaskTexture", id: "baseMaskTexture"});
         }
@@ -406,7 +390,7 @@ export class Scene {
             GPU.writeBuffer(this.runtimeData.bezierModifierData.shapeKeyWights.buffer, new Float32Array(bezierModifier.shapeKeyWeightsData), bezierModifier.runtimeOffsetData.start.shapeKeyWeightsOffset * 4);
         }
         for (const armature of this.objects.armatures) {
-            GPU.writeBuffer(this.runtimeData.armatureData.runtimeAnimationData.buffer, new Float32Array(armature.animationsData), armature.runtimeOffsetData.start.boneOffset * this.runtimeData.armatureData.boneBlockByteLength);
+            GPU.writeBuffer(this.runtimeData.armatureData.runtimeAnimationData.buffer, new Float32Array(armature.poseData), armature.runtimeOffsetData.start.boneOffset * this.runtimeData.armatureData.boneBlockByteLength);
         }
         const computeCommandEncoder = device.createCommandEncoder();
         const computePassEncoder = computeCommandEncoder.beginComputePass();

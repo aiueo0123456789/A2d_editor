@@ -5,7 +5,7 @@ import { JTag } from "./JTag.js";
 
 export class IconTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element = createTag(t, "div", {class: "icon"});
         this.img = createTag(this.element, "img");
         let src = jTag.getParameter(source, child.src);

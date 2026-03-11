@@ -5,7 +5,7 @@ import { createTag } from "../ui/util.js";
 
 export class SelectTag extends CustomTag {
     constructor(jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.customTag = true;
         this.element = createTag(t, "div");
         this.element.classList.add("custom-select");
@@ -22,14 +22,14 @@ export class SelectTag extends CustomTag {
         this.element.addEventListener("click", (e) => {
             let items;
             if (IsString(child.sourceObject)) {
-                items = jTag.getParameterByPath(source, child.sourceObject);
+                items = jTag.getParameter(source, child.sourceObject);
             } else if (Array.isArray(child.sourceObject)) {
                 items = child.sourceObject;
             } else if (isFunction(child.sourceObject)) {
                 items = child.sourceObject();
             }
             const rect = this.element.getBoundingClientRect();
-            const listContainer = app.ui.jTag.getDOMFromID("custom-select-items");
+            const listContainer = app.ui.jTag.getDOMFromID("custom-select-items").element;
             listContainer.style.minWidth = `${rect.width}px`;
             listContainer.style.left = `${rect.left}px`;
             listContainer.style.top = `${rect.bottom}px`;
@@ -54,11 +54,11 @@ export class SelectTag extends CustomTag {
                         option.classList.add("active");
                     }
                     option.addEventListener("click", () => {
-                        this.input.value = item.id;
+                        this.input.value = item.key;
                         // change イベントを手動で発火させる
                         this.input.dispatchEvent(new Event("input", { bubbles: true }));
                         valueTag.textContent = item.name;
-                        submit(item.id);
+                        submit(item.key);
                     })
                 } else {
                     const inner = createTag(option, "p", {textContent: item});

@@ -76,15 +76,15 @@ export class ArmatureData extends RuntimeDataBase {
     getObjectDataForGPU(/** @type {Armature} */armature) {
         const map = new Map();
         // 行列の更新
-        map.set(this.baseBoneMatrix, armature.allBoneWorldMatrix);
+        map.set(this.baseBoneMatrix, armature.boneWorldMatrixsData);
         map.set(this.renderingBoneMatrix, null);
         // 頂点の更新
         map.set(this.baseVertices, armature.verticesData);
         map.set(this.renderingVertices, null);
         // その他
-        map.set(this.baseBone, armature.allBone);
-        map.set(this.physicsData, armature.allPhysics);
-        map.set(this.colors, armature.allColors);
+        map.set(this.baseBone, armature.bonesData);
+        map.set(this.physicsData, armature.physicsParametersData);
+        map.set(this.colors, armature.colorsData);
         map.set(this.runtimeAnimationData, null);
         this.updatePropagateData();
         return map;

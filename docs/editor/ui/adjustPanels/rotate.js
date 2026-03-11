@@ -22,7 +22,7 @@ export class AdjustPanel_Rotate {
                         {tagType: "input", type: "checkbox", checked: "values/1", look: {check: "check", uncheck: "uncheck"}, useCommand: false},
                     ]},
                     {tagType: "label", text: "種類", children: [
-                        {tagType: "select", value: "values/2", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: {path: "values/2"}}, useCommand: false},
+                        {tagType: "select", value: "values/2", sourceObject: ["リニア", "逆二乗", "一定"], options: {initValue: "{values/2}"}, useCommand: false},
                     ]},
                     {tagType: "label", text: "半径", children: [
                         {tagType: "input", value: "values/3", type: "number", min: 0, max: 10000, useCommand: false, custom: {visual: "range"}},

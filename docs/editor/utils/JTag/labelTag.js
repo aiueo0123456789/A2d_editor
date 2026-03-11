@@ -4,7 +4,7 @@ import { JTag } from "./JTag.js";
 
 export class LabelTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,data,flag) {
-        super(false);
+        super(parent, false);
         /** @type {HTMLElement} */
         this.container = createTag(t,"div")
         if (data.attributes?.includes("after")) this.container.classList.add("afterLabel");

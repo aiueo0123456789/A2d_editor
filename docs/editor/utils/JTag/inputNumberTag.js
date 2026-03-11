@@ -4,7 +4,7 @@ import { createRange, createTag } from "../ui/util.js";
 
 export class InputNumberTag extends CustomTag {
     constructor(/** @type {JTag} */jTag,t,parent,source,child,flag) {
-        super();
+        super(parent);
         this.element;
         if (child?.custom?.visual == "range") {
             this.element = createTag(t, "div");
